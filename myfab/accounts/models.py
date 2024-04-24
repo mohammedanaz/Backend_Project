@@ -22,5 +22,7 @@ class CustomUser(AbstractUser):
     )
     
     def __str__(self):
-        return self.first_name
+
+         return self.first_name if self.first_name else self.username
+
     

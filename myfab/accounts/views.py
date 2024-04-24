@@ -6,9 +6,12 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
+from .utils import generate_otp, send_otp
+from .forms import OTPVerificationForm
+from datetime import datetime, timedelta
+import re
 
 # Create your views here.
-
 
 ############################### Signup CBV ######################################
 @method_decorator(never_cache, name='dispatch')
@@ -24,8 +27,16 @@ class Signup(View):
     def post(self, request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login') 
+            otp = generate_otp()
+            send_otp(form.cleaned_data['phone_number'], otp)
+            request.session.pop('signup_data', None)   # remove signup, otp data from session before saving new
+            request.session.pop('otp', None)
+            request.session.pop('expiry_time', None)
+            request.session['signup_data'] = form.cleaned_data  # Store form data in session to save after otp verification
+            request.session['otp'] = otp                        # Store OTP in session
+            expiry_time = datetime.now() + timedelta(minutes=1)
+            request.session['expiry_time'] = str(expiry_time)
+            return redirect(reverse('accounts:otp_verification')) 
         return render(request, 'signup.html', {'form': form})
     
 ############################### Login CBV ######################################
@@ -36,7 +47,6 @@ class LoginPage(TemplateView):
         email = request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(request, username = email, password=password)
-        print('User is:', user)
         if user is not None:
             login(request, user)
             return redirect(reverse('user:user_home'))
@@ -51,7 +61,7 @@ class LoginPage(TemplateView):
         
         return render(request, 'login.html')
 
-############################### Login CBV ######################################
+############################### Logout CBV ######################################
 
 class LogoutPage(TemplateView):
 
@@ -59,3 +69,42 @@ class LogoutPage(TemplateView):
         if request.user.is_authenticated:
             logout(request)
         return redirect('accounts:login')
+    
+############################### OTP verification CBV ######################################
+
+class OTPVerification(View):
+    
+    def get(self, request):
+        if 'signup_data' not in request.session or 'otp' not in request.session:
+            return redirect(reverse('accounts:signup'))
+        form = OTPVerificationForm()
+        return render(request, 'otp_verification.html', {'form': form})
+    
+    def post(self, request):
+        form = OTPVerificationForm(request.POST)
+        if form.is_valid():
+            entered_otp = form.cleaned_data['otp']
+            stored_otp = request.session.get('otp')
+            if entered_otp == stored_otp:            # OTP verification successful, save the user
+                expiry_time_str = request.session.get('expiry_time')
+                # Remove timezone component before parsing
+                expiry_time_str = re.sub(r'\+\d{2}:\d{2}$', '', expiry_time_str)
+                expiry_time = datetime.strptime(expiry_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                if datetime.now() > expiry_time:
+                    context = {'error_otp_expiry':True}
+                    return render(request, 'signup.html', context)
+                else:
+                    form_data = request.session.get('signup_data')
+                    form = UserRegistrationForm(form_data)
+                    if form.is_valid():
+                        form.save()
+                        del request.session['signup_data']
+                        del request.session['otp']
+                        del request.session['expiry_time']
+                        return redirect(reverse('accounts:login'))
+                    else:
+                        return render(request, 'signup.html', {'form': form})
+            else:
+                context = {'invalid_credentials': True, 'form': form}
+                return render(request, 'otp_verification.html', context)
+        return render(request, 'otp_verification.html', {'form': form})

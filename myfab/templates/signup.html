@@ -11,6 +11,9 @@
         </div>
         <form action="/accounts/signup/" method="POST">
           {% csrf_token %}
+          {% if error_otp_expiry %}
+          <p class="text-danger">OTP time expired. Please resubmit.</p> 
+          {% endif %}
             <div class="form-group">
                 <input type="text" name="first_name" class="form-control my-2" id="SignupFname"  placeholder="First Name">
                 {% if form.first_name.errors %}
@@ -49,18 +52,18 @@
               </div>
             {% comment %} </div> {% endcomment %}
             <div class="form-group">
-              <input type="password" name="password1" class="form-control my-2" id="SignupInputPassword1" placeholder="Password">
-              {% if form.password1.errors %}
+              <input type="password" name="password" class="form-control my-2" id="SignupInputPassword1" placeholder="Password">
+              {% if form.password.errors %}
                     <div class="text-danger">
-                        {{ form.password1.errors|join:", " }}
+                        {{ form.password.errors|join:", " }}
                     </div>
                 {% endif %}
             </div>
             <div class="form-group">
-                <input type="password" name="password2" class="form-control my-2" id="SignupInputPassword2" placeholder="Confirm Password">
-                {% if form.password2.errors %}
+                <input type="password" name="confirm_password" class="form-control my-2" id="SignupInputPassword2" placeholder="Confirm Password">
+                {% if form.confirm_password.errors %}
                     <div class="text-danger">
-                        {{ form.password2.errors|join:", " }}
+                        {{ form.confirm_password.errors|join:", " }}
                     </div>
                 {% endif %}
               </div>

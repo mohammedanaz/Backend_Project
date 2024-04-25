@@ -22,7 +22,7 @@
             <!-- madal header -->
             <div class="modal-header">
             <h1 class="modal-title fs-5" id="staticBackdropLabel">OTP Verification</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close"  aria-label="Close"></button>
             </div>
 
             <form method="post" action="/accounts/otp-verification/">
@@ -51,22 +51,26 @@
     </div>
     
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="{% static "./js/bootstrap.js" %}"></script>
 
     <!-- JavaScript to trigger the modal -->
     <script>
         // Trigger the modal when the page loads
-        $(document).ready(function() {
-            $('#staticBackdrop').modal('show');
-            
+        document.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('staticBackdrop');
+            var closeButton = modal.querySelector('.btn-close');
+    
             // Add event listener for close button click
-            $('.btn-close').click(function() {
+            closeButton.addEventListener('click', function() {
                 // Redirect to signup page
                 window.location.href = "{% url 'accounts:signup' %}";
             });
+            
+            // Show the modal
+            var modalBootstrap = new bootstrap.Modal(modal);
+            modalBootstrap.show();
         });
     </script>
 

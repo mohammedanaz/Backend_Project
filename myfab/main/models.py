@@ -25,6 +25,7 @@ class Category(models.Model):
 class CategoryChoice(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     choices = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='images/category_choices', null=True, blank=True)
 
     def __str__(self):
         return self.choices

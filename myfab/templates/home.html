@@ -44,12 +44,27 @@
     {% include "carousel.html" %}
 <!-- ---------------------------- Carousel End ----------------------------- -->
 
-<!-- <section> shop by material begin ============================-->
-    <section class="py-0">
+
+<!-- ---------------------------- New arrivals section Begin ----------------------------- -->
+    
+    <div class="container-fluid text-center">
+      <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2"></h5>
+    </div>
+    <a class="text-decoration-none" href="#">
+      <div class="container-fluid d-flex justify-content-center align-items-center text-center" style="max-width: 98%; background-image: url('{% static "images/new_arrivals_1.jpg" %}'); background-size: contain; height: 50vh;">
+        <h1 class="fw-bold  text-white">New Arrivals</h1>
+      </div>
+    </a>
+    
+<!-- ---------------------------- New arrivals section End ----------------------------- -->
+
+
+<!-- <section> shop by usage begin ============================-->
+    <section class="py-0 mb-2">
         <div class="container-fluid">
           <div class="row h-100">
             <div class="container text-center">
-              <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By Material</h5>
+              <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By Usage</h5>
             </div>
             <div class="col-12">
               <div class="carousel slide" id="carouselBestDeals" data-bs-touch="false" data-bs-interval="false">
@@ -143,10 +158,8 @@
             </div>
           </div>
         </div>
-        <!-- end of .container-->
-
-      </section>
-      <!-- <section> shop by material close ============================-->
+    </section>
+      <!-- <section> shop by usage end ============================-->
 
         
 

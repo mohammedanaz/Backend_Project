@@ -1,11 +1,14 @@
 <!-- home.html -->
 
 {% extends 'base.html' %}
+
 {% load static %}
+{% load custom_filters %}
+
 {% block title %}Main Home{% endblock %}
 
 {% block content %}
-<!-- ---------------------------- Navbar Begin ----------------------------- -->
+<!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
         <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,14 +41,14 @@
         </div>
         </div>
     </nav>
-<!-- ---------------------------- Navbar End ----------------------------- -->
+<!-- =========================== Navbar End =========================== -->
 
-<!-- ---------------------------- Carousel Begin ----------------------------- -->
+<!-- =========================== Carousel Begin ========================== -->
     {% include "carousel.html" %}
-<!-- ---------------------------- Carousel End ----------------------------- -->
+<!-- ============================= Carousel End =============================== -->
 
 
-<!-- ---------------------------- New arrivals section Begin ----------------------------- -->
+<!-- ============================ New arrivals section Begin =================================== -->
     
     <div class="container-fluid text-center">
       <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2"></h5>
@@ -58,7 +61,7 @@
     </div>
     </a>
     
-<!-- ---------------------------- New arrivals section End ----------------------------- -->
+<!-- =============================== New arrivals section End ============================= -->
 
 
 <!-- <section> shop by usage begin ============================-->
@@ -70,7 +73,7 @@
                 <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By Usage</h5>
             </div>
             <div class="col-12">
-              <div class="carousel slide" id="carouselBestDeals" data-bs-touch="false" data-bs-interval="false">
+              <div class="carousel slide" id="shopbyusage" data-bs-touch="false" data-bs-interval="false">
                 <div class="carousel-inner">
                     {% for usage in usages %}
                         {% if forloop.first %}
@@ -102,11 +105,11 @@
                         {% endif %}
                     {% endfor %}
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselBestDeals" data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#shopbyusage" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselBestDeals" data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#shopbyusage" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
@@ -115,11 +118,70 @@
         </div>
     </div>
 </section>
+<!-- =================== <section> shop by usage end ============================-->
 
+<!-- ================== <section> shop by categories begin ============================-->
 
+{% for category in categories_filtered %}
+    {% with choices_list_filtered=choices_filtered|filter_choices_by_category:category %}
+      <section class="py-0 mb-2">
+        <div class="container-fluid">
+            <div class="row h-100">
+                <div class="container text-center">
+                    <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By {{category.name|title}}</h5>
+                </div>
+                <div class="col-12">
+                  <div class="carousel slide" id="{{category.name}}" data-bs-touch="false" data-bs-interval="false">
+                    <div class="carousel-inner">
+                          {% for choice in choices_list_filtered %}
+                            {% if forloop.first %}
+                                <div class="carousel-item active">
+                                    <div class="row h-100 align-items-center g-2">
+                            {% endif %}
+                                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0 h-100">
+                                            <div class="card card-span h-100 text-white">
+                                                <img class="img-fluid h-100" src="{{ choice.image.url }}" alt="{{ choice.name }} Image" />
+                                                <div class="card-img-overlay ps-0"> </div>
+                                                <div class="card-body ps-0 bg-200">
+                                                    <h3 class="fw-bold text-center text-black text-truncate">{{ choice.choices|title }}</h3>
+                                                </div>
+                                                <a class="stretched-link" href="#"></a>
+                                            </div>
+                                        </div>
+                            {% if forloop.last %}
+                                    </div>
+                                </div>
+                            {% elif forloop.counter|divisibleby:4 %}
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="row h-100 align-items-center g-2">
+                            {% endif %}
+                          {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#{{category.name}}" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#{{category.name}}" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>            
+                </div>
+            </div>
+        </div>
+      </section>
+    {% endwith %}
+{% endfor %}
 
+<!-- ============================= <section> shop by categories End ============================-->
 
-    <!-- <section class="py-0 mb-2">
+        
+
+{% endblock %}
+
+<!-- <section class="py-0 mb-2">
         <div class="container-fluid">
           <div class="row h-100">
             <div class="container text-center">
@@ -218,8 +280,3 @@
           </div>
         </div>
     </section> -->
-      <!-- <section> shop by usage end ============================-->
-
-        
-
-{% endblock %}

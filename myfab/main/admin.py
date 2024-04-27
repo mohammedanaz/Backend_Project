@@ -7,7 +7,7 @@ from django import forms
 # Register your models here.
 
 class CategoryChoiceAdmin(admin.ModelAdmin):
-    list_display = ('id','choices', 'category')
+    list_display = ('id','choices', 'category', 'image')
 
 class UsageAdmin(admin.ModelAdmin):
     list_display = ('id','name', 'image', 'gender')

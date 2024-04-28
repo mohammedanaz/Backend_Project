@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, TemplateView
+from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
 from .models import CustomUser
 from django.urls import reverse
@@ -63,12 +64,10 @@ class LoginPage(TemplateView):
 
 ############################### Logout CBV ######################################
 
-class LogoutPage(TemplateView):
+class LogoutPage(LogoutView):
+    next_page = '/accounts/login/'
 
-    def post(self, request):
-        if request.user.is_authenticated:
-            logout(request)
-        return redirect('accounts:login')
+    
     
 ############################### OTP verification CBV ######################################
 

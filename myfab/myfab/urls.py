@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(('main.urls', 'main'), namespace='main')),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
-    path('user/', include(('user.urls', 'user'), namespace='user'))
+    path('user/', include(('user.urls', 'user'), namespace='user')),
+    path('custom_admin/', include(('custom_admin.urls', 'custom_admin'), namespace='custom_admin')),
 ]
 
 if settings.DEBUG:

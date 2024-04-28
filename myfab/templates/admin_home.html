@@ -1,0 +1,63 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Admin Home{% endblock %}
+
+{% block content %}
+    <!-- =================================== Navbar Begin ====================================== -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="nav-link active btn btn-link" style="min-width: 150px; background-color: #800020;" aria-current="page">
+                        <a class="text-white text-decoration-none" href="#">Home</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Users</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Orders</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Products</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Categories</a>
+                    </button>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/user/">UserHome</a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/accounts/logout/">Logout</a>
+                </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+<!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== Graph section begin =========================== -->
+    <div class="container-fluid" style="max-height: 30vw;">
+        <img class="logo" style="width: 100%; max-height: 30vw;" src="{% static 'images/graph.png' %}" alt="grapf">
+    </div>
+<!-- =========================== Graph section End =========================== -->
+
+
+{% endblock  %}

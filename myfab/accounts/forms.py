@@ -73,15 +73,8 @@ class UserRegistrationForm(forms.ModelForm):
 
 ############################# OTPVerificationForm ###########################################
 class OTPVerificationForm(forms.Form):
-    otp = forms.CharField(max_length=6, required=True)
+    otp = forms.CharField(max_length=6)
 
-    def clean_otp(self):
-        otp = self.cleaned_data.get('otp')
 
-        if not otp:
-            raise forms.ValidationError('OTP is required.')
-        if not re.match("^\d+$", otp):
-            raise forms.ValidationError('OTP should contain only digits.')
-        if len(otp) != 6:
-            raise forms.ValidationError('OTP should have 6 digits')
-        return otp
+
+

@@ -113,6 +113,8 @@ class OTPVerification(View):
                     else:
                         return render(request, 'signup.html', {'form': form})
             else:
-                context = {'invalid_credentials': True, 'form': form}
-                return render(request, 'otp_verification.html', context)
-        return render(request, 'otp_verification.html', {'form': form})
+                context = {'invalid_credentials': True}
+                return render(request, 'signup.html', context)
+        else:   
+            context = {'invalid_credentials': True}
+            return render(request, 'signup.html', context)

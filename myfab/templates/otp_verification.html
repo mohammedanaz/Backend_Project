@@ -33,7 +33,7 @@
                         <p class="text-danger">Invalid OTP. Try again</p>
                     {% endif %}
                     <div class="form-group">
-                        <input type="text" class="form-control" id="otpInput" name="otp" placeholder="Enter OTP" required>
+                        <input type="text" class="form-control" id="otpInput" name="otp" placeholder="Enter OTP">
                         {% if form.otp.errors %}
                             <div class="text-danger">
                                 {{ form.otp.errors|join:", " }}

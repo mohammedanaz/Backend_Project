@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.views import View
 from .models import Usage, Category, CategoryChoice
 
@@ -11,6 +12,9 @@ from .models import Usage, Category, CategoryChoice
 
 class Home(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect(reverse('user:user_home'))
+        
         usages = Usage.objects.filter(gender='M')  # Filter usages with male gender
         usage_list = list(usages)
 

@@ -67,7 +67,16 @@ class LoginPage(TemplateView):
 class LogoutPage(LogoutView):
     next_page = '/accounts/login/'
 
-    
+    def dispatch(self, request, *args, **kwargs):
+       # Delete cookie data
+        if request.COOKIES.get('sessionid'):
+            request.COOKIES.pop('sessionid')
+
+        # Delete session data
+        if request.session:
+            request.session.flush()
+
+        return super().dispatch(request, *args, **kwargs)
     
 ############################### OTP verification CBV ######################################
 

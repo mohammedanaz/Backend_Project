@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.AdminRedirect',
+    'user.middleware.UserHomeRedirect',
 ]
 
 ROOT_URLCONF = 'myfab.urls'

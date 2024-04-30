@@ -62,5 +62,151 @@
     </div>
 <!-- =========================== Graph section End =========================== -->
 
+<!-- =========================== user section begin =========================== -->
+    <section class="mb-2">
+        <div class="container-fluid">
+            <div class="container-fluid text-center px-0">
+                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Users</h5>
+            </div>
+            <div class="row h-100">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table  table-hover">
+                            <thead>
+                              <tr>
+                                <th scope="col">ID#</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Email ID</th>
+                                <th scope="col">Status</th>
+                              </tr>
+                            </thead>
+                            {% for user in users  %}
+                            <tbody>
+                                <tr>
+                                    <th scope="col">{{ user.id }}</th>
+                                    <td>{{ user.first_name }}</td>
+                                    <td>{{ user.last_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <button class="status-toggle text-white btn btn-sm btn-primary"
+                                            data-user-id="{{ user.id }}"
+                                            data-is-active="{{ user.is_active }}">
+                                            {{ user.is_active|yesno:"Block,Unblock" }} 
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row h-100">
+                <div class="col-12">
+                    <div class="d-flex justify-content-end">
+                        <a href="#">Go to Users Section</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- =========================== user section end =========================== -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusButtons = document.querySelectorAll('.status-toggle');
+
+            statusButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    const userId = this.dataset.userId;
+                    const isActive = this.dataset.isActive === 'true'; // Convert string to boolean
+
+                    const csrftoken = getCookie('csrftoken'); // Get the CSRF token from cookies
+
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/custom_admin/');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Set the AJAX header
+                    xhr.setRequestHeader('Content-Type', 'application/json'); // Set the content type
+                    xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token
+
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                // Update UI or perform other actions on success
+                            } else {
+                                console.error('Error updating status:', response.error);
+                            }
+                        } else {
+                            console.error('Request failed with status:', xhr.status);
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        console.error('Request failed');
+                    };
+
+                    xhr.send(JSON.stringify({ is_active: !isActive, user_id: userId }));
+                });
+            });
+        });
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if the cookie name matches the CSRF token name
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+
+    </script>
+
+        <!-- // document.addEventListener('DOMContentLoaded', function() {
+        //     const statusButtons = document.querySelectorAll('.status-toggle');
+
+        // statusButtons.forEach(button => {
+        //     button.addEventListener('click', function(event) {
+        //     event.preventDefault(); // Prevent default form submission
+
+        //     const userId = this.dataset.userId;
+        //     const isActive = this.dataset.isActive === 'true'; // Convert string to boolean
+
+        //     fetch(`/custom_admin/`, { // URL AdminHome view
+        //         method: 'POST',
+        //         headers: {
+        //         'Content-Type': 'application/json',
+        //         'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+        //         },
+        //         body: JSON.stringify({ is_active: !isActive, user_id: userId }) // Send updated status and user ID
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.success) {
+        //         // You can remove this part as the button text is already set in the template
+        //         // const newStatus = !isActive ? 'Inactive' : 'Active';
+        //         // this.textContent = newStatus;
+        //         } else {
+        //         // Handle errors (e.g., display an error message)
+        //         console.error('Error updating status:', data.error);
+        //         }
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        //     });
+        // });
+        // }); -->
+
+
 
 {% endblock  %}

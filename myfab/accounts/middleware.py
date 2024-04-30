@@ -9,15 +9,19 @@ class AdminRedirect:
     def __call__(self, request):
         admin_url = reverse('admin:index')
         custom_admin_url = reverse('custom_admin:admin_home')
+        main_url = reverse('main:home')
 
-        # if request.path.startswith(custom_admin_url) and request.user.is_authenticated:
-        #     print("Redirecting auth user to custom admin home page.")
-        #     return redirect(reverse('custom_admin:admin_home'))
-        # if request.path.startswith(custom_admin_url) and not request.user.is_authenticated:
-        #     print("Redirecting non-auth user from custom admin page to login page.")
-        #     return redirect(reverse('accounts:login'))
+        if request.path.startswith(custom_admin_url) and not request.user.is_authenticated:
+            print("Redirecting non-auth user from custom admin page to login page.")
+            return redirect(reverse('accounts:login'))
+        if request.path.startswith(custom_admin_url) and not request.user.is_superuser and request.user.is_authenticated:
+            print("Redirecting non-superuser from admin page to user home page.")
+            return redirect(reverse('user:user_home'))
         if (request.path.startswith(admin_url) or request.path.startswith(custom_admin_url)) and not request.user.is_superuser and request.user.is_authenticated:
             print("Redirecting non-superuser from admin page to user home page.")
+            return redirect(reverse('user:user_home'))
+        if request.path.startswith(main_url) and request.user.is_authenticated:
+            print("Redirecting non-auth user from custom admin page to login page.")
             return redirect(reverse('user:user_home'))
         
         response = self.get_response(request)

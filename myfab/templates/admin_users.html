@@ -84,7 +84,7 @@
                                 <td>{{ user.last_name }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>
-                                    <button class="status-toggle text-white btn btn-sm btn-primary"
+                                    <button class="status-toggle text-white btn btn-sm"
                                         data-user-id="{{ user.id }}"
                                         data-is-active="{{ user.is_active }}">
                                         {{ user.is_active|yesno:"Block,Unblock" }}  
@@ -112,6 +112,19 @@
         </div>
     </div>
 </section>
+
+<!-- Internal CSS for button color -->
+<style>
+    .status-toggle.active {
+        /* Button style when active */
+        background-color: green;
+    }
+
+    .status-toggle.inactive {
+        /* Button style when inactive */
+        background-color: red;
+    }
+</style>
 <!-- =========================== user section end =========================== -->
 <!-- =========================== user section JS begin =========================== -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -119,7 +132,22 @@
     document.addEventListener('DOMContentLoaded', function() {
         const statusButtons = document.querySelectorAll('.status-toggle');
 
+        // Function to set initial status of each button
+    function setInitialStatus(button) {
+        const isActive = button.dataset.isActive.toLowerCase() === 'true';
+
+        // Toggle button color based on initial isActive status
+        if (isActive) {
+            button.classList.add('active'); // Add the 'active' class
+        } else {
+            button.classList.add('inactive'); // Add the 'inactive' class
+        }
+    }
+
         statusButtons.forEach(button => {
+            // Set initial status of each button
+            setInitialStatus(button);
+
             button.addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent default form submission
 
@@ -153,6 +181,10 @@
 
                         // Update the button text based on the new user status
                         button.textContent = !isActive ? 'Block' : 'Unblock';
+
+                       // Toggle button color based on isActive status
+                        this.classList.toggle('active', !isActive);
+                        this.classList.toggle('inactive', isActive);
                     } else {
                         console.error('Error updating status:', response.data.error);
                     }

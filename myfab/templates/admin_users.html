@@ -154,6 +154,12 @@
                 const userId = this.dataset.userId;
                 const isActive = this.dataset.isActive.toLowerCase() === 'true'; // Converting the state to opposite
 
+                // Display confirmation dialog
+                const confirmed = confirm("Are you sure you want to change the status?");
+                if (!confirmed) {
+                    return; // Don't proceed if not confirmed
+                }
+
                 // Get CSRF token from cookies
                 const csrftoken = getCookie('csrftoken');
 

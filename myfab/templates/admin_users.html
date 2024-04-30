@@ -1,0 +1,173 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Admin Users{% endblock %}
+
+{% block content %}
+
+    <!-- =================================== Navbar Begin ====================================== -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="/custom_admin/">Home</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px; background-color: #800020;" aria-current="page">
+                        <a class="text-white text-decoration-none" href="#">Users</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Orders</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Products</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Categories</a>
+                    </button>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/user/">UserHome</a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <form id="logout-form" action="/accounts/logout/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+<!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== user section begin =========================== -->
+<section class="mb-2">
+    <div class="container-fluid">
+        <div class="container-fluid text-center px-0">
+            <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Users</h5>
+        </div>
+        <div class="row h-100">
+            <div class="col-12">
+                <div class="table-responsive text-center">
+                    <table class="table  table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">ID#</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">Email ID</th>
+                            <th scope="col">Action</th>
+                          </tr>
+                        </thead>
+                        {% for user in users  %}
+                        <tbody>
+                            <tr>
+                                <th scope="col">{{ user.id }}</th>
+                                <td>{{ user.first_name }}</td>
+                                <td>{{ user.last_name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <button class="status-toggle text-white btn btn-sm btn-primary"
+                                        data-user-id="{{ user.id }}"
+                                        data-is-active="{{ user.is_active }}">
+                                        {{ user.is_active|yesno:"Block,Unblock" }}  
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- =========================== user section end =========================== -->
+<!-- =========================== user section JS begin =========================== -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusButtons = document.querySelectorAll('.status-toggle');
+
+        statusButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const userId = this.dataset.userId;
+                const isActive = this.dataset.isActive.toLowerCase() === 'true'; // Converting the state to opposite
+
+                // Get CSRF token from cookies
+                const csrftoken = getCookie('csrftoken');
+
+
+                axios.post('/custom_admin/', {
+                    is_active: !isActive,
+                    user_id: userId
+                }, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => {
+                    if (response.data.success) {
+                        // Update UI or provide feedback to the user
+                        console.log('Status updated successfully');
+
+                        // Get the button element that was clicked
+                        const button = event.target;
+
+                        // Update the data-is-active attribute to reflect the new state
+                        button.dataset.isActive = !isActive;
+
+                        // Update the button text based on the new user status
+                        button.textContent = !isActive ? 'Block' : 'Unblock';
+                    } else {
+                        console.error('Error updating status:', response.data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    });
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+</script>
+<!-- =========================== user section JS end =========================== -->
+
+{% endblock  %}

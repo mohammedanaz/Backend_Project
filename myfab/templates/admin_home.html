@@ -21,7 +21,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="#">Users</a>
+                        <a class="text-black text-decoration-none" href="/custom_admin/users/">Users</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -78,7 +78,7 @@
                                 <th scope="col">First Name</th>
                                 <th scope="col">Last Name</th>
                                 <th scope="col">Email ID</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
                               </tr>
                             </thead>
                             {% for user in users  %}
@@ -105,13 +105,14 @@
             <div class="row h-100">
                 <div class="col-12">
                     <div class="d-flex justify-content-end">
-                        <a href="#">Go to Users Section</a>
+                        <a href="/custom_admin/users/">Go to Users Section</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 <!-- =========================== user section end =========================== -->
+<!-- =========================== user section JS begin =========================== -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -122,7 +123,7 @@
                     event.preventDefault(); // Prevent default form submission
 
                     const userId = this.dataset.userId;
-                    const isActive = this.dataset.isActive === 'true'; // Converting the state to opposite
+                    const isActive = this.dataset.isActive.toLowerCase() === 'true'; // Converting the state to opposite
 
                     // Get CSRF token from cookies
                     const csrftoken = getCookie('csrftoken');
@@ -179,41 +180,5 @@
         }
 
     </script>
-
-        <!-- // document.addEventListener('DOMContentLoaded', function() {
-        //     const statusButtons = document.querySelectorAll('.status-toggle');
-
-        // statusButtons.forEach(button => {
-        //     button.addEventListener('click', function(event) {
-        //     event.preventDefault(); // Prevent default form submission
-
-        //     const userId = this.dataset.userId;
-        //     const isActive = this.dataset.isActive === 'true'; // Convert string to boolean
-
-        //     fetch(`/custom_admin/`, { // URL AdminHome view
-        //         method: 'POST',
-        //         headers: {
-        //         'Content-Type': 'application/json',
-        //         'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
-        //         },
-        //         body: JSON.stringify({ is_active: !isActive, user_id: userId }) // Send updated status and user ID
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         if (data.success) {
-        //         // You can remove this part as the button text is already set in the template
-        //         // const newStatus = !isActive ? 'Inactive' : 'Active';
-        //         // this.textContent = newStatus;
-        //         } else {
-        //         // Handle errors (e.g., display an error message)
-        //         console.error('Error updating status:', data.error);
-        //         }
-        //     })
-        //     .catch(error => console.error('Error:', error));
-        //     });
-        // });
-        // }); -->
-
-
-
+<!-- =========================== user section JS end =========================== -->
 {% endblock  %}

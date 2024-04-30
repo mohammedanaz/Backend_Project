@@ -7,7 +7,7 @@ from accounts.models import CustomUser
 
 
 # Create your views here.
-
+################################### Admin Home ####################################
 class AdminHome(View):
     def get(self, request):
         users = CustomUser.objects.all()[:5]
@@ -34,6 +34,10 @@ class AdminHome(View):
             return JsonResponse({'success': False, 'error': 'Missing user_id in request data'})
 
 
+################################### Admin Users ####################################
 
-
-    
+class AdminUsers(View):
+     def get(self, request):
+        users = CustomUser.objects.all()
+        context = {'users': users}
+        return render(request, 'admin_users.html', context)

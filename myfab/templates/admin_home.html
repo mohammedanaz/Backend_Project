@@ -70,7 +70,7 @@
             </div>
             <div class="row h-100">
                 <div class="col-12">
-                    <div class="table-responsive">
+                    <div class="table-responsive text-center">
                         <table class="table  table-hover">
                             <thead>
                               <tr>
@@ -92,7 +92,7 @@
                                         <button class="status-toggle text-white btn btn-sm btn-primary"
                                             data-user-id="{{ user.id }}"
                                             data-is-active="{{ user.is_active }}">
-                                            {{ user.is_active|yesno:"Block,Unblock" }} 
+                                            {{ user.is_active|yesno:"Block,Unblock" }}  
                                         </button>
                                     </td>
                                 </tr>
@@ -112,6 +112,7 @@
         </div>
     </section>
 <!-- =========================== user section end =========================== -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const statusButtons = document.querySelectorAll('.status-toggle');
@@ -121,34 +122,42 @@
                     event.preventDefault(); // Prevent default form submission
 
                     const userId = this.dataset.userId;
-                    const isActive = this.dataset.isActive === 'true'; // Convert string to boolean
+                    const isActive = this.dataset.isActive === 'true'; // Converting the state to opposite
 
-                    const csrftoken = getCookie('csrftoken'); // Get the CSRF token from cookies
+                    // Get CSRF token from cookies
+                    const csrftoken = getCookie('csrftoken');
 
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/custom_admin/');
-                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Set the AJAX header
-                    xhr.setRequestHeader('Content-Type', 'application/json'); // Set the content type
-                    xhr.setRequestHeader('X-CSRFToken', csrftoken); // Set the CSRF token
 
-                    xhr.onload = function() {
-                        if (xhr.status === 200) {
-                            const response = JSON.parse(xhr.responseText);
-                            if (response.success) {
-                                // Update UI or perform other actions on success
-                            } else {
-                                console.error('Error updating status:', response.error);
-                            }
-                        } else {
-                            console.error('Request failed with status:', xhr.status);
+                    axios.post('/custom_admin/', {
+                        is_active: !isActive,
+                        user_id: userId
+                    }, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
                         }
-                    };
+                    })
+                    .then(response => {
+                        if (response.data.success) {
+                            // Update UI or provide feedback to the user
+                            console.log('Status updated successfully');
 
-                    xhr.onerror = function() {
-                        console.error('Request failed');
-                    };
+                            // Get the button element that was clicked
+                            const button = event.target;
 
-                    xhr.send(JSON.stringify({ is_active: !isActive, user_id: userId }));
+                            // Update the data-is-active attribute to reflect the new state
+                            button.dataset.isActive = !isActive;
+
+                            // Update the button text based on the new user status
+                            button.textContent = !isActive ? 'Block' : 'Unblock';
+                        } else {
+                            console.error('Error updating status:', response.data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
                 });
             });
         });
@@ -160,7 +169,6 @@
                 const cookies = document.cookie.split(';');
                 for (let i = 0; i < cookies.length; i++) {
                     const cookie = cookies[i].trim();
-                    // Check if the cookie name matches the CSRF token name
                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
@@ -169,7 +177,6 @@
             }
             return cookieValue;
         }
-
 
     </script>
 

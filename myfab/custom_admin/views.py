@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect 
 from django.http import JsonResponse
 import json
-from django.http import HttpResponse
 from django.views import View
 from accounts.models import CustomUser
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
@@ -37,7 +37,15 @@ class AdminHome(View):
 ################################### Admin Users ####################################
 
 class AdminUsers(View):
-     def get(self, request):
-        users = CustomUser.objects.all()
+    def get(self, request):
+        users_list = CustomUser.objects.all()
+        paginator = Paginator(users_list, 10) 
+        page_number = request.GET.get('page')
+        try:
+            users = paginator.page(page_number)
+        except PageNotAnInteger:
+            users = paginator.page(1)
+        except EmptyPage:
+            users = paginator.page(paginator.num_pages)
         context = {'users': users}
         return render(request, 'admin_users.html', context)

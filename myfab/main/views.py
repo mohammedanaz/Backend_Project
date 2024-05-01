@@ -12,8 +12,6 @@ from .models import Usage, Category, CategoryChoice
 
 class Home(View):
     def get(self, request):
-        if request.user.is_authenticated:
-            return redirect(reverse('user:user_home'))
         
         usages = Usage.objects.filter(gender='M')  # Filter usages with male gender
         usage_list = list(usages)
@@ -35,3 +33,8 @@ class Home(View):
         return render(request, 'home.html', context)
     
 
+############################### Products CBV ######################################
+
+class Product(View):
+    def get(self, request):
+        return render(request, 'products.html')

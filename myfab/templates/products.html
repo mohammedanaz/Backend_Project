@@ -54,11 +54,11 @@
          <!-- Filter section -->
         <div class="container filter-sec w-25 my-4">
             <!-- Toggle button for Filter accordion -->
-            <button class="accordion-toggle btn btn-primary d-block d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#categoryAccordion" aria-expanded="false" aria-controls="categoryAccordion">
+            <button class="accordion-toggle btn btn-primary d-block d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filterAccordion" aria-expanded="false" aria-controls="filterAccordion">
                 Filters
             </button>
             <!-- Fliter Accordion -->
-            <div class="accordion d-none d-lg-block" id="categoryAccordion">
+            <div class="accordion d-none d-lg-block" id="filterAccordion">
                 <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters</h6>
                 <!-- Category loop -->
                 {% for category, choices in category_choice_dict.items %}
@@ -74,7 +74,12 @@
                             <ul class="list-group">
                                 <!-- Sub Category loop -->
                                 {% for choice in choices %}
-                                <li class="list-group-item">{{choice|title}}</li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="{{ choice }}-check-box">
+                                    <label class="form-check-label" for="{{ choice }}-check-box">
+                                        {{ choice|title }}
+                                    </label>
+                                </div>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -93,7 +98,7 @@
                         <div class="card-body">
                         <h4 class="card-title">{{product.name|title}}</h4>
                         <p class="card-text fw-bold fs-4"><i class="fa">&#xf156;</i>  {{product.price}}</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <a href="#" class="btn btn-primary">Go For It</a>
                         </div>
                     </div>
                 </div>

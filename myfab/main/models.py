@@ -24,14 +24,14 @@ class Category(models.Model):
 
 class CategoryChoice(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    choices = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to='images/category_choices', null=True, blank=True)
 
     def __str__(self):
-        return self.choices
+        return self.name
 
 class Product(models.Model):
-    name = models.CharField(max_length=255, blank=False, null=False)
+    name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     image = models.ImageField(upload_to='images/products')
     description = models.TextField(blank=True)
@@ -39,6 +39,7 @@ class Product(models.Model):
     add_date = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     usages = models.ManyToManyField(Usage)
+    category_choices = models.ManyToManyField(CategoryChoice)
 
     def __str__(self):
         return self.name

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.views import View
 from .models import Usage, Category, CategoryChoice, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 
 # Create your views here.
@@ -65,22 +66,47 @@ class HomeWomen(View):
 class ProductPage(View):
 
     def get(self, request):
-        products_list = Product.objects.all()
-        paginator = Paginator(products_list, 9)
+        # Making an all product query set
+        products = Product.objects.all()
+
+        # Section for handling filter queries
+        selected_choices = request.GET.getlist('choice')
+        selected_category_choice_dict = {}
+        for choice in selected_choices:
+            choice_obj = CategoryChoice.objects.get(name=choice)
+            selected_category = choice_obj.category.name
+            if selected_category in  selected_category_choice_dict:
+                selected_category_choice_dict[selected_category] += [choice]
+            else:
+                selected_category_choice_dict[selected_category] = [choice]
+        if selected_category_choice_dict:
+            for selected_category, choices in selected_category_choice_dict.items():
+                q_obj = Q()
+                for choice in choices:
+                    q_obj |= Q(category_choices__name=choice)
+                products = products.filter(q_obj)
+
+        # Section For pagination
+        paginator = Paginator(products, 9)
         page_number = request.GET.get('page')
         try:
-            products = paginator.page(page_number)
+            paged_products = paginator.page(page_number)
         except PageNotAnInteger:
-            products = paginator.page(1)
+            paged_products = paginator.page(1)
         except EmptyPage:
-            products = paginator.page(paginator.num_pages)
+            paged_products = paginator.page(paginator.num_pages)
+
+        # Section For listing category and choices for filters
         categories = Category.objects.all()
         category_choice_dict = {}
         for category in categories:
             choice_obj = CategoryChoice.objects.filter(category=category)
             choices_list = [choice.name for choice in choice_obj]
             category_choice_dict[category.name] = choices_list
-        context = {'products': products,
-                   'category_choice_dict': category_choice_dict
+
+        # Context data
+        context = {'products': paged_products,
+                   'category_choice_dict': category_choice_dict,
+                   'selected_choices': selected_choices
                    }
         return render(request, 'products.html', context)

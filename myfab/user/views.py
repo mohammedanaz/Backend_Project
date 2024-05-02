@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
+from main.models import Product
 
 # Create your views here.
 

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
 from .models import Usage, Category, CategoryChoice, Product
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
@@ -64,4 +65,22 @@ class HomeWomen(View):
 class ProductPage(View):
 
     def get(self, request):
-        return render(request, 'products.html')
+        products_list = Product.objects.all()
+        paginator = Paginator(products_list, 9)
+        page_number = request.GET.get('page')
+        try:
+            products = paginator.page(page_number)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+        categories = Category.objects.all()
+        category_choice_dict = {}
+        for category in categories:
+            choice_obj = CategoryChoice.objects.filter(category=category)
+            choices_list = [choice.name for choice in choice_obj]
+            category_choice_dict[category.name] = choices_list
+        context = {'products': products,
+                   'category_choice_dict': category_choice_dict
+                   }
+        return render(request, 'products.html', context)

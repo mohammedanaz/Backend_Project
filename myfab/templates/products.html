@@ -1,4 +1,4 @@
-<!-- home.html -->
+<!-- products.html -->
 
 {% extends 'base.html' %}
 
@@ -42,5 +42,80 @@
         </div>
     </nav>
 <!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== Product sec header begin =========================== -->
+    <div class="container-fluid text-center">
+        <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Products</h5>
+    </div>
+<!-- =========================== Product sec header end =========================== -->
+
+<!-- =========================== Product section begin =========================== -->
+    <section class="container-fluid prod-sec-flex-container d-flex my-2">
+         <!-- Filter section -->
+        <div class="container filter-sec w-25 my-4">
+            <!-- Toggle button for Filter accordion -->
+            <button class="accordion-toggle btn btn-primary d-block d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#categoryAccordion" aria-expanded="false" aria-controls="categoryAccordion">
+                Filters
+            </button>
+            <!-- Fliter Accordion -->
+            <div class="accordion d-none d-lg-block" id="categoryAccordion">
+                <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters</h6>
+                <!-- Category loop -->
+                {% for category, choices in category_choice_dict.items %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="category1Heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{category}}Collapse" aria-expanded="false" aria-controls="category1Collapse">
+                            {{category|title}}
+                        </button>
+                    </h2>
+                    <div id="{{category}}Collapse" class="accordion-collapse collapse" aria-labelledby="category1Heading" data-bs-parent="#categoryAccordion">
+                        <div class="accordion-body">
+                            <!-- Subcategories for Category -->
+                            <ul class="list-group">
+                                <!-- Sub Category loop -->
+                                {% for choice in choices %}
+                                <li class="list-group-item">{{choice|title}}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Grid section for product display -->
+        <div class="container grid-container text-center my-3">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+                {% for product in products %}
+                <div class="col mt-2">
+                    <div class="card" >
+                        <img src="{{ product.image.url }}" class="{{product.name}}-img" alt="...">
+                        <div class="card-body">
+                        <h4 class="card-title">{{product.name|title}}</h4>
+                        <p class="card-text fw-bold fs-4"><i class="fa">&#xf156;</i>  {{product.price}}</p>
+                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Pagination -->
+            <div class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <a href="?page=1" class="page-link">&laquo; First</a>
+                    <a href="?page={{ products.previous_page_number }}" class="page-link">Previous</a>
+                {% endif %}
+                {% for page in products.paginator.page_range %}
+                    <a href="?page={{ page }}" class="page-link {% if products.number == page %}active{% endif %}">{{ page }}</a>
+                {% endfor %}
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
+                    <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    
+<!-- =========================== Product section end =========================== -->
 
 {% endblock %}

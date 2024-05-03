@@ -4,6 +4,7 @@ from django.views import View
 from .models import Usage, Category, CategoryChoice, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.db.models.functions import Lower
 
 
 # Create your views here.
@@ -70,7 +71,7 @@ class ProductPage(View):
         products = Product.objects.all()
 
         # Section for handling filter queries
-        selected_choices = request.GET.getlist('choice')
+        selected_choices = request.GET.getlist('choice', None)
         selected_category_choice_dict = {}
         for choice in selected_choices:
             choice_obj = CategoryChoice.objects.get(name=choice)
@@ -86,6 +87,21 @@ class ProductPage(View):
                     q_obj |= Q(category_choices__name=choice)
                 products = products.filter(q_obj)
         product_count = products.count()
+
+        # Section For sorting
+        sort_by = request.GET.get('sort', None)
+        if sort_by == 'newest':
+            products = products.order_by('-add_date')
+        elif sort_by == 'name_asc':
+            products = products.order_by(Lower('name'))
+        elif sort_by == 'name_dsc':
+            products = products.order_by(Lower('name')).reverse()
+        elif sort_by == 'lowest':
+            products = products.order_by('price')
+        elif sort_by == 'highest':
+            products = products.order_by('-price')
+        
+
         # Section For pagination
         paginator = Paginator(products, 9)
         page_number = request.GET.get('page')
@@ -108,6 +124,7 @@ class ProductPage(View):
         context = {'products': paged_products,
                    'product_count': product_count,
                    'category_choice_dict': category_choice_dict,
-                   'selected_choices': selected_choices
+                   'selected_choices': selected_choices,
+                   'sort_by': sort_by
                    }
         return render(request, 'products.html', context)

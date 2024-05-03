@@ -29,9 +29,12 @@
             </ul>
             <ul class="navbar-nav d-flex justify-content-center mx-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <form action="" method="get">
+                    <form id="formsearch" action="" method="get">
                         <div class="input-group">
                             <input type="text" class="form-control" name="search" value="{{ search_query }}">
+                            <button type="submit" class="btn btn-outline-secondary" id="clear-search">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                             <button type="submit" class="btn btn-outline-secondary" id="search-prod">Search</button>
                         </div>
                     </form>
@@ -68,6 +71,8 @@
             <div class="accordion d-none d-lg-block" id="filterAccordion">
                 <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters and Sort</h6>
                 <form action="" method="get">
+                    <!-- Hidden search input field to preserve search value when submitting filter form -->
+                    <input type="hidden" name="search" value="{{ search_query }}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="sortHeading">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sortCollapse" aria-expanded="false" aria-controls="sortCollapse">
@@ -201,14 +206,23 @@
 <!-- =========================== JS for cancel filters =========================== -->
     <script>
         document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-            // Loop through each checkbox and uncheck it
             var checkboxes = document.querySelectorAll('#filterAccordion input[type="checkbox"]');
             var radios = document.querySelectorAll('#filterAccordion input[type="radio"]');
+
             checkboxes.forEach(function(checkbox) {
                 checkbox.checked = false;
             });
             radios.forEach(function(radio) {
                 radio.checked = false;
+            });
+        });
+
+        document.getElementById('clear-search').addEventListener('click', function() {
+            var searchbox = document.querySelectorAll('#formsearch input[type="text"]');
+
+            
+            searchbox.forEach(function(input) {
+                input.value = '';
             });
         });
     </script>

@@ -6,6 +6,18 @@
 {% block title %}Admin Users{% endblock %}
 
 {% block content %}
+    <!-- Internal CSS for user block/unblock button color -->
+    <style>
+        .status-toggle.active {
+            /* Button style when active */
+            background-color: green;
+        }
+
+        .status-toggle.inactive {
+            /* Button style when inactive */
+            background-color: red;
+        }
+    </style>
 
     <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -32,7 +44,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="#">Products</a>
+                        <a class="text-black text-decoration-none" href="/custom_admin/products/">Products</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -113,18 +125,6 @@
     </div>
 </section>
 
-<!-- Internal CSS for button color -->
-<style>
-    .status-toggle.active {
-        /* Button style when active */
-        background-color: green;
-    }
-
-    .status-toggle.inactive {
-        /* Button style when inactive */
-        background-color: red;
-    }
-</style>
 <!-- =========================== user section end =========================== -->
 <!-- =========================== user section JS begin =========================== -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

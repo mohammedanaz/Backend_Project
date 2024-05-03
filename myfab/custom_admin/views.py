@@ -3,6 +3,7 @@ from django.http import JsonResponse
 import json
 from django.views import View
 from accounts.models import CustomUser
+from main.models import Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -49,3 +50,19 @@ class AdminUsers(View):
             users = paginator.page(paginator.num_pages)
         context = {'users': users}
         return render(request, 'admin_users.html', context)
+
+################################### Admin Products ####################################
+
+class AdminProducts(View):
+    def get(self, request):
+        products = Product.objects.all()
+        paginator = Paginator(products, 10) 
+        page_number = request.GET.get('page')
+        try:
+            paged_products = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_products = paginator.page(1)
+        except EmptyPage:
+             paged_products = paginator.page(paginator.num_pages)
+        context = {'products': paged_products}
+        return render(request, 'admin_products.html', context)

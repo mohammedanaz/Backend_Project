@@ -112,15 +112,20 @@
             <!-- Pagination -->
             <div class="pagination justify-content-center">
                 {% if products.has_previous %}
-                    <a href="?page=1" class="page-link">&laquo; First</a>
-                    <a href="?page={{ products.previous_page_number }}" class="page-link">Previous</a>
+                    <a href="?page=1{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"                " 
+                    class="page-link">&laquo; First</a>
+                    <a href="?page={{ products.previous_page_number }}{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"" 
+                    class="page-link">Previous</a>
                 {% endif %}
                 {% for page in products.paginator.page_range %}
-                    <a href="?page={{ page }}" class="page-link {% if products.number == page %}active{% endif %}">{{ page }}</a>
+                <a href="?page={{ page }}{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"
+                class="page-link {% if products.number == page %}active{% endif %}">{{ page }}</a>
                 {% endfor %}
                 {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
-                    <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                    <a href="?page={{ products.next_page_number }}{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"" 
+                    class="page-link">Next</a>
+                    <a href="?page={{ products.paginator.num_pages }}{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"" 
+                    class="page-link">Last &raquo;</a>
                 {% endif %}
             </div>
         </div>

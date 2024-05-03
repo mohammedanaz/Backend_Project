@@ -95,6 +95,9 @@
         </div>
         <!-- Grid section for product display -->
         <div class="container grid-container text-center my-3">
+            <div class="container-fluid d-flex">
+                <h6>Found {{product_count}} products</h6>
+            </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                 {% for product in products %}
                 <div class="col mt-2">
@@ -110,7 +113,7 @@
                 {% endfor %}
             </div>
             <!-- Pagination -->
-            <div class="pagination justify-content-center">
+            <div class="pagination justify-content-center mt-2">
                 {% if products.has_previous %}
                     <a href="?page=1{% if selected_choices %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}{% endif %}"                " 
                     class="page-link">&laquo; First</a>

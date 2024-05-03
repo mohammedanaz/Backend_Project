@@ -85,7 +85,7 @@ class ProductPage(View):
                 for choice in choices:
                     q_obj |= Q(category_choices__name=choice)
                 products = products.filter(q_obj)
-
+        product_count = products.count()
         # Section For pagination
         paginator = Paginator(products, 9)
         page_number = request.GET.get('page')
@@ -106,6 +106,7 @@ class ProductPage(View):
 
         # Context data
         context = {'products': paged_products,
+                   'product_count': product_count,
                    'category_choice_dict': category_choice_dict,
                    'selected_choices': selected_choices
                    }

@@ -70,6 +70,11 @@ class ProductPage(View):
         # Making an all product query set
         products = Product.objects.all()
 
+        # Section for handling search query
+        search_query = request.GET.get('search', None)
+        if search_query:
+            products = products.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+
         # Section for handling filter queries
         selected_choices = request.GET.getlist('choice', None)
         selected_category_choice_dict = {}
@@ -125,6 +130,7 @@ class ProductPage(View):
                    'product_count': product_count,
                    'category_choice_dict': category_choice_dict,
                    'selected_choices': selected_choices,
-                   'sort_by': sort_by
+                   'sort_by': sort_by,
+                   'search_query': search_query
                    }
         return render(request, 'products.html', context)

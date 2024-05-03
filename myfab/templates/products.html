@@ -31,9 +31,9 @@
                 <li class="nav-item">
                     <form id="formsearch" action="" method="get">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="search" value="{{ search_query }}">
-                            <button type="submit" class="btn btn-outline-secondary" id="clear-search">
-                                <span aria-hidden="true">&times;</span>
+                            <input type="text" class="form-control" name="search" value="{% if search_query %}{{ search_query }}{% endif %}">
+                            <button type="submit" class="btn btn-outline-secondary " id="clear-search">
+                                <span aria-hidden="true"><i style="font-size:24px" class="fa">&#xf00d;</i></span>
                             </button>
                             <button type="submit" class="btn btn-outline-secondary" id="search-prod">Search</button>
                         </div>
@@ -72,7 +72,7 @@
                 <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters and Sort</h6>
                 <form action="" method="get">
                     <!-- Hidden search input field to preserve search value when submitting filter form -->
-                    <input type="hidden" name="search" value="{{ search_query }}">
+                    <input type="hidden" name="search" value="{% if search_query %}{{ search_query }}{% endif %}">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="sortHeading">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sortCollapse" aria-expanded="false" aria-controls="sortCollapse">
@@ -182,19 +182,19 @@
             <!-- Pagination -->
             <div class="pagination justify-content-center mt-2">
                 {% if products.has_previous %}
-                    <a href="?page=1{% if selected_choices or sort_by %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}{% endif %}"  
+                    <a href="?page=1{% if selected_choices or sort_by or search_query %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}&search={{ search_query|urlencode }}{% endif %}"  
                     class="page-link">&laquo; First</a>
-                    <a href="?page={{ products.previous_page_number }}{% if selected_choices or sort_by %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}{% endif %}"
+                    <a href="?page={{ products.previous_page_number }}{% if selected_choices or sort_by or search_query %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}&search={{ search_query|urlencode }}{% endif %}"
                     class="page-link">Previous</a>
                 {% endif %}
                 {% for page in products.paginator.page_range %}
-                <a href="?page={{ page }}{% if selected_choices or sort_by %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}{% endif %}"
+                <a href="?page={{ page }}{% if selected_choices or sort_by or search_query %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}&search={{ search_query|urlencode }}{% endif %}"
                 class="page-link {% if products.number == page %}active{% endif %}">{{ page }}</a>
                 {% endfor %}
                 {% if products.has_next %}
-                    <a href="?page={{ products.next_page_number }}{% if selected_choices or sort_by %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}{% endif %}"
+                    <a href="?page={{ products.next_page_number }}{% if selected_choices or sort_by or search_query %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}&search={{ search_query|urlencode }}{% endif %}"
                     class="page-link">Next</a>
-                    <a href="?page={{ products.paginator.num_pages }}{% if selected_choices or sort_by %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}{% endif %}"
+                    <a href="?page={{ products.paginator.num_pages }}{% if selected_choices or sort_by or search_query %}&{% for choice in selected_choices %}choice={{ choice|urlencode }}{% if not loop.last %}&{% endif %}{% endfor %}sort={{ sort_by|urlencode }}&search={{ search_query|urlencode }}{% endif %}"
                     class="page-link">Last &raquo;</a>
                 {% endif %}
             </div>

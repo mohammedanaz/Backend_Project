@@ -73,7 +73,7 @@ class ProductPage(View):
         # Section for handling search query
         search_query = request.GET.get('search', None)
         if search_query:
-            products = products.filter(Q(name__icontains=search_query) | Q(description__icontains=search_query))
+            products = products.filter(Q(name__icontains=search_query))
 
         # Section for handling filter queries
         selected_choices = request.GET.getlist('choice', None)

@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect 
+from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.http import JsonResponse
 import json
 from django.views import View
+from django.views.generic import UpdateView
 from accounts.models import CustomUser
 from main.models import Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -66,3 +68,11 @@ class AdminProducts(View):
              paged_products = paginator.page(paginator.num_pages)
         context = {'products': paged_products}
         return render(request, 'admin_products.html', context)
+    
+################################### Admin Product Edit ####################################
+
+class AdminProductEdit(UpdateView):
+    model = Product
+    fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
+    template_name = 'admin_product_edit.html'
+    success_url = reverse_lazy('custom_admin:admin_products')

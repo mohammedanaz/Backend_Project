@@ -1,9 +1,8 @@
 {% extends 'admin_base.html' %}
 
 {% load static %}
-{% load custom_filters %}
 
-{% block title %}Admin Users{% endblock %}
+{% block title %}Admin Products{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -56,7 +55,7 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== user section begin =========================== -->
+<!-- =========================== products section begin =========================== -->
     <section class="mb-2">
         <div class="container-fluid">
             <div class="container-fluid text-center px-0">
@@ -88,7 +87,7 @@
                                     <td><a href="{{ product.image.url }}" target="_blank">View Image</a></td>
                                     <td>
                                         <button class="btn btn-sm">
-                                            Edit  
+                                            <a href="{% url 'custom_admin:admin_product_edit' product.id %}">Edit</a> 
                                         </button>
                                     </td>
                                 </tr>
@@ -113,5 +112,5 @@
             </div>
         </div>
     </section>
-
+<!-- =========================== products section end =========================== -->
 {% endblock content %}

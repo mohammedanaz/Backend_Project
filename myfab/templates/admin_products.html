@@ -87,7 +87,10 @@
                                     <td><a href="{{ product.image.url }}" target="_blank">View Image</a></td>
                                     <td>
                                         <button class="btn btn-sm">
-                                            <a href="{% url 'custom_admin:admin_product_edit' product.id %}">Edit</a> 
+                                            <a href="{% url 'custom_admin:admin_product_edit' product.id %}" class="btn btn-primary">Edit</a>
+                                        </button>
+                                        <button class="btn btn-danger delete-product" data-bs-toggle="modal" data-bs-target="#confirmationModal" data-id="{{ product.pk }}" data-name="{{ product.name }}">
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
@@ -111,6 +114,99 @@
                 </div>
             </div>
         </div>
+        <!-- Modal for Confirmation -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete <span id="productName"></span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <a href="#" id="confirmDeleteLink" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal for Confirmation -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete <span id="productName"></span>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form id="deleteForm" action="/custom_admin/products/delete/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" id="productIdInput" name="id" value="">
+                            <button type="submit"   class="btn btn-danger" >Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 <!-- =========================== products section end =========================== -->
+
+<!-- JavaScript to handle delete button click -->
+<!-- JavaScript to handle delete button click -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-product');
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                // Prevent the default behavior of the click event
+                event.preventDefault();
+
+                const productId = this.getAttribute('data-id');
+                const productName = this.getAttribute('data-name');
+
+                // Set product name in the confirmation modal
+                document.getElementById('productName').innerText = productName;
+
+                // Set product id as the value of the hidden input for post request
+                document.getElementById('productIdInput').value = productId;
+
+                // Open the confirmation modal
+                const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                confirmationModal.show();
+            });
+        });
+
+        // Handle dismissal of modal and backdrop when clicking "Cancel" button
+        const cancelButton = document.querySelector('.btn-secondary[data-bs-dismiss="modal"]');
+        cancelButton.addEventListener('click', function(event) {
+            // Find the modal element
+            const modalElement = document.querySelector('.modal');
+            if (modalElement) {
+                // Hide the modal
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                // Hide the backdrop manually
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            }
+        });
+
+        // Handle form submission after confirmation
+        const confirmDeleteLink = document.getElementById('confirmDeleteLink');
+        confirmDeleteLink.addEventListener('click', function(event) {
+            // Submit the form after confirmation
+            document.getElementById('deleteForm').submit();
+        });
+    });
+</script>
+
 {% endblock content %}

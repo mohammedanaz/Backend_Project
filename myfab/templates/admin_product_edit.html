@@ -55,6 +55,7 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
+<!-- =========================== product edit begin =========================== -->
     <div class="container w-50">
         <h2 class="text-center">Edit Product</h2>
         <form method="post" enctype="multipart/form-data">
@@ -68,8 +69,8 @@
                 <input type="number" class="form-control price-input" id="id_price" name="price" step="0.01" value="{{ object.price }}">
             </div>
             <div class="form-group my-2">
-                <label for="id_image">Image:<a href="{{ object.image.url }}" target="_blank">{{ object.image }}</a></label>
-                <div class="custom-file">
+                <label for="id_image">Current Image:<a href="{{ object.image.url }}" target="_blank">{{ object.image }}</a></label>
+                <div class="custom-file my-2">
                     <input type="file" class="custom-file-input" id="id_image" name="image">
                 </div>
             </div>
@@ -105,6 +106,6 @@
             <a href="{% url 'custom_admin:admin_products' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
-
+<!-- =========================== product edit end =========================== -->
 
 {% endblock content %}

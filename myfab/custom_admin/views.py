@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse
 import json
 from django.views import View
@@ -76,3 +76,20 @@ class AdminProductEdit(UpdateView):
     fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
     template_name = 'admin_product_edit.html'
     success_url = reverse_lazy('custom_admin:admin_products')
+
+
+################################### Admin Product Delete ####################################
+
+class AdminProductDelete(View):
+
+    def post(self, request):
+        product_id = request.POST.get('id')
+
+        # Retrieve the product instance from the database
+        product = get_object_or_404(Product, pk=product_id)
+        
+        # Delete the product
+        product.delete()
+        
+        print(f'Item with id = {product_id} deleted successfully')
+        return redirect(reverse('custom_admin:admin_products'))

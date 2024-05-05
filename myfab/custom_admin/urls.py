@@ -1,6 +1,5 @@
 from django.urls import path
-from .views import AdminHome, AdminUsers, AdminProducts, AdminProductEdit, AdminProductDelete
-
+from .views import AdminHome, AdminUsers, AdminProducts, AdminProductEdit, AdminProductDelete, AdminProductAdd
 app_name = 'custom_admin'
 
 urlpatterns = [
@@ -9,4 +8,5 @@ urlpatterns = [
     path('products/', AdminProducts.as_view(), name = 'admin_products'),
     path('products/<int:pk>/edit/', AdminProductEdit.as_view(), name = 'admin_product_edit'),
     path('products/delete/', AdminProductDelete.as_view(), name = 'admin_product_delete'),
+    path('products/add/', AdminProductAdd.as_view(), name='admin_product_add'),
 ]   

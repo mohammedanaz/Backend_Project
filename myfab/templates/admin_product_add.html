@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Admin Products Edit{% endblock %}
+{% block title %}Admin Products Add{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -55,37 +55,37 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== product edit begin =========================== -->
+<!-- =========================== product add begin =========================== -->
     <div class="container w-50">
-        <h2 class="text-center">Edit Product</h2>
+        <h2 class="text-center">Add Product</h2>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group my-2">
                 <label for="id_name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="id_name" name="name" value="{{ object.name }}">
+                <input type="text" class="form-control" id="id_name" name="name" value="" required>
             </div>
             <div class="form-group my-2">
                 <label for="id_price">Price:</label>
-                <input type="number" class="form-control price-input" id="id_price" name="price" step="0.01" value="{{ object.price }}">
+                <input type="number" class="form-control price-input" id="id_price" name="price" step="0.01" value="" required>
             </div>
             <div class="form-group my-2">
-                <label for="id_image">Current Image:<a href="{{ object.image.url }}" target="_blank">{{ object.image }}</a></label>
+                <label for="id_image">Upload Image:</label>
                 <div class="custom-file my-2">
-                    <input type="file" class="custom-file-input" id="id_image" name="image">
+                    <input type="file" class="custom-file-input" id="id_image" name="image" required>
                 </div>
             </div>
             <div class="form-group my-2" style="height: 30vh;">
                 <label for="id_description">Description:</label>
-                <textarea class="form-control h-75" id="id_description" name="description">{{ object.description }}</textarea>
+                <textarea class="form-control h-75" id="id_description" name="description" required></textarea>
             </div>
             <div class="form-group my-2">
                 <label for="id_qty">Quantity:</label>
-                <input type="number" class="form-control" id="id_qty" name="qty" value="{{ object.qty }}">
+                <input type="number" class="form-control" id="id_qty" name="qty" value="" required>
             </div>
             <div class="form-group my-2">
                 <label for="id_is_active">Is Active:</label>
                 <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="id_is_active" name="is_active" {% if object.is_active %}checked{% endif %}>
+                    <input type="checkbox" class="form-check-input" id="id_is_active" name="is_active" checked>
                 </div>
             </div>
             <div class="container d-flex my-2" style="height: 25vh;">
@@ -106,6 +106,6 @@
             <a href="{% url 'custom_admin:admin_products' %}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
-<!-- =========================== product edit end =========================== -->
+<!-- =========================== product add end =========================== -->
 
 {% endblock content %}

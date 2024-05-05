@@ -4,6 +4,7 @@ from django.http import JsonResponse
 import json
 from django.views import View
 from django.views.generic import UpdateView
+from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
 from main.models import Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -93,3 +94,12 @@ class AdminProductDelete(View):
         
         print(f'Item with id = {product_id} deleted successfully')
         return redirect(reverse('custom_admin:admin_products'))
+    
+
+################################### Admin Product Add ####################################
+
+class AdminProductAdd(CreateView):
+    model = Product
+    fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
+    template_name = 'admin_product_add.html'  
+    success_url = reverse_lazy('custom_admin:admin_products')  

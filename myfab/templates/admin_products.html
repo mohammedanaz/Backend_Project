@@ -59,8 +59,14 @@
     <section class="mb-2">
         <div class="container-fluid">
             <div class="container-fluid text-center px-0">
-                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Products</h5>
-                <button class="btn btn-primary" onclick="window.location.href='{% url 'custom_admin:admin_product_add' %}'">Add Product</button>
+                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
+                    Products
+                    <span>
+                        <button class="btn btn-outline-primary" onclick="window.location.href='{% url 'custom_admin:admin_product_add' %}'">
+                            <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
+                        </button>
+                    </span>
+                </h5>
             </div>
             <div class="row h-100">
                 <div class="col-12">
@@ -127,7 +133,10 @@
                         Are you sure you want to delete <span id="productName"></span>?
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                        onclick="window.location.href='{% url 'custom_admin:admin_products' %}'">
+                            Cancel
+                        </button>
                         <form id="deleteForm" action="/custom_admin/products/delete/" method="post">
                             {% csrf_token %}
                             <input type="hidden" id="productIdInput" name="id" value="">
@@ -163,23 +172,6 @@
                 const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
                 confirmationModal.show();
             });
-        });
-
-        // Handle dismissal of modal and backdrop when clicking "Cancel" button
-        const cancelButton = document.querySelector('.btn-secondary[data-bs-dismiss="modal"]');
-        cancelButton.addEventListener('click', function(event) {
-            // Find the modal element
-            const modalElement = document.querySelector('.modal');
-            if (modalElement) {
-                // Hide the modal
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                modal.hide();
-                // Hide the backdrop manually
-                const backdrop = document.querySelector('.modal-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
-            }
         });
 
         // Handle form submission after confirmation

@@ -127,24 +127,6 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <a href="#" id="confirmDeleteLink" class="btn btn-danger">Delete</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Modal for Confirmation -->
-        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete <span id="productName"></span>?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form id="deleteForm" action="/custom_admin/products/delete/" method="post">
                             {% csrf_token %}
                             <input type="hidden" id="productIdInput" name="id" value="">
@@ -157,7 +139,6 @@
     </section>
 <!-- =========================== products section end =========================== -->
 
-<!-- JavaScript to handle delete button click -->
 <!-- JavaScript to handle delete button click -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {

@@ -67,7 +67,14 @@ class AdminProducts(View):
             paged_products = paginator.page(1)
         except EmptyPage:
              paged_products = paginator.page(paginator.num_pages)
-        context = {'products': paged_products}
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_products.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_products)))
+        zipped_data = zip(serial_numbers, paged_products)
+
+        context = {'zipped_data': zipped_data, 'products': paged_products}
         return render(request, 'admin_products.html', context)
     
 ################################### Admin Product Edit ####################################

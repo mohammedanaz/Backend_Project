@@ -1,0 +1,129 @@
+<!-- products.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Product Details{% endblock %}
+
+{% block content %}
+<!-- =================================== Navbar Begin ====================================== -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="/main/">Men</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Women</a>
+                    </button>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex  flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/accounts/login/"><i style="font-size:24px" class="fa">&#xf007;</i></a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="#"><i style='font-size:24px' class='fas'>&#xf217;</i></a>
+                </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+<!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== Product sec header begin =========================== -->
+    <div class="container-fluid text-center">
+        <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Product Details</h5>
+    </div>
+<!-- =========================== Product sec header end =========================== -->
+
+<!-- =========================== Product details sec begin =========================== -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
+            </div>
+            <div class="col-md-6">
+                <h2> {{ product.name }} </h2>
+                <h4 class="font-weight-bold">Price: <i class="fa">&#xf156;</i> {{ product.price }} /Mtr</h4>
+                <small>Shipping calculated at checkout.</small>
+                <div class="form-group my-2">
+                    <label for="quantity">Quantity (in meters):</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1">
+                </div>
+                <button class="btn btn-primary">Add to Cart</button>
+                <hr>
+                <!-- Accordion for product details and ordering info -->
+                <div class="accordion d-none d-lg-block mb-2" id="productAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="descriptionHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
+                                Description
+                            </button>
+                        </h2>
+                        <div id="descriptionCollapse" class="accordion-collapse collapse" aria-labelledby="descriptionHeading" data-bs-parent="#productAccordion">
+                            <div class="accordion-body">
+                                {{ product.description }} 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="estimatorHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#estimatorCollapse" aria-expanded="false" aria-controls="estimatorCollapse">
+                                Fabric Estimator
+                            </button>
+                        </h2>
+                        <div id="estimatorCollapse" class="accordion-collapse collapse" aria-labelledby="estimatorHeading" data-bs-parent="#productAccordion">
+                            <div class="accordion-body text-center">
+                                <img src="{% static "images/fabric_estimator.jpg" %}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="shippingHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#shippingCollapse" aria-expanded="false" aria-controls="shippingCollapse">
+                                Shipping Information
+                            </button>
+                        </h2>
+                        <div id="shippingCollapse" class="accordion-collapse collapse" aria-labelledby="shippingHeading" data-bs-parent="#productAccordion">
+                            <div class="accordion-body ">
+                                <ul>
+                                    <li>We ship across India. For international deliveries, please get in touch with us.</li>
+                                    <li>Orders are shipped within 24-48 hours of being confirmed.</li>
+                                    <li>Shipment tracking details will be shared with you on the registered email ID.</li>
+                                    <li>It takes approximately 3- 5 business days to deliver your product. 
+                                        Sometimes delivery may take longer due to bad weather, 
+                                        flight/transportation delays, political disruptions or other unforeseen circumstances.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <h3>Related Products</h3>
+                <p></p>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="col">
+                <h3>Customer Reviews</h3>
+                <!-- Display customer reviews here -->
+                <p>No reviews yet.</p>
+            </div>
+        </div>
+    </div>
+<!-- =========================== Product details sec end =========================== -->
+{% endblock %}

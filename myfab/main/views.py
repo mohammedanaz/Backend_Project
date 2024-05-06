@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
+from django.views.generic import DetailView
 from .models import Usage, Category, CategoryChoice, Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -134,3 +135,11 @@ class ProductPage(View):
                    'search_query': search_query
                    }
         return render(request, 'products.html', context)
+    
+
+    ############################### Products Details CBV ######################################
+
+class ProductDetailsPage(DetailView):
+    model = Product
+    template_name = 'product_details.html'
+    context_object_name = 'product'

@@ -8,6 +8,11 @@
 {% block title %}Product Details{% endblock %}
 
 {% block content %}
+    <style>
+        .hidden {
+        display: none;
+    }
+    </style>
 <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -53,17 +58,42 @@
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
             </div>
             <div class="col-md-6">
-                <h2> {{ product.name }} </h2>
-                <h4 class="font-weight-bold">Price: <i class="fa">&#xf156;</i> {{ product.price }} /Mtr</h4>
-                <small>Shipping calculated at checkout.</small>
-                <div class="form-group my-2">
-                    <label for="quantity">Quantity (in meters):</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1">
+                <h2 class="mb-4"> {{ product.name }} </h2>
+                <h4 class="font-weight-bold product-price">Price: <i class="fa">&#xf156;</i> {{ product.price }} /Mtr</h4>
+                <small class="mb-4">Shipping calculated at checkout.</small>
+                <div class="d-flex ordertype-container mt-3">
+                    <div class="form-check me-5">
+                        <input class="form-check-input" type="radio" name="ordertype" id="fabric-only" value="fabric-only" checked>
+                        <label class="form-check-label" for="ordertype">
+                          Fabric Only
+                        </label>
+                    </div>
+                    <div class="form-check me-5">
+                        <input class="form-check-input" type="radio" name="ordertype" id="fabric-stitching" value="fabric-stitching">
+                        <label class="form-check-label" for="ordertype">
+                          Fabric with stitching
+                        </label>
+                    </div>
                 </div>
-                <button class="btn btn-primary">Add to Cart</button>
+                <div id="div-fabric-only" class="hidden my-2">
+                    <div class="form-group ">
+                        <label for="quantity">Quantity (in meters):</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1">
+                    </div>
+                </div>
+                
+                <div id="div-fabric-stitching" class="hidden my-2">
+                    <label for="dresstype">Choose a dress type:</label>
+                    <select class="form-select" id="dresstype" aria-label="Default select example">
+                        {% for usage in usages %}
+                            <option value="{{ usage.name }}">{{ usage.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <hr>
+                <button class="btn btn-primary">Add to Cart</button>
                 <!-- Accordion for product details and ordering info -->
-                <div class="accordion d-none d-lg-block mb-2" id="productAccordion">
+                <div class="accordion my-3" id="productAccordion">
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="descriptionHeading">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#descriptionCollapse" aria-expanded="false" aria-controls="descriptionCollapse">
@@ -126,4 +156,31 @@
         </div>
     </div>
 <!-- =========================== Product details sec end =========================== -->
+
+<!-- =========================== JS =========================== -->
+
+    <script>
+         // Function to show the corresponding div based on the initial checked radio button
+    function showInitialDiv() {
+        var checkedRadio = document.querySelector('input[type=radio][name="ordertype"]:checked');
+        if (checkedRadio && checkedRadio.value === 'fabric-only') {
+            document.getElementById('div-fabric-only').classList.remove('hidden');
+        }
+    }
+
+    // Run the function when the page loads
+    window.addEventListener('load', showInitialDiv);
+
+        document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                if (this.value === 'fabric-only') {
+                    document.getElementById('div-fabric-only').classList.remove('hidden');
+                    document.getElementById('div-fabric-stitching').classList.add('hidden');
+                } else if (this.value === 'fabric-stitching') {
+                    document.getElementById('div-fabric-only').classList.add('hidden');
+                    document.getElementById('div-fabric-stitching').classList.remove('hidden');
+                }
+            });
+        });
+    </script>
 {% endblock %}

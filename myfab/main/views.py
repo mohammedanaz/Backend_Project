@@ -143,3 +143,10 @@ class ProductDetailsPage(DetailView):
     model = Product
     template_name = 'product_details.html'
     context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = context['product']
+        usages = product.usages.all()
+        context['usages'] = usages
+        return context

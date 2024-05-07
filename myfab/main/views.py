@@ -147,6 +147,13 @@ class ProductDetailsPage(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = context['product']
+    
         usages = product.usages.all()
         context['usages'] = usages
+        
+        measurements = {}
+        for usage in usages:
+            measurements[usage.pk] = list(usage.measurements.all())
+        
+        context['measurements_dict'] = measurements
         return context

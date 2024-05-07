@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Usage, Category, CategoryChoice
+from .models import Product, Usage, Category, CategoryChoice, Measurement
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -45,3 +45,4 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Usage, UsageAdmin)
 admin.site.register(Category)
 admin.site.register(CategoryChoice, CategoryChoiceAdmin)
+admin.site.register(Measurement)

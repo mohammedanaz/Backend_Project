@@ -1,6 +1,15 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 
+class Measurement(models.Model):
+    '''
+    model to provide possible measurements to each usage
+    '''
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Usage(models.Model):
     '''
     model to provide possible usage types
@@ -12,9 +21,11 @@ class Usage(models.Model):
     name = models.CharField(max_length=100, null=False, unique=True)
     image = models.ImageField(upload_to='images/usages', null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, choices=GENDER_CHOICES)
+    measurements = models.ManyToManyField(Measurement)
 
     def __str__(self):
         return self.name
+    
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)

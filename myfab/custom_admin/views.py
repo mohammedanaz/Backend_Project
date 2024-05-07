@@ -3,10 +3,10 @@ from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse
 import json
 from django.views import View
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
-from main.models import Product
+from main.models import Product, Category, CategoryChoice, Usage
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -110,3 +110,39 @@ class AdminProductAdd(CreateView):
     fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
     template_name = 'admin_product_add.html'  
     success_url = reverse_lazy('custom_admin:admin_products')  
+
+    ################################### Admin Categories ####################################
+
+class AdminCategories(View):
+    def get(self, request):
+        categories = Category.objects.all()
+        context = {'categories': categories}
+        return render(request, 'admin_categories.html', context)
+
+################################### Admin Category Edit ####################################
+
+class AdminCategoryEdit(UpdateView):
+    model = Category
+    fields = ['name']
+    template_name = 'admin_category_edit.html'
+    success_url = reverse_lazy('custom_admin:admin_categories')
+
+################################### Admin Category Add ####################################
+
+class AdminCategoryAdd(CreateView):
+    model = Category
+    fields = ['name']
+    template_name = 'admin_category_add.html'  
+    success_url = reverse_lazy('custom_admin:admin_categories')
+
+################################### Admin Category Delete ####################################
+
+class AdminCategoryDelete(DeleteView):
+    model = Category
+    template_name = 'admin_category_confirm_delete.html'
+    success_url = reverse_lazy('custom_admin:admin_categories')
+
+    def delete(self, request, *args, **kwargs):
+        category = self.get_object()
+        category_id = category.pk
+        return super().delete(request, *args, **kwargs)

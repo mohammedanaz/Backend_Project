@@ -29,15 +29,25 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;  background-color: #800020;" aria-current="page">
-                        <a class="text-white text-decoration-none" href="#">Products</a>
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Products</a>
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="#">Categories</a>
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_categories" %}">Categories</a>
                     </button>
                 </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Usages Types</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Measurement Types</a>
+                    </button>
+                </li>   
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item ms-3 ms-lg-0">

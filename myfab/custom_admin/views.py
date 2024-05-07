@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
-from main.models import Product, Category, CategoryChoice, Usage
+from main.models import Product, Category, CategoryChoice, Usage, Measurement
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -111,7 +111,7 @@ class AdminProductAdd(CreateView):
     template_name = 'admin_product_add.html'  
     success_url = reverse_lazy('custom_admin:admin_products')  
 
-    ################################### Admin Categories ####################################
+################################### Admin Categories ####################################
 
 class AdminCategories(View):
     def get(self, request):
@@ -146,3 +146,52 @@ class AdminCategoryDelete(DeleteView):
         category = self.get_object()
         category_id = category.pk
         return super().delete(request, *args, **kwargs)
+
+
+################################### Admin Usage types ####################################
+
+class AdminUsages(View):
+    def get(self, request):
+        usages = Usage.objects.all()
+        paginator = Paginator(usages, 6) 
+        page_number = request.GET.get('page')
+        try:
+            paged_usages = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_usages = paginator.page(1)
+        except EmptyPage:
+             paged_usages = paginator.page(paginator.num_pages)
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_usages.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_usages)))
+        zipped_data = zip(serial_numbers, paged_usages)
+        context = {'zipped_data': zipped_data,'usages': paged_usages}
+        return render(request, 'admin_usages.html', context)
+
+################################### Admin Usage Edit ####################################
+
+class AdminUsageEdit(UpdateView):
+    model = Usage
+    fields = ['name', 'image', 'gender', 'measurements']
+    template_name = 'admin_usage_edit.html'
+    success_url = reverse_lazy('custom_admin:admin_usages')
+
+################################### Admin Usage Add ####################################
+
+class AdminUsageAdd(CreateView):
+    model = Usage
+    fields = ['name', 'image', 'gender', 'measurements']
+    template_name = 'admin_usage_add.html'  
+    success_url = reverse_lazy('custom_admin:admin_usages')
+
+
+
+################################### Admin Usage Delete ####################################
+
+class AdminUsageDelete(DeleteView):
+    model = Usage
+    template_name = 'admin_usage_confirm_delete.html'
+    success_url = reverse_lazy('custom_admin:admin_usages')
+

@@ -1,12 +1,11 @@
 {% extends 'admin_base.html' %}
 
 {% load static %}
-{% load custom_filters %}
 
-{% block title %}Admin Home{% endblock %}
+{% block title %}Admin Usage Type Add{% endblock %}
 
 {% block content %}
-    <!-- =================================== Navbar Begin ====================================== -->
+<!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
         <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -15,8 +14,8 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <button class="nav-link active btn btn-link" style="min-width: 150px; background-color: #800020;" aria-current="page">
-                        <a class="text-white text-decoration-none" href="/custom_admin/">Home</a>
+                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="/custom_admin/">Home</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -31,7 +30,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="/custom_admin/products/">Products</a>
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_products" %}">Products</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -41,7 +40,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_usages" %}">Usages Types</a>
+                        <a class="text-black text-decoration-none" href="#">Usages Types</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -66,11 +65,35 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== Graph section begin =========================== -->
-    <div class="container-fluid" style="max-height: 30vw;">
-        <img class="logo" style="width: 100%; max-height: 30vw;" src="{% static 'images/graph.png' %}" alt="grapf">
+<!-- =========================== Usage add begin =========================== -->
+    <div class="container w-50">
+        <h2 class="text-center">Add Dress Usage Type</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group my-2">
+                <label for="id_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="id_name" name="name" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_image">Upload Image:</label>
+                <div class="custom-file my-2">
+                    <input type="file" class="custom-file-input" id="id_image" name="image" required>
+                </div>
+            </div>
+            <div>
+                <label for="gender">Gender:</label>
+                    {{form.gender}}
+            </div>
+            <div class="form-group me-5 my-2 h-100">
+                <label for="id_usages">Measurements:</label>
+                <div>
+                    {{ form.measurements }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary my-2">Add</button>
+            <a href="{% url 'custom_admin:admin_usages' %}" class="btn btn-secondary">Cancel</a>
+        </form>
     </div>
-<!-- =========================== Graph section End =========================== -->
+<!-- =========================== Usage add end =========================== -->
 
-
-{% endblock  %}
+{% endblock content %}

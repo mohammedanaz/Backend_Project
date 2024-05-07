@@ -1,0 +1,149 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+
+{% block title %}Admin Usages{% endblock %}
+
+{% block content %}
+
+<style>
+    .thumbnail-image {
+        max-width: 75px; 
+        max-height: 75px;
+        width: auto; 
+        height: auto;
+        display: block;
+        margin: auto; 
+    }
+</style>
+<!-- =================================== Navbar Begin ====================================== -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="/custom_admin/">Home</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="/custom_admin/users/">Users</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Orders</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;  " aria-current="page">
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_products" %}">Products</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_categories" %}">Categories</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px; background-color: #800020;" aria-current="page">
+                        <a class="text-white text-decoration-none" href="#">Usages Types</a>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="#">Measurement Types</a>
+                    </button>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/main/">Home</a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <form id="logout-form" action="/accounts/logout/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link btn btn-link">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+<!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== Usages section begin =========================== -->
+    <section class="mb-2">
+        <div class="container-fluid">
+            <div class="container-fluid text-center px-0">
+                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
+                    Dress Usages Types
+                    <span>
+                        <button class="btn btn-outline-primary my-2" onclick="window.location.href='{% url 'custom_admin:admin_usage_add' %}'">
+                            <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
+                        </button>
+                    </span>
+                </h5>
+            </div>
+            <div class="row h-100">
+                <div class="col-12">
+                    <div class="table-responsive text-center">
+                        <table class="table  table-hover">
+                            <thead>
+                            <tr>
+                                <th scope="col">Sr#</th>
+                                <th scope="col">ID#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Gender</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for serial_number, usage in zipped_data %}
+                                <tr>
+                                    <th scope="row">{{ serial_number }}</th>
+                                    <td>{{ usage.id }}</td>
+                                    <td>{{ usage.name }}</td>
+                                    <td>
+                                        <a href="{{ usage.image.url }}" target="_blank">
+                                            <img class="thumbnail-image" src="{{ usage.image.url }}" alt="{{ usage.name }} Image">
+                                        </a>
+                                    </td>
+                                    <td>{{ usage.gender }}</td>
+                                    <td>
+                                        <button class="btn btn-sm">
+                                            <a href="{% url "custom_admin:admin_usage_edit" usage.id %}" class="btn btn-primary">Edit</a>
+                                            <a href="{% url "custom_admin:admin_usage_delete" usage.id %}" class="btn btn-danger">Delete</a>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination justify-content-center">
+                        {% if usages.has_previous %}
+                            <a href="?page=1" class="page-link">&laquo; First</a>
+                            <a href="?page={{ usages.previous_page_number }}" class="page-link">Previous</a>
+                        {% endif %}
+                        {% for page in usages.paginator.page_range %}
+                        <a href="?page={{ page }}" class="page-link {% if usages.number == page %}active{% endif %}">{{ page }}</a>
+                        {% endfor %}
+                        {% if usages.has_next %}
+                            <a href="?page={{ usages.next_page_number }}" class="page-link">Next</a>
+                            <a href="?page={{ usages.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- =========================== Usages section end =========================== -->
+
+
+{% endblock content %}

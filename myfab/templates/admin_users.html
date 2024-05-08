@@ -19,7 +19,7 @@
         }
     </style>
 
-    <!-- =================================== Navbar Begin ====================================== -->
+<!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
         <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
                         <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_measurements" %}">Measurement Types</a>
                     </button>
-                </li>
+                </li>   
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item ms-3 ms-lg-0">
@@ -78,64 +78,77 @@
         </div>
     </nav>
 <!-- =========================== Navbar End =========================== -->
-
+    
+<!-- =========================== Search section begin =========================== -->
+    <div class="container w-50 py-3">
+        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
+            <div class="input-group">  <select class="form-select" aria-label="Search options">
+                <option value="email">Email</option>
+                <option value="order_id">Order ID</option>
+              </select>
+              <input type="text" class="form-control w-50" placeholder="Search">
+            </div>
+            <button type="button" class="btn btn-primary mt-3 mt-sm-0">Search</button>
+          </div>             
+    </div>
+<!-- =========================== Search section end =========================== -->
 <!-- =========================== user section begin =========================== -->
-<section class="mb-2">
-    <div class="container-fluid">
-        <div class="container-fluid text-center px-0">
-            <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Users</h5>
-        </div>
-        <div class="row h-100">
-            <div class="col-12">
-                <div class="table-responsive text-center">
-                    <table class="table  table-hover">
-                        <thead>
-                          <tr>
-                            <th scope="col">ID#</th>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
-                            <th scope="col">Email ID</th>
-                            <th scope="col">Order ID</th>
-                            <th scope="col">Action</th>
-                          </tr>
-                        </thead>
-                        {% for user in users  %}
-                        <tbody>
+    <section class="mb-2">
+        <div class="container-fluid">
+            <div class="container-fluid text-center px-0">
+                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5">Users</h5>
+            </div>
+            <div class="row h-100">
+                <div class="col-12">
+                    <div class="table-responsive text-center">
+                        <table class="table  table-hover">
+                            <thead>
                             <tr>
-                                <th scope="col">{{ user.id }}</th>
-                                <td>{{ user.first_name }}</td>
-                                <td>{{ user.last_name }}</td>
-                                <td>{{ user.email }}</td>
-                                <td>To be filled</td>
-                                <td>
-                                    <button class="status-toggle text-white btn btn-sm"
-                                        data-user-id="{{ user.id }}"
-                                        data-is-active="{{ user.is_active }}">
-                                        {{ user.is_active|yesno:"Block,Unblock" }}  
-                                    </button>
-                                </td>
+                                <th scope="col">ID#</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Email ID</th>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Action</th>
                             </tr>
-                        </tbody>
-                        {% endfor %}
-                    </table>
-                </div>
-                <div class="pagination justify-content-center">
-                    {% if users.has_previous %}
-                        <a href="?page=1" class="page-link">&laquo; First</a>
-                        <a href="?page={{ users.previous_page_number }}" class="page-link">Previous</a>
-                    {% endif %}
-                    <span class="current-page">{{ users.number }}</span>
-                    /
-                    <span class="total-pages">{{ users.paginator.num_pages }}</span>
-                    {% if users.has_next %}
-                        <a href="?page={{ users.next_page_number }}" class="page-link">Next</a>
-                        <a href="?page={{ users.paginator.num_pages }}" class="page-link">Last &raquo;</a>
-                    {% endif %}
+                            </thead>
+                            {% for user in users  %}
+                            <tbody>
+                                <tr>
+                                    <th scope="col">{{ user.id }}</th>
+                                    <td>{{ user.first_name }}</td>
+                                    <td>{{ user.last_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>To be filled</td>
+                                    <td>
+                                        <button class="status-toggle text-white btn btn-sm"
+                                            data-user-id="{{ user.id }}"
+                                            data-is-active="{{ user.is_active }}">
+                                            {{ user.is_active|yesno:"Block,Unblock" }}  
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div class="pagination justify-content-center">
+                        {% if users.has_previous %}
+                            <a href="?page=1" class="page-link">&laquo; First</a>
+                            <a href="?page={{ users.previous_page_number }}" class="page-link">Previous</a>
+                        {% endif %}
+                        <span class="current-page">{{ users.number }}</span>
+                        /
+                        <span class="total-pages">{{ users.paginator.num_pages }}</span>
+                        {% if users.has_next %}
+                            <a href="?page={{ users.next_page_number }}" class="page-link">Next</a>
+                            <a href="?page={{ users.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 <!-- =========================== user section end =========================== -->
 <!-- =========================== user section JS begin =========================== -->

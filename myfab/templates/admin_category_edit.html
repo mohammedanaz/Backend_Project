@@ -75,7 +75,7 @@
                 <input type="text" class="form-control" id="id_name" name="name" value="{{ object.name }}">
             </div>
             <button type="submit" class="btn btn-primary my-2">Save Changes</button>
-            <a href="{% url 'custom_admin:admin_categories' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ previous_url }}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 <!-- =========================== product edit end =========================== -->

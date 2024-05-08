@@ -90,8 +90,9 @@
                     {{ form.measurements }}
                 </div>
             </div>
+            <input type="hidden" name="next" value="{{ previous_url }}">
             <button type="submit" class="btn btn-primary my-2">Add</button>
-            <a href="{% url 'custom_admin:admin_usages' %}" class="btn btn-secondary">Cancel</a>
+            <a href="{{previous_url}}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 <!-- =========================== Usage add end =========================== -->

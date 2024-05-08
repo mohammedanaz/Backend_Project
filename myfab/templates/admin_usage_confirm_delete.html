@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Admin Category Delete{% endblock %}
+{% block title %}Admin Dress TYpe Delete{% endblock %}
 
 {% block content %}
 
@@ -10,7 +10,7 @@
 <!-- =========================== Category delete begin =========================== -->
     <div class="container w-50 bg-light text-center my-5 py-5">
         <h1>Confirm Delete</h1>
-        <p>Are you sure you want to delete this category: {{ object.name }}?</p>
+        <p>Are you sure you want to delete this dress type: {{ object.name }}?</p>
         <form method="post">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ previous_url }}">

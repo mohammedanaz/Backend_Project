@@ -85,6 +85,12 @@ class AdminProductEdit(UpdateView):
     template_name = 'admin_product_edit.html'
     success_url = reverse_lazy('custom_admin:admin_products')
 
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_products'))
+        return context
+
 
 ################################### Admin Product Delete ####################################
 
@@ -127,6 +133,12 @@ class AdminCategoryEdit(UpdateView):
     template_name = 'admin_category_edit.html'
     success_url = reverse_lazy('custom_admin:admin_categories')
 
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_categories'))
+        return context
+
 ################################### Admin Category Add ####################################
 
 class AdminCategoryAdd(CreateView):
@@ -140,12 +152,16 @@ class AdminCategoryAdd(CreateView):
 class AdminCategoryDelete(DeleteView):
     model = Category
     template_name = 'admin_category_confirm_delete.html'
-    success_url = reverse_lazy('custom_admin:admin_categories')
 
-    def delete(self, request, *args, **kwargs):
-        category = self.get_object()
-        category_id = category.pk
-        return super().delete(request, *args, **kwargs)
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_usages'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 
 ################################### Admin Usage types ####################################
@@ -176,7 +192,16 @@ class AdminUsageEdit(UpdateView):
     model = Usage
     fields = ['name', 'image', 'gender', 'measurements']
     template_name = 'admin_usage_edit.html'
-    success_url = reverse_lazy('custom_admin:admin_usages')
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_usages'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 ################################### Admin Usage Add ####################################
 
@@ -184,7 +209,16 @@ class AdminUsageAdd(CreateView):
     model = Usage
     fields = ['name', 'image', 'gender', 'measurements']
     template_name = 'admin_usage_add.html'  
-    success_url = reverse_lazy('custom_admin:admin_usages')
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_usages'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 
 
@@ -193,5 +227,14 @@ class AdminUsageAdd(CreateView):
 class AdminUsageDelete(DeleteView):
     model = Usage
     template_name = 'admin_usage_confirm_delete.html'
-    success_url = reverse_lazy('custom_admin:admin_usages')
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_usages'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 

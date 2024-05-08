@@ -264,3 +264,77 @@ class AdminUsageDelete(DeleteView):
     def get_success_url(self):
         return self.request.POST.get('next', self.success_url)
 
+################################### Admin Measurements types ####################################
+
+class AdminMeasurements(View):
+    def get(self, request):
+        measurements = Measurement.objects.all()
+        paginator = Paginator(measurements, 6) 
+        page_number = request.GET.get('page')
+        try:
+            paged_measurements = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_measurements = paginator.page(1)
+        except EmptyPage:
+             paged_measurements = paginator.page(paginator.num_pages)
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_measurements.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_measurements)))
+        zipped_data = zip(serial_numbers, paged_measurements)
+        context = {'zipped_data': zipped_data,'measurements': paged_measurements}
+        return render(request, 'admin_measurements.html', context)
+
+################################### Admin Usage Edit ####################################
+
+class AdminMeasurementEdit(UpdateView):
+    model = Measurement
+    fields = ['name']
+    template_name = 'admin_measurement_edit.html'
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_measurements'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
+
+################################### Admin Usage Add ####################################
+
+class AdminMeasurementAdd(CreateView):
+    model = Measurement
+    fields = ['name']
+    template_name = 'admin_measurement_add.html'  
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_measurements'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
+
+
+
+################################### Admin Usage Delete ####################################
+
+class AdminMeasurementDelete(DeleteView):
+    model = Measurement
+    template_name = 'admin_measurement_confirm_delete.html'
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_measurements'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
+

@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Admin Category Add{% endblock %}
+{% block title %}Admin Measurement Add{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -40,7 +40,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="#">Usages Types</a>
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_usages" %}">Usages Types</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -67,7 +67,7 @@
 
 <!-- =========================== Category add begin =========================== -->
     <div class="container w-50">
-        <h2 class="text-center">Add Category</h2>
+        <h2 class="text-center">Add Measurement Type</h2>
         <form method="post">
             {% csrf_token %}
             <div class="form-group my-2">

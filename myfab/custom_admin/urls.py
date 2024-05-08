@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import AdminHome, AdminUsers, AdminProducts, AdminProductEdit, AdminProductDelete, AdminProductAdd, AdminCategories
-from .views import AdminCategoryEdit, AdminCategoryAdd, AdminCategoryDelete, AdminUsages, AdminUsageEdit, AdminUsageAdd, AdminUsageDelete
+from .views import AdminHome, AdminUsers, AdminProducts, AdminProductEdit, AdminProductDelete, AdminProductAdd
+from .views import AdminCategories, AdminCategoryEdit, AdminCategoryAdd, AdminCategoryDelete
+from .views import AdminUsages, AdminUsageEdit, AdminUsageAdd, AdminUsageDelete
+from .views import AdminMeasurements, AdminMeasurementAdd, AdminMeasurementEdit, AdminMeasurementDelete
 app_name = 'custom_admin'
 
 urlpatterns = [
@@ -18,4 +20,8 @@ urlpatterns = [
     path('usages/<int:pk>/edit/', AdminUsageEdit.as_view(), name='admin_usage_edit'),
     path('usages/add/', AdminUsageAdd.as_view(), name='admin_usage_add'),
     path('usages/<int:pk>/delete/', AdminUsageDelete.as_view(), name='admin_usage_delete'),
+    path('measurements/', AdminMeasurements.as_view(), name='admin_measurements'),
+    path('measurements/<int:pk>/edit/', AdminMeasurementEdit.as_view(), name='admin_measurement_edit'),
+    path('measurements/add/', AdminMeasurementAdd.as_view(), name='admin_measurement_add'),
+    path('measurements/<int:pk>/delete/', AdminMeasurementDelete.as_view(), name='admin_measurement_delete'),
 ]   

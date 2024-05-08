@@ -121,9 +121,7 @@
                                     <td>
                                         <button class="btn btn-sm">
                                             <a href="{% url 'custom_admin:admin_product_edit' product.id %}" class="btn btn-primary">View/Edit</a>
-                                        </button>
-                                        <button class="btn btn-danger delete-product" data-bs-toggle="modal" data-bs-target="#confirmationModal" data-id="{{ product.pk }}" data-name="{{ product.name }}">
-                                            Delete
+                                            <a href="{% url "custom_admin:admin_product_delete" product.id %}" class="btn btn-danger">Delete</a>
                                         </button>
                                     </td>
                                 </tr>

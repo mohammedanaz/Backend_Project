@@ -83,30 +83,33 @@ class AdminProductEdit(UpdateView):
     model = Product
     fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
     template_name = 'admin_product_edit.html'
-    success_url = reverse_lazy('custom_admin:admin_products')
 
     # To pass prev page url into the context to use with cancel btn
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_products'))
         return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 
 ################################### Admin Product Delete ####################################
 
-class AdminProductDelete(View):
+class AdminProductDelete(DeleteView):
+    model = Product
+    template_name = 'admin_product_confirm_delete.html'
 
-    def post(self, request):
-        product_id = request.POST.get('id')
-
-        # Retrieve the product instance from the database
-        product = get_object_or_404(Product, pk=product_id)
-        
-        # Delete the product
-        product.delete()
-        
-        print(f'Item with id = {product_id} deleted successfully')
-        return redirect(reverse('custom_admin:admin_products'))
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_products'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
     
 
 ################################### Admin Product Add ####################################
@@ -115,7 +118,16 @@ class AdminProductAdd(CreateView):
     model = Product
     fields = ['name', 'price', 'image', 'description', 'qty', 'is_active', 'usages', 'category_choices']
     template_name = 'admin_product_add.html'  
-    success_url = reverse_lazy('custom_admin:admin_products')  
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_products'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 ################################### Admin Categories ####################################
 

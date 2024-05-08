@@ -179,38 +179,5 @@
     </section>
 <!-- =========================== products section end =========================== -->
 
-<!-- JavaScript to handle delete button click -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const deleteButtons = document.querySelectorAll('.delete-product');
-
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                // Prevent the default behavior of the click event
-                event.preventDefault();
-
-                const productId = this.getAttribute('data-id');
-                const productName = this.getAttribute('data-name');
-
-                // Set product name in the confirmation modal
-                document.getElementById('productName').innerText = productName;
-
-                // Set product id as the value of the hidden input for post request
-                document.getElementById('productIdInput').value = productId;
-
-                // Open the confirmation modal
-                const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-                confirmationModal.show();
-            });
-        });
-
-        // Handle form submission after confirmation
-        const confirmDeleteLink = document.getElementById('confirmDeleteLink');
-        confirmDeleteLink.addEventListener('click', function(event) {
-            // Submit the form after confirmation
-            document.getElementById('deleteForm').submit();
-        });
-    });
-</script>
 
 {% endblock content %}

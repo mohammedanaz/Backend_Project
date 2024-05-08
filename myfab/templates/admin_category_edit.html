@@ -74,6 +74,7 @@
                 <label for="id_name" class="form-label">Name</label>
                 <input type="text" class="form-control" id="id_name" name="name" value="{{ object.name }}">
             </div>
+            <input type="hidden" name="next" value="{{ previous_url }}">
             <button type="submit" class="btn btn-primary my-2">Save Changes</button>
             <a href="{{ previous_url }}" class="btn btn-secondary">Cancel</a>
         </form>

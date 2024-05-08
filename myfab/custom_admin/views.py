@@ -131,13 +131,16 @@ class AdminCategoryEdit(UpdateView):
     model = Category
     fields = ['name']
     template_name = 'admin_category_edit.html'
-    success_url = reverse_lazy('custom_admin:admin_categories')
 
     # To pass prev page url into the context to use with cancel btn
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_categories'))
         return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
 
 ################################### Admin Category Add ####################################
 
@@ -145,7 +148,18 @@ class AdminCategoryAdd(CreateView):
     model = Category
     fields = ['name']
     template_name = 'admin_category_add.html'  
-    success_url = reverse_lazy('custom_admin:admin_categories')
+
+    # To pass prev page url into the context to use with cancel btn
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_categories'))
+        return context
+    
+    # To redirect to prev page after deletion
+    def get_success_url(self):
+        return self.request.POST.get('next', self.success_url)
+
+
 
 ################################### Admin Category Delete ####################################
 
@@ -156,7 +170,7 @@ class AdminCategoryDelete(DeleteView):
     # To pass prev page url into the context to use with cancel btn
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_usages'))
+        context['previous_url'] = self.request.META.get('HTTP_REFERER', reverse('custom_admin:admin_categories'))
         return context
     
     # To redirect to prev page after deletion

@@ -77,6 +77,41 @@ class AdminProducts(View):
         context = {'zipped_data': zipped_data, 'products': paged_products}
         return render(request, 'admin_products.html', context)
     
+
+################################### Admin Product Search ####################################
+
+class AdminProductSearch(View):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        page_number = request.GET.get('page', 1)
+        products = Product.objects.filter(name__icontains=query)
+        paginator = Paginator(products, 10)
+
+        try:
+            paged_products = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_products = paginator.page(1)
+        except EmptyPage:
+            paged_products = paginator.page(paginator.num_pages)
+
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_products.number - 1) * paginator.per_page + 1
+
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_products)))
+        serial_numbers.reverse() # reverse list of page Sr number for poping
+
+        data = [{'name': product.name, 
+                 'price': product.price, 
+                 'qty': product.qty, 
+                 'add_date': product.add_date, 
+                 'image_url': product.image.url, 
+                 'id': product.id,
+                 'serial_number':serial_numbers.pop()
+                 } for product in paged_products]
+        return JsonResponse({'data': data, 'has_previous': paged_products.has_previous(), 'has_next': paged_products.has_next(), 'pages': paginator.num_pages}, safe=False)
+
+
 ################################### Admin Product Edit ####################################
 
 class AdminProductEdit(UpdateView):

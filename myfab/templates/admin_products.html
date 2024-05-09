@@ -59,10 +59,12 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <div class="input-group">
-                        <input type="text" class="form-control" name="prod-search-input" aria-label="search" aria-describedby="search">
-                        <button class="btn btn-outline-secondary" type="button" id="prod-search-btn">Search</button>
-                    </div>
+                    <form id="search-form">
+                        <div class="input-group">
+                            <input type="text" id="search-input" name="query">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </form>
                 </li>
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
@@ -110,7 +112,7 @@
                                 <th scope="col">Action</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="product-table-body">
                                 {% for serial_number, product in zipped_data %}
                                 <tr>
                                     <th scope="row">{{ serial_number }}</th>
@@ -126,7 +128,7 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-sm">
-                                            <a href="{% url 'custom_admin:admin_product_edit' product.id %}" class="btn btn-primary">View/Edit</a>
+                                            <a href="{% url "custom_admin:admin_product_edit" product.id %}" class="btn btn-primary">View/Edit</a>
                                             <a href="{% url "custom_admin:admin_product_delete" product.id %}" class="btn btn-danger">Delete</a>
                                         </button>
                                     </td>
@@ -151,33 +153,66 @@
                 </div>
             </div>
         </div>
-        <!-- Modal for Confirmation -->
-        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmationModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete <span id="productName"></span>?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
-                        onclick="window.location.href='{% url 'custom_admin:admin_products' %}'">
-                            Cancel
-                        </button>
-                        <form id="deleteForm" action="/custom_admin/products/delete/" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" id="productIdInput" name="id" value="">
-                            <button type="submit"   class="btn btn-danger" >Delete</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 <!-- =========================== products section end =========================== -->
 
+<!-- ====================== JS ============================= -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('search-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const query = document.getElementById('search-input').value.trim();
+    
+    searchProducts(query, 1);  // Initial search, start from page 1
+    
+});
+
+function searchProducts(query, page) {
+    axios.get('/custom_admin/products/search/', { params: { query: query, page: page } })
+        .then(function(response) {
+            const tableBody = document.getElementById('product-table-body');
+            tableBody.innerHTML = ''; // Clear previous results
+            response.data.data.forEach(function(product) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th scope="row">${product.serial_number}</th>
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td>${product.qty}</td>
+                    <td>${product.add_date}</td>
+                    <td>
+                        <a href="${product.image_url}" target="_blank">
+                            <img class="thumbnail-image" src="${product.image_url}" alt="${product.name} Image">
+                        </a>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm">
+                            <a href="/custom_admin/products/${product.id}/edit/" class="btn btn-primary">View/Edit</a>
+                            <a href="/custom_admin/products/${product.id}/delete/" class="btn btn-danger">Delete</a>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update pagination links based on response
+            const pagination = document.querySelector('.pagination');
+            pagination.innerHTML = '';
+            if (response.data.has_previous) {
+                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
+            }
+            for (let i = 1; i <= response.data.pages; i++) {
+                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${i})" class="page-link">${i}</a>`;
+            }
+            if (response.data.has_next) {
+                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
+            }
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+        });
+}
+</script>
 
 {% endblock content %}

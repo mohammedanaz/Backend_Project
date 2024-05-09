@@ -23,7 +23,7 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="#">Women</a>
+                        <a class="text-black text-decoration-none" href="{% url "main:home_women" %}">Women</a>
                     </button>
                 </li>
             </ul>
@@ -42,9 +42,16 @@
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 {% if user.is_authenticated %}
-                <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="#">Hi {{user.first_name}}</a>
-                </li>
+                <div class="btn-group">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Hi {{user.first_name}}
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="#">Profile</a></li>
+                      <li><a class="dropdown-item" href="#">Addresses</a></li>
+                      <li><a class="dropdown-item" href="#">Orders</a></li>
+                    </ul>
+                </div>
                 <li class="nav-item ms-3 ms-lg-0">
                     <a class="nav-link" href="#"><i style='font-size:24px' class='fas'>&#xf217;</i></a>
                 </li>

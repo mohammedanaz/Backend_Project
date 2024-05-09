@@ -19,7 +19,7 @@ class AdminRedirect:
             return redirect(reverse('user:user_home'))
         if (request.path.startswith(admin_url) or request.path.startswith(custom_admin_url)) and not request.user.is_superuser and request.user.is_authenticated:
             print("Redirecting non-superuser from admin page to user home page.")
-            return redirect(reverse('user:user_home'))
+            return redirect(reverse('main:home'))
         # if request.path.startswith(main_url) and request.user.is_authenticated:
         #     print("Redirecting non-auth user from custom admin page to login page.")
         #     return redirect(reverse('user:user_home'))

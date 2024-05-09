@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'main',
     'user',
     'custom_admin',
+    'orders',
 ]
 
 MIDDLEWARE = [

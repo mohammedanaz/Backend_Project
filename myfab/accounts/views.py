@@ -118,3 +118,9 @@ class OTPVerification(View):
         else:   
             context = {'invalid_credentials': True}
             return render(request, 'signup.html', context)
+        
+############################### User Profile ######################################
+
+class UserProfile(View):
+    def get(self, request):
+        return render(request, 'profile.html')

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, TemplateView, UpdateView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
@@ -147,8 +147,10 @@ class AddAddress(CreateView):
     To add new address.
     '''
     model = Address
-    fields = ['customer_id', 'name', 'house_name', 'street_name_1',
-               'street_name_2', 'city', 'state', 'pincode', 'phone_number']
-    template_name = 'address.html'
-    success_url = ''
+    fields = ['customer_id', 'name', 'house_name', 'street_name_1', 'street_name_2', 
+              'city', 'state', 'pincode', 'phone_number']
+    template_name = 'address_add.html'
+    success_url = '/accounts/address/'
+
+
 

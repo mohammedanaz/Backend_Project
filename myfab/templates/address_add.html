@@ -5,7 +5,7 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block title %}User Address{% endblock %}
+{% block title %}Add New Address{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -35,7 +35,7 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{% url 'accounts:user_profile' user.id %}">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Addresses</a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:address' %}">Addresses</a></li>
                         <li><a class="dropdown-item" href="#">Orders</a></li>
                     </ul>
                   </div>
@@ -67,36 +67,50 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== Address Section begin =========================== -->
-    <section class="my-2 text-center">
-        {% if addresses %}
-        <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
-            Addresses
-        </h5>
-        {% for address in addresses %}
-        <div>
-        {{address.customer_id}}
-        {{address.name}}
-        {{address.house_name}}
-        </div>
-        {% endfor %}
-        <button>
-            <a href="{% url "accounts:add_address" %}">Add New</a>
-        </button>
-
-        {% else %}
+<!-- =========================== Add Address Section begin =========================== -->
+    <section class="bg-light w-50 my-2 mx-auto p-4">
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
-            Addresses
+            Add New Addresses
         </h5>
-        <h2 class="text-info my-2">
-            No Address Yet
-        </h2>
-        <button>
-            <a href="{% url "accounts:add_address" %}">Add New</a>
-        </button>
-        {% endif %}
-
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="customer_id" value="{{ user.pk }}">
+            <div class="form-group my-2">
+                <label for="id_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="id_name" name="name" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_house_name" class="form-label">House Name</label>
+                <input type="text" class="form-control" id="id_house_name" name="house_name" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_street_name_1" class="form-label">Street Name 1</label>
+                <input type="text" class="form-control" id="id_street_name_1" name="street_name_1" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_street_name_2" class="form-label">Street Name 2</label>
+                <input type="text" class="form-control" id="id_street_name_2" name="street_name_2" value="">
+            </div>
+            <div class="form-group my-2">
+                <label for="id_city" class="form-label">City</label>
+                <input type="text" class="form-control" id="id_city" name="city" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_state" class="form-label">State</label>
+                <input type="text" class="form-control" id="id_state" name="state" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_pincode" class="form-label">Pincode</label>
+                <input type="text" class="form-control" id="id_pincode" name="pincode" value="" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="id_phone_number" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="id_phone_number" name="phone_number" value="" required>
+            </div>
+            <button type="submit" class="btn btn-primary my-2">Add</button>
+            <a href="#" onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
+        </form>
     </section>
-<!-- =========================== Address Section end =========================== -->
+<!-- =========================== Add Address Section end =========================== -->
 {% endblock %}
 

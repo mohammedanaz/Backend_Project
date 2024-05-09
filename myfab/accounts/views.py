@@ -11,6 +11,7 @@ from .utils import generate_otp, send_otp
 from .forms import OTPVerificationForm
 from datetime import datetime, timedelta
 import re
+from django.views.generic import UpdateView
 
 # Create your views here.
 
@@ -121,6 +122,9 @@ class OTPVerification(View):
         
 ############################### User Profile ######################################
 
-class UserProfile(View):
-    def get(self, request):
-        return render(request, 'profile.html')
+class UserProfile(UpdateView):
+    model = CustomUser
+    fields = ['first_name', 'last_name']
+    template_name = 'profile.html'
+    success_url = '/main/'
+

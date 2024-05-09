@@ -34,9 +34,9 @@
                         Hi {{user.first_name}}
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{% url "accounts:user_profile" %}">Profile</a></li>
-                      <li><a class="dropdown-item" href="#">Addresses</a></li>
-                      <li><a class="dropdown-item" href="#">Orders</a></li>
+                        <li><a class="dropdown-item" href="{% url 'accounts:user_profile' user.id %}">Profile</a></li>
+                        <li><a class="dropdown-item" href="#">Addresses</a></li>
+                        <li><a class="dropdown-item" href="#">Orders</a></li>
                     </ul>
                   </div>
                 <li class="nav-item ms-3 ms-lg-0">

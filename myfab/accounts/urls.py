@@ -6,5 +6,5 @@ urlpatterns = [
     path('signup/', Signup.as_view(), name = 'signup'),
     path('logout/', LogoutPage.as_view(), name = 'logout'),
     path('otp-verification/', OTPVerification.as_view(), name='otp_verification'),
-    path('profile/', UserProfile.as_view(), name = 'user_profile'),
+    path('profile/<int:pk>', UserProfile.as_view(), name = 'user_profile'),
 ]

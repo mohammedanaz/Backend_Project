@@ -51,7 +51,7 @@ class LoginPage(TemplateView):
         user = authenticate(request, username = email, password=password)
         if user is not None:
             login(request, user)
-            return redirect(reverse('user:user_home'))
+            return redirect(reverse('main:home'))
         else:
             user_exists = CustomUser.objects.filter(username = email).exists()
             context = {'user_exists': user_exists, 'invalid_credentials': True}
@@ -59,7 +59,7 @@ class LoginPage(TemplateView):
         
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect(reverse('user:user_home'))
+            return redirect(reverse('main:home'))
         
         return render(request, 'login.html')
 

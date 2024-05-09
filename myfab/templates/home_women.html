@@ -28,12 +28,29 @@
                 </li>
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
                 <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="/accounts/login/"><i style="font-size:24px" class="fa">&#xf007;</i></a>
+                    <a class="nav-link" href="#">Hi {{user.first_name}}</a>
                 </li>
                 <li class="nav-item ms-3 ms-lg-0">
                     <a class="nav-link" href="#"><i style='font-size:24px' class='fas'>&#xf217;</i></a>
                 </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <form action="{% url 'accounts:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link" style="border: none; background: none;">
+                            <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+                        </button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" >Hi Guest</a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="nav-link" href="/accounts/login/"><i style="font-size:24px" class="fa">&#xf007;</i></a>
+                </li>
+                {% endif %}
             </ul>
         </div>
         </div>

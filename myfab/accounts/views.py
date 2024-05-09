@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, UpdateView
+from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
-from .models import CustomUser
+from .models import CustomUser, Address
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
@@ -11,7 +12,8 @@ from .utils import generate_otp, send_otp
 from .forms import OTPVerificationForm
 from datetime import datetime, timedelta
 import re
-from django.views.generic import UpdateView
+
+
 
 # Create your views here.
 
@@ -127,4 +129,26 @@ class UserProfile(UpdateView):
     fields = ['first_name', 'last_name']
     template_name = 'profile.html'
     success_url = '/main/'
+
+############################### User Address ######################################
+class AddressView(View):
+    '''
+    To display address page.
+    '''
+    def get(self, request):
+        user = request.user
+        addresses = Address.objects.filter(customer_id=user)
+        context = {'addresses': addresses}
+        return render(request, 'address.html', context)
+
+############################### User Add Address ######################################
+class AddAddress(CreateView):
+    '''
+    To add new address.
+    '''
+    model = Address
+    fields = ['customer_id', 'name', 'house_name', 'street_name_1',
+               'street_name_2', 'city', 'state', 'pincode', 'phone_number']
+    template_name = 'address.html'
+    success_url = ''
 

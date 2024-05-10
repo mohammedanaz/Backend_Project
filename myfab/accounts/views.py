@@ -4,15 +4,17 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
 from .models import CustomUser, Address
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from .utils import generate_otp, send_otp
 from .forms import OTPVerificationForm
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
 import re
-
+from django import forms
+from .forms import AddressForm
 
 
 # Create your views here.
@@ -147,10 +149,16 @@ class AddAddress(CreateView):
     To add new address.
     '''
     model = Address
-    fields = ['customer_id', 'name', 'house_name', 'street_name_1', 'street_name_2', 
-              'city', 'state', 'pincode', 'phone_number']
+    form_class = AddressForm
     template_name = 'address_add.html'
-    success_url = '/accounts/address/'
-
-
-
+    success_url = reverse_lazy('accounts:address')
+    
+    def form_valid(self, form):
+        # Perform pincode validation
+        try:
+            form.clean_pincode()
+        except forms.ValidationError as e:
+            form.add_error('pincode', e)
+            return self.form_invalid(form)
+        # If pincode is valid, proceed with form saving
+        return super().form_valid(form)

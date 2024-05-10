@@ -72,8 +72,23 @@
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
             Add New Addresses
         </h5>
-        <form method="post" enctype="multipart/form-data">
+        <form method="post">
             {% csrf_token %}
+            {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>Error(s):</strong>
+                <ul>
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
             <input type="hidden" name="customer_id" value="{{ user.pk }}">
             <div class="form-group my-2">
                 <label for="id_name" class="form-label">Name</label>
@@ -108,7 +123,7 @@
                 <input type="text" class="form-control" id="id_phone_number" name="phone_number" value="" required>
             </div>
             <button type="submit" class="btn btn-primary my-2">Add</button>
-            <a href="#" onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
+            <a href="{% url "accounts:address" %}"  class="btn btn-secondary">Cancel</a>
         </form>
     </section>
 <!-- =========================== Add Address Section end =========================== -->

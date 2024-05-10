@@ -1,9 +1,10 @@
 # forms.py
 from django import forms
-from .models import CustomUser
+from .models import CustomUser, Address
 import re
 from django.core.validators import EmailValidator
 from django.contrib.auth.hashers import make_password
+import requests
 
 
 ############################# Signup form ###########################################
@@ -76,5 +77,28 @@ class OTPVerificationForm(forms.Form):
     otp = forms.CharField(max_length=6)
 
 
+############################# Add Address Form ###########################################
+class AddressForm(forms.ModelForm):
+    '''
+    Form To add new user address. clean_pincode() checks for valid india post pincode. 
+    '''
+    class Meta:
+        model = Address
+        fields = ['customer_id', 'name', 'house_name', 'street_name_1', 'street_name_2', 
+                  'city', 'state', 'pincode', 'phone_number']
+
+    def clean_pincode(self):
+        pincode = self.cleaned_data['pincode']
+        response = requests.get('https://api.postalpincode.in/pincode/'+pincode)
+        if response.status_code == 200:
+            data = response.json()
+            first_result = data[0]  # Assuming the first item contains relevant data
+            if first_result.get('Status') == 'Success':
+                return pincode
+            else:
+                raise forms.ValidationError('Invalid Pincode')
+        else:
+            print('Invalid Response')
+            raise forms.ValidationError('Error validating Pincode')
 
 

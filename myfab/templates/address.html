@@ -68,21 +68,38 @@
 <!-- =========================== Navbar End =========================== -->
 
 <!-- =========================== Address Section begin =========================== -->
-    <section class="my-2 text-center">
+    <section class="container my-2">
         {% if addresses %}
-        <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
+        <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
             Addresses
+            <span>
+                <button class="btn btn-outline-primary my-2" onclick="window.location.href='{% url 'accounts:add_address' %}'">
+                    <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
+                </button>
+            </span>
         </h5>
-        {% for address in addresses %}
-        <div>
-        {{address.customer_id}}
-        {{address.name}}
-        {{address.house_name}}
-        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+            {% for address in addresses %}
+            <div class="col mt-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Address Details - {{forloop.counter}}</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Name:</strong> {{ address.name }}</li>
+                            <li class="list-group-item"><strong>House Name:</strong> {{ address.house_name }}</li>
+                            <li class="list-group-item"><strong>Street Name 1:</strong> {{ address.street_name_1 }}</li>
+                            <li class="list-group-item"><strong>Street Name 2:</strong> {{ address.street_name_2 }}</li>
+                            <li class="list-group-item"><strong>City:</strong> {{ address.city }}</li>
+                            <li class="list-group-item"><strong>State:</strong> {{ address.state }}</li>
+                            <li class="list-group-item"><strong>Pincode:</strong> {{ address.pincode }}</li>
+                            <li class="list-group-item"><strong>Phone Number:</strong> {{ address.phone_number }}</li>
+                        </ul>
+                        <a href="#" class="btn btn-primary mt-3">Edit Address</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-        <button>
-            <a href="{% url "accounts:add_address" %}">Add New</a>
-        </button>
+        </div>
 
         {% else %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
@@ -91,9 +108,6 @@
         <h2 class="text-info my-2">
             No Address Yet
         </h2>
-        <button>
-            <a href="{% url "accounts:add_address" %}">Add New</a>
-        </button>
         {% endif %}
 
     </section>

@@ -29,8 +29,9 @@ class Address(models.Model):
 
     def clean(self):
         # Ensure that the combination of name and phone_number is unique
-        if Address.objects.filter(name=self.name, phone_number=self.phone_number).exists():
-            raise ValidationError("An address with this name and phone number already exists.")
+        if Address.objects.filter(pincode=self.pincode, phone_number=self.phone_number).exists():
+            print('same name, phone# exixsts')
+            raise ValidationError("An address with this pincode and phone number already exists.")
         super().clean()
 
     def __str__(self):

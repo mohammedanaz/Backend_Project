@@ -100,7 +100,7 @@
                             <li class="list-group-item"><strong>Pincode:</strong> {{ address.pincode }}</li>
                             <li class="list-group-item"><strong>Phone Number:</strong> {{ address.phone_number }}</li>
                         </ul>
-                        <a href="#" class="btn fs-4"><i class="bi bi-pencil-square"></i></a>
+                        <a href="{% url "accounts:edit_address" address.id %}" class="btn fs-4"><i class="bi bi-pencil-square"></i></a>
                         <form id="deleteAddressForm" action="{% url "accounts:delete_address" address.id %}" method="post" 
                             class="d-inline" onsubmit="return confirmDelete()">
                             {% csrf_token %}

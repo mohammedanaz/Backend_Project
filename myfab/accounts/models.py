@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
 class Address(models.Model):
     '''
     Address of each customer and guest will be saves here. name and phone_number 
-    will be a unique combination.
+    will be a unique combination for each customer.
     '''
     customer_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=False, null=False)
@@ -28,10 +28,14 @@ class Address(models.Model):
     phone_number = models.CharField(max_length=13)
 
     def clean(self):
-        # Ensure that the combination of name and phone_number is unique
-        if Address.objects.filter(pincode=self.pincode, phone_number=self.phone_number, customer_id=self.customer_id).exists():
-            print('same name, phone# exixsts')
-            raise ValidationError("An address with this pincode and phone number already exists for this customer.")
+        # Ensure that the combination of pincode, phone_number, and customer_id is unique
+        existing_addresses = Address.objects.filter(
+            pincode=self.pincode,
+            phone_number=self.phone_number,
+            customer_id=self.customer_id
+        ).exclude(pk=self.pk)  # Exclude the current instance being edited
+        if existing_addresses.exists():
+            raise ValidationError("An address with this pincode, phone number already exists for this customer.")
         super().clean()
 
     def __str__(self):

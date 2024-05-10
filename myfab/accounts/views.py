@@ -154,18 +154,18 @@ class AddAddress(CreateView):
     template_name = 'address_add.html'
     success_url = reverse_lazy('accounts:address')
     
-    def form_valid(self, form):
-        # Perform pincode validation
-        try:
-            form.clean_pincode()
-        except forms.ValidationError as e:
-            form.add_error('pincode', e)
-            return self.form_invalid(form)
-        # If pincode is valid, proceed with form saving
-        return super().form_valid(form)
-
 
 ############################### User Delete Address ######################################
 class AddressDelete(DeleteView):
     model = Address
     success_url = reverse_lazy('accounts:address')
+
+    ############################### User Address Edit ######################################
+
+class AddressEdit(UpdateView):
+    model = Address
+    form_class = AddressForm
+    template_name = 'address_edit.html'
+    success_url = reverse_lazy('accounts:address')
+
+    

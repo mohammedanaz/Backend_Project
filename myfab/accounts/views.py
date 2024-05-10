@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import View, TemplateView, UpdateView
+from django.views.generic import View, TemplateView, UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
@@ -140,7 +140,8 @@ class AddressView(View):
     def get(self, request):
         user = request.user
         addresses = Address.objects.filter(customer_id=user)
-        context = {'addresses': addresses}
+        address_count = addresses.count()
+        context = {'addresses': addresses, 'address_count': address_count}
         return render(request, 'address.html', context)
 
 ############################### User Add Address ######################################
@@ -162,3 +163,9 @@ class AddAddress(CreateView):
             return self.form_invalid(form)
         # If pincode is valid, proceed with form saving
         return super().form_valid(form)
+
+
+############################### User Delete Address ######################################
+class AddressDelete(DeleteView):
+    model = Address
+    success_url = reverse_lazy('accounts:address')

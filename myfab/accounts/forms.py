@@ -5,6 +5,7 @@ import re
 from django.core.validators import EmailValidator
 from django.contrib.auth.hashers import make_password
 import requests
+import phonenumbers
 
 
 ############################# Signup form ###########################################
@@ -88,6 +89,9 @@ class AddressForm(forms.ModelForm):
                   'city', 'state', 'pincode', 'phone_number']
 
     def clean_pincode(self):
+        '''
+        clean_pincode() checks for valid india post pincode. 
+        '''
         pincode = self.cleaned_data['pincode']
         response = requests.get('https://api.postalpincode.in/pincode/'+pincode)
         if response.status_code == 200:
@@ -100,5 +104,19 @@ class AddressForm(forms.ModelForm):
         else:
             print('Invalid Response')
             raise forms.ValidationError('Error validating Pincode')
+        
+    def clean_phone_number(self):
+        """
+        Validate and format the phone number using phonenumbers library.
+        """
+        phone_number = self.cleaned_data['phone_number']
+        if phone_number:
+            try:
+                parsed_number = phonenumbers.parse(phone_number, "IN")
+                if not phonenumbers.is_valid_number(parsed_number):
+                    raise forms.ValidationError('Invalid phone number')
+            except phonenumbers.phonenumberutil.NumberParseException:
+                raise forms.ValidationError('Invalid phone number format')
+        return phone_number
 
 

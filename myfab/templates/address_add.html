@@ -92,35 +92,43 @@
             <input type="hidden" name="customer_id" value="{{ user.pk }}">
             <div class="form-group my-2">
                 <label for="id_name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="id_name" name="name" value="" required>
+                <input type="text" class="form-control" id="id_name" name="name" 
+                {% if form.name.value %}value={{form.name.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_house_name" class="form-label">House Name</label>
-                <input type="text" class="form-control" id="id_house_name" name="house_name" value="" required>
+                <input type="text" class="form-control" id="id_house_name" name="house_name" 
+                {% if form.house_name.value %}value={{form.house_name.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_street_name_1" class="form-label">Street Name 1</label>
-                <input type="text" class="form-control" id="id_street_name_1" name="street_name_1" value="" required>
+                <input type="text" class="form-control" id="id_street_name_1" name="street_name_1" 
+                {% if form.street_name_1.value %}value={{form.street_name_1.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_street_name_2" class="form-label">Street Name 2</label>
-                <input type="text" class="form-control" id="id_street_name_2" name="street_name_2" value="">
+                <input type="text" class="form-control" id="id_street_name_2" name="street_name_2" 
+                {% if form.street_name_2.value %}value={{form.street_name_2.value}}{% endif %}>
             </div>
             <div class="form-group my-2">
                 <label for="id_city" class="form-label">City</label>
-                <input type="text" class="form-control" id="id_city" name="city" value="" required>
+                <input type="text" class="form-control" id="id_city" name="city" 
+                {% if form.city.value %}value={{form.city.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_state" class="form-label">State</label>
-                <input type="text" class="form-control" id="id_state" name="state" value="" required>
+                <input type="text" class="form-control" id="id_state" name="state" 
+                {% if form.state.value %}value={{form.state.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_pincode" class="form-label">Pincode</label>
-                <input type="text" class="form-control" id="id_pincode" name="pincode" value="" required>
+                <input type="text" class="form-control" id="id_pincode" name="pincode" 
+                {% if form.pincode.value %}value={{form.pincode.value}}{% endif %} required>
             </div>
             <div class="form-group my-2">
                 <label for="id_phone_number" class="form-label">Phone Number</label>
-                <input type="text" class="form-control" id="id_phone_number" name="phone_number" value="" required>
+                <input type="text" class="form-control" id="id_phone_number" name="phone_number" 
+                {% if form.phone_number.value %}value={{form.phone_number.value}}{% endif %} required>
             </div>
             <button type="submit" class="btn btn-primary my-2">Add</button>
             <a href="{% url "accounts:address" %}"  class="btn btn-secondary">Cancel</a>

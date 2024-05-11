@@ -225,7 +225,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    Cart Item
+                                    Item
                                     <span class="serial-number">-{{forloop.counter}}</span>
                                 </h5>
                                 <div class="cart-item">
@@ -236,7 +236,7 @@
                                     <div class="quantity-controls d-flex align-items-center">
                                         <div>
                                             <h6 class="mb-0">{{item.product_id.name}}</h6>
-                                            <p class="mb-0">Order Type: {% if item.ordertype == 1 %}Fabric Only
+                                            <p class="mb-0">Order Type: {% if item.order_type == 1 %}Fabric Only
                                                 {% else %}Fabric with stitching{% endif %}
                                             </p>
                                             <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>
@@ -259,8 +259,8 @@
                         <div class="card-body">
                             <h5 class="card-title">Summary</h5>
                             <!-- Add summary details here -->
-                            <p class="mb-2">Total Items: 1</p>
-                            <p class="mb-2">Total Price: $100</p>
+                            <p class="mb-2">Total items: {{cart_count}}</p>
+                            <p class="mb-2">Total Price: <i class="fa">&#xf156;</i> {{total_price}}</p>
                             <!-- Add checkout button -->
                             <a href="#" class="btn btn-primary btn-block">Proceed to Checkout</a>
                         </div>

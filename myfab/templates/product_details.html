@@ -82,6 +82,9 @@
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
             </div>
             <div class="col-md-6">
+                <div id="success-message" class="alert alert-success fade show" role="alert" style="display: none;">
+                    Item added to cart successfully.
+                </div>
                 <form id="cart-form" method="post" action="{% url "orders:cart" %}">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
@@ -91,13 +94,13 @@
                     <!-- Radio to choose order type -->
                     <div class="d-flex ordertype-container mt-3">
                         <div class="form-check me-5">
-                            <input class="form-check-input" type="radio" name="ordertype" id="fabric-only" value="fabric-only" checked>
+                            <input class="form-check-input" type="radio" name="ordertype" id="fabric-only" value="1" checked>
                             <label class="form-check-label" for="ordertype">
                             Fabric Only
                             </label>
                         </div>
                         <div class="form-check me-5">
-                            <input class="form-check-input" type="radio" name="ordertype" id="fabric-stitching" value="fabric-stitching">
+                            <input class="form-check-input" type="radio" name="ordertype" id="fabric-stitching" value="2">
                             <label class="form-check-label" for="ordertype">
                             Fabric with stitching
                             </label>
@@ -117,18 +120,17 @@
                             <input type="number" class="form-control" id="quantity-FS" name="quantity-FS" value="1" min="1">
                         </div>
                         <label for="dresstype">Choose a dress type:</label>
-                        <select class="form-select mb-3" id="dresstype" aria-label="Default select example">
+                        <select class="form-select mb-3 dynamic-field" id="dresstype" aria-label="Default select example" name="dresstype">
                             {% for usage in usages %}
-                            <option value="{{ usage.pk }}">{{ usage.name }}</option>
+                            <option value="{{ usage.name }}">{{ usage.name }}</option>
                             {% endfor %}
                         </select>
-
-                        <div class="measurements-div">
+                        <div class="measurements-div" id="measurements-container">
                             {% for usage in usages %}
-                            <div id="measurements-{{ usage.pk }}" class="form-group usage-measurements" style="display: none;">
+                            <div id="measurements-{{ usage.name }}" class="form-group usage-measurements" style="display: none;">
                                 {% for measurement in measurements_dict|get_item:usage.pk %}
-                                    <input type="text" id="{{measurement}}" placeholder="{{measurement}}" 
-                                    style="margin: 5px; border-radius: 5px; border-width: 1px;" required>
+                                    <input type="text" class="form-control dynamic-field" id="{{measurement.name}}" placeholder="{{measurement.name}}" 
+                                    name="{{measurement.name}}" style="margin: 5px; border-radius: 5px; border-width: 1px;">
                                 {% endfor %}
                             </div>
                             {% endfor %}
@@ -204,11 +206,58 @@
 
 <!-- =========================== JS =========================== -->
 
-    <script>
-         // Function to show the corresponding div based on the initial checked radio button
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    // Function to serialize form data into a JavaScript object
+    function serializeForm(form) {
+        var formData = new FormData(form);
+        // Add dynamically generated fields to formData manually
+        var dynamicFields = document.querySelectorAll('.dynamic-field');
+        dynamicFields.forEach(function(field) {
+            formData.append(field.name, field.value);
+        });
+        var obj = {};
+        formData.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        return obj;
+    }
+
+    // Function to send form data using Axios
+    function sendDataToCart() {
+        var form = document.getElementById('cart-form');
+        var formData = serializeForm(form);
+        console.log('Form Data:', formData);
+
+        // Get CSRF token from the form
+        var csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        // Send data using Axios POST request
+        axios.post('{% url "orders:cart" %}', formData, {
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(function(response) {
+            console.log('Response:', response.data);
+            // Show success message
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000);
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            // Handle error if needed
+        });
+    }
+
+    // Function to show the corresponding order type div based on the initial checked radio button
     function showInitialDiv() {
         var checkedRadio = document.querySelector('input[type=radio][name="ordertype"]:checked');
-        if (checkedRadio && checkedRadio.value === 'fabric-only') {
+        if (checkedRadio && checkedRadio.value === '1') {
             document.getElementById('div-fabric-only').classList.remove('hidden');
         }
     }
@@ -216,45 +265,42 @@
     // Run the function when the page loads
     window.addEventListener('load', showInitialDiv);
 
-        document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
-            radio.addEventListener('change', function() {
-                if (this.value === 'fabric-only') {
-                    document.getElementById('div-fabric-only').classList.remove('hidden');
-                    document.getElementById('div-fabric-stitching').classList.add('hidden');
-                } else if (this.value === 'fabric-stitching') {
-                    document.getElementById('div-fabric-only').classList.add('hidden');
-                    document.getElementById('div-fabric-stitching').classList.remove('hidden');
-                }
-            });
+    // Function to show the corresponding order type div when order type radio changes selection
+    document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.value === '1') {
+                document.getElementById('div-fabric-only').classList.remove('hidden');
+                document.getElementById('div-fabric-stitching').classList.add('hidden');
+            } else if (this.value === '2') {
+                document.getElementById('div-fabric-only').classList.add('hidden');
+                document.getElementById('div-fabric-stitching').classList.remove('hidden');
+            }
         });
-
+    });
 
     // JS To display measurements based on the selected usage
     document.addEventListener('DOMContentLoaded', function() {
-    var selectElement = document.getElementById('dresstype');
-    var measurementsDivs = document.querySelectorAll('.usage-measurements');
+        var selectElement = document.getElementById('dresstype');
+        var measurementsDivs = document.querySelectorAll('.usage-measurements');
 
-    // Function to display measurements based on selected usage
-    function displayMeasurements() {
-        var selectedUsageId = selectElement.value;
-        console.log('Selected usage ID:', selectedUsageId);
+        // Function to display measurements based on selected usage
+        function displayMeasurements() {
+            var selectedUsageId = selectElement.value;
 
-        // Hide all measurement divs
-        measurementsDivs.forEach(function(div) {
-            div.style.display = 'none';
-        });
+            // Hide all measurement divs
+            measurementsDivs.forEach(function(div) {
+                div.style.display = 'none';
+            });
 
-        // Show the measurement div of the selected usage
-        var selectedUsageDiv = document.getElementById('measurements-' + selectedUsageId);
-        console.log('Selected usage div:', selectedUsageDiv);
-        if (selectedUsageDiv) {
-            selectedUsageDiv.style.display = 'block';
+            // Show the measurement div of the selected usage
+            var selectedUsageDiv = document.getElementById('measurements-' + selectedUsageId);
+            if (selectedUsageDiv) {
+                selectedUsageDiv.style.display = 'block';
+            }
         }
-    }
 
         // Listen for changes in the select input
         selectElement.addEventListener('change', function() {
-            console.log('Select input changed');
             displayMeasurements();
         });
 
@@ -262,11 +308,10 @@
         displayMeasurements();
     });
 
-    // Add to cart form not submitting normally
-    document.getElementById("add-to-cart-button").addEventListener("click", function(event) {
+    // Add event listener to the submit button to send data to Cart view
+    document.getElementById('add-to-cart-button').addEventListener('click', function(event) {
         event.preventDefault(); // Prevent default form submission
-        document.getElementById("cart-form").submit(); // Submit the form by JS
-      });
-    
-    </script>
+        sendDataToCart(); // Call function to send data to Cart view
+    });
+</script>
 {% endblock %}

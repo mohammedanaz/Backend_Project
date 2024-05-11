@@ -127,10 +127,14 @@
                         </select>
                         <div class="measurements-div" id="measurements-container">
                             {% for usage in usages %}
-                            <div id="measurements-{{ usage.name }}" class="form-group usage-measurements" style="display: none;">
+                            <div id="measurements-{{ usage.name }}" class="form-group usage-measurements row" 
+                            style="display: none;">
                                 {% for measurement in measurements_dict|get_item:usage.pk %}
-                                    <input type="text" class="form-control dynamic-field" id="{{measurement.name}}" placeholder="{{measurement.name}}" 
+                                <div class="col-6">
+                                    <label for="{{measurement.name}}">{{measurement.name}}(In Inch):</label>
+                                    <input type="text" class="form-control dynamic-field" id="{{measurement.name}}" 
                                     name="{{measurement.name}}" style="margin: 5px; border-radius: 5px; border-width: 1px;">
+                                </div>
                                 {% endfor %}
                             </div>
                             {% endfor %}
@@ -295,7 +299,7 @@
             // Show the measurement div of the selected usage
             var selectedUsageDiv = document.getElementById('measurements-' + selectedUsageId);
             if (selectedUsageDiv) {
-                selectedUsageDiv.style.display = 'block';
+                selectedUsageDiv.style.display = 'flex';
             }
         }
 

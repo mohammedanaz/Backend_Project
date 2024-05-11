@@ -203,11 +203,11 @@
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
         <div class="offcanvas-header">
-            <h5 class="offcanvas-title text-white text-center" id="offcanvasRightLabel">
+            <h5 class="offcanvas-title text-white text-center w-100" id="offcanvasRightLabel">
                 <!-- -------------------- Header begin ---------------------------------------- -->
-                    <header class="header" style="height: 3vw; background-color: #0F4C81;">
-                        <div class="container" style="max-height: 100%;">
-                            <img class="logo" style="max-width: 8%; display: block; margin: auto;" 
+                    <header class="header text-center w-100" style=" background-color: #0F4C81;">
+                        <div class="container">
+                            <img class="img-fluid d-block mx-auto"  
                             src="{% static 'images/MyFAB_transparent.png' %}" alt="Logo">
                         </div>
                         Carts
@@ -216,21 +216,19 @@
             </h5>
         </div>
         <div class="offcanvas-body">
-        
-
         <!-- -------------------- cart begin ---------------------------------------- -->
             <div class="container">
                 <div class="row ">
                     <!-- Iterate over cart items -->
                     {% comment %} {% for cart_item in user_cart_items %} {% endcomment %}
-                    <div class="col">
-                        <div class="card mb-3">
+                    <div class="col mb-2">
+                        <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">
                                     Cart Item
                                     <span class="serial-number">-1</span>
                                 </h5>
-                                <div class="cart-item  border">
+                                <div class="cart-item">
                                     <div class="product-info  align-items-center me-5 w-25">
                                         <img src="" alt="img-name" class="img-thumbnail me-3" style="">
                                     </div>

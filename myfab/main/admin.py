@@ -1,8 +1,7 @@
 from django.contrib import admin
 from .models import Product, Usage, Category, CategoryChoice, Measurement
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+
 
 
 

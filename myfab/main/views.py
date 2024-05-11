@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView
 from .models import Usage, Category, CategoryChoice, Product
+from orders.models import Cart
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -28,12 +29,21 @@ class Home(View):
         for category in categories_filtered:
             choices = choices_filtered.filter(category = category)
             dict[category.name] = choices
-        context = {'usages': usage_list,
-                   'categories_filtered': categories_filtered,
-                   'choices_filtered': choices_filtered,
-                   'dict': dict
-                   }
 
+        # Make cart items for context
+        user= request.user
+        cart_items = Cart.objects.filter(customer_id=user)
+        cart_count = cart_items.count()
+
+        context = {
+                    'usages': usage_list,
+                    'categories_filtered': categories_filtered,
+                    'choices_filtered': choices_filtered,
+                    'dict': dict,
+                    'cart_items': cart_items,
+                    'cart_count': cart_count,
+                    }
+        print(cart_items)
         return render(request, 'home.html', context)
     
 

@@ -88,6 +88,7 @@
                 <form id="cart-form" method="post" action="{% url "orders:cart" %}">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="price" value="{{ product.price }}">
                     <h2 class="mb-4"> {{ product.name }} </h2>
                     <h4 class="font-weight-bold product-price">Price: <i class="fa">&#xf156;</i> {{ product.price }} /Mtr</h4>
                     <small class="mb-4">Shipping calculated at checkout.</small>
@@ -132,7 +133,7 @@
                                 {% for measurement in measurements_dict|get_item:usage.pk %}
                                 <div class="col-6">
                                     <label for="{{measurement.name}}">{{measurement.name}}(In Inch):</label>
-                                    <input type="text" class="form-control dynamic-field" id="{{measurement.name}}" 
+                                    <input type="number" class="form-control dynamic-field" id="{{measurement.name}}" 
                                     name="{{measurement.name}}" style="margin: 5px; border-radius: 5px; border-width: 1px;">
                                 </div>
                                 {% endfor %}

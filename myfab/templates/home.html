@@ -196,7 +196,7 @@
       </section>
     {% endwith %}
 {% endfor %}
-
+                    
 <!-- ============================= <section> shop by categories End ============================-->
 
 <!-- ============================= Off canvas section for cart begin ============================-->
@@ -218,31 +218,32 @@
         <div class="offcanvas-body">
         <!-- -------------------- cart begin ---------------------------------------- -->
             <div class="container">
-                <div class="row ">
+                <div class="row">
                     <!-- Iterate over cart items -->
-                    {% comment %} {% for cart_item in user_cart_items %} {% endcomment %}
-                    <div class="col mb-2">
+                    {% for item in cart_items %}
+                    <div class="col-12 mb-2">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">
                                     Cart Item
-                                    <span class="serial-number">-1</span>
+                                    <span class="serial-number">-{{forloop.counter}}</span>
                                 </h5>
                                 <div class="cart-item">
                                     <div class="product-info  align-items-center me-5 w-25">
-                                        <img src="" alt="img-name" class="img-thumbnail me-3" style="">
+                                        <img src="{{ item.product_id.image.url }}" 
+                                        alt="img-name" class="img-thumbnail me-3">
                                     </div>
                                     <div class="quantity-controls d-flex align-items-center">
                                         <div>
-                                            <h6 class="mb-0">Product Name</h6>
-                                            <p class="mb-0">Order Type: Fabric-Only</p>
-                                            <p class="mb-0">Price: $-100</p>
+                                            <h6 class="mb-0">{{item.product_id.name}}</h6>
+                                            <p class="mb-0">Order Type: {% if item.ordertype == 1 %}Fabric Only
+                                                {% else %}Fabric with stitching{% endif %}
+                                            </p>
+                                            <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>
                                             <div class="d-flex">
-                                                <label for="quantity">Quantity:</label>
-                                                <button type="button" class="btn btn-sm btn-secondary me-1" onclick="decrementQuantity('pass item id')">-</button>
-                                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center" 
-                                                value="" id="quantity{{ cart_item.id }}" onchange="updateQuantity('pass item id')">
-                                                <button type="button" class="btn btn-sm btn-secondary ms-1" onclick="incrementQuantity('pass item id')">+</button>
+                                                <label for="quantity">Quantity: </label>
+                                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center ms-4" 
+                                                value="{{ item.qty }}" id="quantity{{ cart_item.id }}" onchange="updateQuantity()">
                                             </div>
                                         </div>
                                     </div>
@@ -250,36 +251,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    Cart Item
-                                    <span class="serial-number">-2</span>
-                                </h5>
-                                <div class="cart-item  border">
-                                    <div class="product-info  align-items-center me-5 w-25">
-                                        <img src="" alt="img-name" class="img-thumbnail me-3" style="">
-                                    </div>
-                                    <div class="quantity-controls d-flex align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">Product Name</h6>
-                                            <p class="mb-0">Order Type: Fabric-Only</p>
-                                            <p class="mb-0">Price: $-100</p>
-                                            <div class="d-flex">
-                                                <label for="quantity">Quantity:</label>
-                                                <button type="button" class="btn btn-sm btn-secondary me-1" onclick="decrementQuantity('pass item id')">-</button>
-                                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center" 
-                                                value="" id="quantity{{ cart_item.id }}" onchange="updateQuantity('pass item id')">
-                                                <button type="button" class="btn btn-sm btn-secondary ms-1" onclick="incrementQuantity('pass item id')">+</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% comment %} {% endfor %} {% endcomment %}
+                    {% endfor %}
                 </div>
                 <!-- Summary Section -->
                 <div class="my-2">

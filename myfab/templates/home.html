@@ -40,8 +40,10 @@
                     </ul>
                   </div>
                 <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="#">
-                        <i style='font-size:24px' class='fas'>&#xf217;</i></a>
+                    <button type="button" class="btn" data-bs-toggle="offcanvas"
+                    data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                        <i style='font-size:24px' class='fas'>&#xf217;</i>
+                    </button>
                 </li>
                 <li class="nav-item ms-3 ms-lg-0">
                     <form action="{% url 'accounts:logout' %}" method="post">
@@ -196,6 +198,110 @@
 {% endfor %}
 
 <!-- ============================= <section> shop by categories End ============================-->
+
+<!-- ============================= Off canvas section for cart begin ============================-->
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white text-center" id="offcanvasRightLabel">
+                <!-- -------------------- Header begin ---------------------------------------- -->
+                    <header class="header" style="height: 3vw; background-color: #0F4C81;">
+                        <div class="container" style="max-height: 100%;">
+                            <img class="logo" style="max-width: 8%; display: block; margin: auto;" 
+                            src="{% static 'images/MyFAB_transparent.png' %}" alt="Logo">
+                        </div>
+                        Carts
+                    </header>
+                <!-- -------------------- Header end ---------------------------------------- -->
+            </h5>
+        </div>
+        <div class="offcanvas-body">
+        
+
+        <!-- -------------------- cart begin ---------------------------------------- -->
+            <div class="container">
+                <div class="row ">
+                    <!-- Iterate over cart items -->
+                    {% comment %} {% for cart_item in user_cart_items %} {% endcomment %}
+                    <div class="col">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Cart Item
+                                    <span class="serial-number">-1</span>
+                                </h5>
+                                <div class="cart-item  border">
+                                    <div class="product-info  align-items-center me-5 w-25">
+                                        <img src="" alt="img-name" class="img-thumbnail me-3" style="">
+                                    </div>
+                                    <div class="quantity-controls d-flex align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Product Name</h6>
+                                            <p class="mb-0">Order Type: Fabric-Only</p>
+                                            <p class="mb-0">Price: $-100</p>
+                                            <div class="d-flex">
+                                                <label for="quantity">Quantity:</label>
+                                                <button type="button" class="btn btn-sm btn-secondary me-1" onclick="decrementQuantity('pass item id')">-</button>
+                                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center" 
+                                                value="" id="quantity{{ cart_item.id }}" onchange="updateQuantity('pass item id')">
+                                                <button type="button" class="btn btn-sm btn-secondary ms-1" onclick="incrementQuantity('pass item id')">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    Cart Item
+                                    <span class="serial-number">-2</span>
+                                </h5>
+                                <div class="cart-item  border">
+                                    <div class="product-info  align-items-center me-5 w-25">
+                                        <img src="" alt="img-name" class="img-thumbnail me-3" style="">
+                                    </div>
+                                    <div class="quantity-controls d-flex align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">Product Name</h6>
+                                            <p class="mb-0">Order Type: Fabric-Only</p>
+                                            <p class="mb-0">Price: $-100</p>
+                                            <div class="d-flex">
+                                                <label for="quantity">Quantity:</label>
+                                                <button type="button" class="btn btn-sm btn-secondary me-1" onclick="decrementQuantity('pass item id')">-</button>
+                                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center" 
+                                                value="" id="quantity{{ cart_item.id }}" onchange="updateQuantity('pass item id')">
+                                                <button type="button" class="btn btn-sm btn-secondary ms-1" onclick="incrementQuantity('pass item id')">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% comment %} {% endfor %} {% endcomment %}
+                </div>
+                <!-- Summary Section -->
+                <div class="my-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Summary</h5>
+                            <!-- Add summary details here -->
+                            <p class="mb-2">Total Items: 1</p>
+                            <p class="mb-2">Total Price: $100</p>
+                            <!-- Add checkout button -->
+                            <a href="#" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- -------------------- cart end ---------------------------------------- -->
+        </div>
+    </div>
+
+<!-- ============================= Off canvas section for cart end ============================-->
 
 {% endblock %}
 

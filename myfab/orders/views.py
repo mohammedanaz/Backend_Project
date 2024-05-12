@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from main.models import Product
+from main.models import Product, Usage
 from orders.models import Cart
 from django.http import JsonResponse
 import json
@@ -30,6 +30,12 @@ class CartView(View):
             )
         else:
             quantity = int(data.get('quantity-FS'))
+            dresstype = Usage.objects.get(name=dresstype)
+            measurements_dict = {}
+            for measurement in dresstype.measurements.all(  ):
+                measurement_name = measurement.name
+                measurements_dict[measurement_name] = data.get(measurement_name)
+            print(measurements_dict)
 
         print('product: ', product,
               'user: ', user,

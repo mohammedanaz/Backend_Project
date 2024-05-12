@@ -259,17 +259,6 @@
         });
     }
 
-    // Function to show the corresponding order type div based on the initial checked radio button
-    function showInitialDiv() {
-        var checkedRadio = document.querySelector('input[type=radio][name="ordertype"]:checked');
-        if (checkedRadio && checkedRadio.value === '1') {
-            document.getElementById('div-fabric-only').classList.remove('hidden');
-        }
-    }
-
-    // Run the function when the page loads
-    window.addEventListener('load', showInitialDiv);
-
     // Function to show the corresponding order type div when order type radio changes selection
     document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
         radio.addEventListener('change', function() {

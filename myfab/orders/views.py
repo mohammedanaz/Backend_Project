@@ -5,6 +5,8 @@ from main.models import Product, Usage
 from orders.models import Cart
 from django.http import JsonResponse
 import json
+from decimal import Decimal
+from accounts.utils import validate_input
 
 ########################## Cart View #################################
 class CartView(View):
@@ -19,24 +21,50 @@ class CartView(View):
         dresstype = data.get('dresstype')
         price = data.get('price')
 
-        # save quantity based on order type
+        # Cart save logics based on order types
         if int(ordertype) == 1:
-            quantity = int(data.get('quantity-FO'))
-            cart_item = Cart.objects.create(
-                customer_id = user,
-                product_id = product,
-                order_type = int(ordertype),
-                qty = quantity
-            )
-            return JsonResponse({'message': 'Data received successfully'})
-        else:
-            quantity = int(data.get('quantity-FS'))
+            quantity = data.get('quantity-FO')
+            if validate_input(quantity):
+                Cart.objects.create(
+                                    customer_id = user,
+                                    product_id = product,
+                                    order_type = int(ordertype),
+                                    qty = Decimal(quantity)
+                                    )
+                return JsonResponse({'message': 'Cart created successfully.'})
+            else:
+                error_message = f'Cart not saved. Quantity is not valid.'
+                return JsonResponse({'error_message': error_message }, status=400)
+            
+        
+        elif int(ordertype) == 2:
+            quantity = data.get('quantity-FS')
+            if not validate_input(quantity):
+                error_message = f'Cart not saved. Quantity is not valid.'
+                return JsonResponse({'error_message': error_message }, status=400)
             dresstype = Usage.objects.get(name=dresstype)
             measurements_dict = {}
-            for measurement in dresstype.measurements.all(  ):
+            measurements_dict['customer_id'] = user.username
+            measurements_dict['dresstype'] = dresstype.name
+            for measurement in dresstype.measurements.all():
                 measurement_name = measurement.name
-                measurements_dict[measurement_name] = data.get(measurement_name)
-
-            error_message = 'Cart not saved. Mearurements data processing is pending.'
+                measurement_value = data.get(measurement_name)
+                # Check if measurement_value is a valid number
+                if validate_input(measurement_value):
+                    measurements_dict[measurement_name] = measurement_value
+                else:
+                    error_message = f'Cart not saved. Measurement {measurement_name} is not valid.'
+                    return JsonResponse({'error_message': error_message }, status=400)
+            print(measurements_dict, quantity)
+            Cart.objects.create(
+                                    customer_id = user,
+                                    product_id = product,
+                                    order_type = int(ordertype),
+                                    qty = Decimal(quantity),
+                                    cart_measurements = measurements_dict,
+                                    )
+            return JsonResponse({'message': 'Cart created successfully.'})
+        else:
+            error_message = 'Cart not saved. Order type not Known.'
             return JsonResponse({'error_message': error_message }, status=400)
     

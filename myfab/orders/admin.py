@@ -4,6 +4,7 @@ from .models import Cart, Order
 # Register your models here.
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('id','customer_id', 'product_id','qty', 'price')
+    list_display = ('id','customer_id', 'product_id', 'order_type', 'qty', 'price')
 
 admin.site.register(Cart, CartAdmin)
+admin.site.register(Order)

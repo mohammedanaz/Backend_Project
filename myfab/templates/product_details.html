@@ -86,7 +86,7 @@
             </div>
             <div class="col-md-6">
                 <div id="success-message" class="alert alert-success fade show" role="alert" style="display: none;">
-                    Item added to cart successfully.
+                    Item added to cart.
                 </div>
                 <div id="error-message" class="alert alert-danger fade show" role="alert" style="display: none;"></div>
                 <form id="cart-form" method="post" action="{% url "orders:cart" %}">
@@ -122,7 +122,10 @@
                     <div id="div-fabric-stitching" class="hidden my-2">
                         <div class="form-group ">
                             <label for="quantity-FS">Quantity (in meters):</label>
-                            <input type="number" class="form-control" id="quantity-FS" name="quantity-FS" value="1" min="1">
+                            <input type="number" class="form-control" id="quantity-FS" name="quantity-FS" value="1" min="3">
+                            <small class="text-danger">Refer Fabric estimator below. 
+                                Insufficient material lenght will be returned without stitching.
+                            </small>
                         </div>
                         <label for="dresstype">Choose a dress type:</label>
                         <select class="form-select mb-3 dynamic-field" id="dresstype" aria-label="Default select example" name="dresstype">
@@ -291,6 +294,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    // Function to show the corresponding order type div based on the initial checked radio button
+    function showInitialDiv() {
+        var checkedRadio = document.querySelector('input[type=radio][name="ordertype"]:checked');
+        if (checkedRadio && checkedRadio.value === '1') {
+            document.getElementById('div-fabric-only').classList.remove('hidden');
+        }
+    }
+
+    // Run the function when the page loads
+    window.addEventListener('load', showInitialDiv);
+
     // Function to show the corresponding order type div when order type radio changes selection
     document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
@@ -373,10 +387,16 @@
             // Show success message
             var successMessage = document.getElementById('success-message');
             successMessage.style.display = 'block';
+
+            // Reload the page after a short delay
+            setTimeout(function() {
+                window.location.reload();
+            }, 1200);
+
             // Hide success message after 3 seconds
             setTimeout(function() {
                 successMessage.style.display = 'none';
-            }, 5000);
+            }, 1100);
         })
         .catch(function(error) {
             console.error('Error:', error);

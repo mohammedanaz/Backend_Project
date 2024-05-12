@@ -213,52 +213,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    // Function to serialize form data into a JavaScript object
-    function serializeForm(form) {
-        var formData = new FormData(form);
-        // Add dynamically generated fields to formData manually
-        var dynamicFields = document.querySelectorAll('.dynamic-field');
-        dynamicFields.forEach(function(field) {
-            formData.append(field.name, field.value);
-        });
-        var obj = {};
-        formData.forEach(function(value, key) {
-            obj[key] = value;
-        });
-        return obj;
-    }
-
-    // Function to send form data using Axios
-    function sendDataToCart() {
-        var form = document.getElementById('cart-form');
-        var formData = serializeForm(form);
-        console.log('Form Data:', formData);
-
-        // Get CSRF token from the form
-        var csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
-
-        // Send data using Axios POST request
-        axios.post('{% url "orders:cart" %}', formData, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(function(response) {
-            console.log('Response:', response.data);
-            // Show success message
-            var successMessage = document.getElementById('success-message');
-            successMessage.style.display = 'block';
-            // Hide success message after 3 seconds
-            setTimeout(function() {
-                successMessage.style.display = 'none';
-            }, 3000);
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-            // Handle error if needed
-        });
-    }
-
     // Function to show the corresponding order type div when order type radio changes selection
     document.querySelectorAll('input[type=radio][name="ordertype"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
@@ -301,6 +255,57 @@
         // Initial display of measurements based on the initially selected usage
         displayMeasurements();
     });
+
+    // Function to serialize form data into a JavaScript object
+    function serializeForm(form) {
+        var formData = new FormData(form);
+        // Add dynamically generated fields to formData manually
+        var dynamicFields = document.querySelectorAll('.dynamic-field');
+        dynamicFields.forEach(function(field) {
+            // Check if the parent container is visible or selected
+            var isParentVisible = field.offsetParent !== null;
+            if (isParentVisible) {
+                formData.append(field.name, field.value);
+                console.log('Field Name:', field.name, 'Field Value:', field.value);
+            }
+        });
+        var obj = {};
+        formData.forEach(function(value, key) {
+            obj[key] = value;
+        });
+        return obj;
+    }
+
+    // Function to send form data using Axios
+    function sendDataToCart() {
+        var form = document.getElementById('cart-form');
+        var formData = serializeForm(form);
+        console.log('Form Data:', formData);
+
+        // Get CSRF token from the form
+        var csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        // Send data using Axios POST request
+        axios.post('{% url "orders:cart" %}', formData, {
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(function(response) {
+            // Show success message
+            var successMessage = document.getElementById('success-message');
+            successMessage.style.display = 'block';
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000);
+        })
+        .catch(function(error) {
+            console.error('Error:', error);
+            // Handle error if needed
+        });
+    }
+
 
     // Add event listener to the submit button to send data to Cart view
     document.getElementById('add-to-cart-button').addEventListener('click', function(event) {

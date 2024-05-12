@@ -148,14 +148,24 @@ class ProductPage(View):
             choice_obj = CategoryChoice.objects.filter(category=category)
             choices_list = [choice.name for choice in choice_obj]
             category_choice_dict[category.name] = choices_list
+        
+        # Make cart items for context
+        user= request.user
+        cart_items = Cart.objects.filter(customer_id=user)
+        cart_count = cart_items.count()
+        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
 
         # Context data
-        context = {'products': paged_products,
-                   'product_count': product_count,
-                   'category_choice_dict': category_choice_dict,
-                   'selected_choices': selected_choices,
-                   'sort_by': sort_by,
-                   'search_query': search_query
+        context = {
+                    'products': paged_products,
+                    'product_count': product_count,
+                    'category_choice_dict': category_choice_dict,
+                    'selected_choices': selected_choices,
+                    'sort_by': sort_by,
+                    'search_query': search_query,
+                    'cart_items': cart_items,
+                    'cart_count': cart_count,
+                    'total_price': total_price,
                    }
         return render(request, 'products.html', context)
     
@@ -177,6 +187,15 @@ class ProductDetailsPage(DetailView):
         measurements = {}
         for usage in usages:
             measurements[usage.pk] = list(usage.measurements.all())
-        
         context['measurements_dict'] = measurements
+
+        # Make cart items for context
+        user= self.request.user
+        cart_items = Cart.objects.filter(customer_id=user)
+        context['cart_items'] = cart_items
+        cart_count = cart_items.count()
+        context['cart_count'] = cart_count
+        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        context['total_price'] = total_price
+        
         return context

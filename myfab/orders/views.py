@@ -28,13 +28,6 @@ class CartView(View):
                 order_type = int(ordertype),
                 qty = quantity
             )
-            print('product: ', product,
-              'user: ', user,
-              'ordertype :', ordertype,
-              'dresstype :', dresstype,
-              'price: ', price,
-              'quantity: ', quantity
-              )
             return JsonResponse({'message': 'Data received successfully'})
         else:
             quantity = int(data.get('quantity-FS'))
@@ -43,14 +36,7 @@ class CartView(View):
             for measurement in dresstype.measurements.all(  ):
                 measurement_name = measurement.name
                 measurements_dict[measurement_name] = data.get(measurement_name)
-            print(measurements_dict)
-            print('product: ', product,
-              'user: ', user,
-              'ordertype :', ordertype,
-              'dresstype :', dresstype,
-              'price: ', price,
-              'quantity: ', quantity
-              )
+
             error_message = 'Cart not saved. Mearurements data processing is pending.'
             return JsonResponse({'error_message': error_message }, status=400)
     

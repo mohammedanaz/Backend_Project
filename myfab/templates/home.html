@@ -79,7 +79,7 @@
     <div class="container-fluid text-center">
       <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2"></h5>
     </div>
-    <a class="text-decoration-none" href="/main/products/?choice=male">
+    <a class="text-decoration-none" href="{% url "main:products" %}">
       <div class="container-wrapper" style="margin-right: 12px; margin-left: 12px;">
         <div class="container-fluid d-flex justify-content-center align-items-center text-center" style="background-image: url('/static/images/new_arrivals_1.jpg'); background-size: contain; height: 50vh;">
             <h1 class="fw-bold text-white">Explore Our Collections</h1>
@@ -235,8 +235,8 @@
                                     </div>
                                     <div class="quantity-controls d-flex align-items-center">
                                         <div>
-                                            <h6 class="mb-0">{{item.product_id.name}}</h6>
-                                            <p class="mb-0">Order Type: {% if item.order_type == 1 %}Fabric Only
+                                            <h6 class="mb-1">{{item.product_id.name}}</h6>
+                                            <p class="mb-1">Order Type: {% if item.order_type == 1 %}Fabric Only
                                                 {% else %}Fabric with stitching{% endif %}
                                             </p>
                                             <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>

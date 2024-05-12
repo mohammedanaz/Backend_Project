@@ -193,7 +193,7 @@
                 {% for product in products %}
                 <div class="col mt-2">
                     <div class="card" >
-                        <img src="{{ product.image.url }}" class="{{product.name}}-img" alt="...">
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{product.name}}-img">
                         <div class="card-body">
                         <h4 class="card-title text-truncate">{{product.name|title}}</h4>
                         <p class="card-text fw-bold fs-4"><i class="fa">&#xf156;</i>  {{product.price}} /Mtr</p>

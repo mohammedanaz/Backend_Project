@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from main.models import Product, Usage
+from accounts.models import Address
 from orders.models import Cart
 from django.http import JsonResponse
 import json
@@ -75,4 +76,7 @@ class CheckoutView(View):
     
     def get(self, request):
 
-        return render(request, 'checkout.html')
+        user = request.user
+        addresses = Address.objects.filter(customer_id=user)
+        context = {'addresses': addresses}
+        return render(request, 'checkout.html', context)

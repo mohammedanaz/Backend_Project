@@ -45,7 +45,6 @@ class Home(View):
                     'cart_count': cart_count,
                     'total_price': total_price,
                     }
-        print(cart_items)
         return render(request, 'home.html', context)
     
 

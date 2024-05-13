@@ -80,7 +80,7 @@ class CheckoutView(View):
         to context.
         '''
         user = request.user
-        addresses = Address.objects.filter(customer_id=user)
+        addresses = Address.objects.filter(customer_id=user, is_active=True)
         carts = Cart.objects.filter(customer_id=user)
         subtotal = sum(cart.price for cart in carts)
         grant_total = subtotal + 75

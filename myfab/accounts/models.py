@@ -26,6 +26,7 @@ class Address(models.Model):
     state = models.CharField(max_length=100, blank=False, null=False)
     pincode = models.CharField(max_length=10, blank=False, null=False)
     phone_number = models.CharField(max_length=13)
+    is_active = models.BooleanField(default=True)
 
     def clean(self):
         # Ensure that the combination of pincode, phone_number, and customer_id is unique

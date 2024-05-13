@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import View, TemplateView, UpdateView, DeleteView
+from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
@@ -139,7 +140,7 @@ class AddressView(View):
     '''
     def get(self, request):
         user = request.user
-        addresses = Address.objects.filter(customer_id=user)
+        addresses = Address.objects.filter(customer_id=user, is_active=True)
         address_count = addresses.count()
         context = {'addresses': addresses, 'address_count': address_count}
         return render(request, 'address.html', context)
@@ -157,11 +158,26 @@ class AddAddress(CreateView):
     
 
 ############################### User Delete Address ######################################
-class AddressDelete(DeleteView):
-    model = Address
-    success_url = reverse_lazy('accounts:address')
 
-    ############################### User Address Edit ######################################
+def address_delete(request, pk):
+    '''
+    this view make is_active status of address to False instead of
+    deleting an address row. instance of address is referenced by order 
+    model which cannot be deleted on cascade.
+    '''
+    print('address_delete called')
+    address = get_object_or_404(Address, pk=pk)
+
+    if request.method == 'POST':
+        print(address, address.is_active)
+        address.is_active = False
+        address.save()
+        print(address, address.is_active)
+        return redirect(reverse_lazy('accounts:address'))
+
+    
+
+############################### User Address Edit ######################################
 
 class AddressEdit(UpdateView):
     model = Address

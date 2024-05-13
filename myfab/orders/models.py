@@ -1,5 +1,6 @@
 from django.db import models
 from main.models import Product
+from accounts.models import Address
 from accounts.models import CustomUser
 from decimal import Decimal, ROUND_HALF_UP
 import json
@@ -69,6 +70,7 @@ class Order(models.Model):
     add_date = models.DateField(auto_now_add=True)
     payment_method = models.CharField(max_length=10, null=False, choices=PAYMENT_CHOICES)
     status = models.CharField(max_length=10, null=False, choices=STATUS_CHOICES, default='P')
+    address = models.ForeignKey(Address, on_delete=models.PROTECT)
     order_measurements = models.TextField(null=True)
 
 

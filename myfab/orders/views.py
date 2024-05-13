@@ -84,7 +84,6 @@ class CheckoutView(View):
         carts = Cart.objects.filter(customer_id=user)
         subtotal = sum(cart.price for cart in carts)
         grant_total = subtotal + 75
-        print(grant_total)
         context = {
             'addresses': addresses,
             'carts': carts,

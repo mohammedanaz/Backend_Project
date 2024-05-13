@@ -266,7 +266,7 @@
                         <p class="mb-2">Total items: {{cart_count}}</p>
                         <p class="mb-2">Total Price: <i class="fa">&#xf156;</i> {{total_price}}</p>
                         <!-- Add checkout button -->
-                        <a href="#" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                        <a href="{% url "orders:checkout" %}" class="btn btn-primary btn-block">Proceed to Checkout</a>
                     </div>
                 </div>
             </div>

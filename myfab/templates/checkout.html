@@ -112,7 +112,8 @@
         </div>
         <!-- Shipping Address and Payment section -->
         <div class="container">
-            <form>
+            <form action="{% url "orders:create_order" %}" method="post">
+                {% csrf_token %}
                 <!-- Shipping Address -->
                 <h4 class="mt-5 mb-4">Shipping Address</h4>
                 <div class="form-group mb-3">

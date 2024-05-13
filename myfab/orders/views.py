@@ -3,11 +3,13 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from main.models import Product, Usage
 from accounts.models import Address
-from orders.models import Cart
+from orders.models import Cart, Order
 from django.http import JsonResponse
 import json
 from decimal import Decimal
 from accounts.utils import validate_input
+from django.db import transaction, IntegrityError
+
 
 ########################## Cart View #################################
 class CartView(View):
@@ -70,7 +72,7 @@ class CartView(View):
             return JsonResponse({'error_message': error_message }, status=400)
     
 
-########################## Checkout View #################################
+########################## Create Order View #################################
 
 class CheckoutView(View):
     
@@ -91,3 +93,60 @@ class CheckoutView(View):
             'grant_total': grant_total
             }
         return render(request, 'checkout.html', context)
+    
+########################## Create Order View #################################
+
+class CreateOrder(View):
+
+    def post(self, request):
+        '''
+        using atomic and row locking feature this view will add new rows to 
+        order model and delete all the rows of the current user from cart model.
+        '''
+        user = request.user
+        try:
+            with transaction.atomic():
+                # lock corresponding rows of cart and product to update.
+                cart_items = Cart.objects.select_for_update().filter(customer_id=user)
+                product_ids = [cart_item.product_id.id for cart_item in cart_items]
+                products = Product.objects.select_for_update().filter(id__in=product_ids)
+                for cart in cart_items:
+                    product = products.get(id=cart.product_id.id)
+                    order_type = cart.order_type
+                    qty = cart.qty
+                    price = cart.price
+                    payment_type = request.POST.get('paymentOption')
+                    if payment_type == 'COD':
+                        payment_method = 'C'
+                    else:
+                        payment_method = 'P'
+                    selected_address = request.POST.get('addressOption')
+                    address = Address.objects.get(id=selected_address)
+                    order_measurements = cart.cart_measurements
+
+                    if product.qty >= qty + Decimal('0.01'):
+                        Order.objects.create(
+                            customer_id = user,
+                            product_id = product,
+                            order_type = order_type,
+                            quantity = qty,
+                            price = price,
+                            payment_method = payment_method,
+                            address = address,
+                            order_measurements = order_measurements
+                        )
+                        product.qty -= (qty + Decimal('0.01'))
+                        product.save()
+                    else:
+                        raise Exception(f'Insufficient stock for the item {product.name} with id: {product.id}')
+                cart_items.delete()
+
+                return redirect(reverse('main:products'))
+             
+        except IntegrityError:
+            print('Integrity error occured')
+            return redirect(reverse('orders:checkout'))
+        except Exception as e:
+            print(f'Exception occured- {e}')
+            return redirect(reverse('main:home'))
+

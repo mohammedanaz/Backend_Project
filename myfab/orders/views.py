@@ -68,3 +68,11 @@ class CartView(View):
             error_message = 'Cart not saved. Order type not Known.'
             return JsonResponse({'error_message': error_message }, status=400)
     
+
+########################## Checkout View #################################
+
+class CheckoutView(View):
+    
+    def get(self, request):
+
+        return render(request, 'checkout.html')

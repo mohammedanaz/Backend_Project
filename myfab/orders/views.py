@@ -13,7 +13,7 @@ from accounts.utils import validate_input
 class CartView(View):
 
     def post(self, request):
-        # Parse the JSON data sent from the frontend
+        # Parse the JSON data sent from the frontend(product details page)
         data = json.loads(request.body)
         user = request.user
         product_id = data.get('product_id')
@@ -75,8 +75,20 @@ class CartView(View):
 class CheckoutView(View):
     
     def get(self, request):
-
+        '''
+        create address for the user and products from the cart to pass
+        to context.
+        '''
         user = request.user
         addresses = Address.objects.filter(customer_id=user)
-        context = {'addresses': addresses}
+        carts = Cart.objects.filter(customer_id=user)
+        subtotal = sum(cart.price for cart in carts)
+        grant_total = subtotal + 75
+        print(grant_total)
+        context = {
+            'addresses': addresses,
+            'carts': carts,
+            'subtotal': subtotal,
+            'grant_total': grant_total
+            }
         return render(request, 'checkout.html', context)

@@ -65,52 +65,50 @@
 
 <!-- =========================== Checkout Section begin =========================== -->
     <section class="container d-flex flex-column flex-md-row my-4 border border-3 rounded-4">
+        <!-- Order table and Summary section -->
         <div class="container">
             <h2 class="mt-5 mb-4">Checkout</h2>
-            <!-- Order Summary -->
+            <!-- Order table -->
             <h4>Order Summary</h4>
-            <div class="mb-3 w-50">
+            <div class="mb-3">
                 <table class="table">
                     <thead>
                         <tr>
                             <th scope="col">Product</th>
                             <th scope="col">Quantity</th>
-                            <th scope="col">Price</th>
+                            <th scope="col">Unit Price</th>
                             <th scope="col">Total</th>
                         </tr>
                     </thead>
                     <tbody>
+                        {% for cart in carts %}
                         <tr>
-                            <td>Product 1</td>
-                            <td>2</td>
-                            <td>$10.00</td>
-                            <td>$20.00</td>
+                            <td>{{cart.product_id.name}}</td>
+                            <td>{{cart.qty}}</td>
+                            <td>₹ {{cart.product_id.price}}</td>
+                            <td>₹ {{cart.price}}</td>
                         </tr>
-                        <tr>
-                            <td>Product 2</td>
-                            <td>1</td>
-                            <td>$15.00</td>
-                            <td>$15.00</td>
-                        </tr>
-                        <!-- Add more rows for each product -->
+                        {% endfor %}
                     </tbody>
+                    <!-- order summary -->
                     <tfoot>
                         <tr>
                             <th colspan="3">Subtotal</th>
-                            <td>$35.00</td>
+                            <td class="fw-bold">₹ {{ subtotal }}</td>
                         </tr>
                         <tr>
                             <th colspan="3">Shipping</th>
-                            <td>$5.00</td>
+                            <td>₹ 75.00</td>
                         </tr>
                         <tr>
-                            <th colspan="3">Total</th>
-                            <td>$40.00</td>
+                            <th colspan="3">Grant Total</th>
+                            <td class="fw-bold text-danger">₹ {{grant_total}}</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+        <!-- Shipping Address and Payment section -->
         <div class="container">
             <form>
                 <!-- Shipping Address -->

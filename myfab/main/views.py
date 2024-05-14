@@ -32,9 +32,14 @@ class Home(View):
 
         # Make cart items for context
         user= request.user
-        cart_items = Cart.objects.filter(customer_id=user)
-        cart_count = cart_items.count()
-        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        if user.is_authenticated:
+            cart_items = Cart.objects.filter(customer_id=user)
+            cart_count = cart_items.count()
+            total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        else:
+            cart_items = []
+            cart_count = 0
+            total_price = 0
 
         context = {
                     'usages': usage_list,
@@ -68,9 +73,14 @@ class HomeWomen(View):
 
         # Make cart items for context
         user= request.user
-        cart_items = Cart.objects.filter(customer_id=user)
-        cart_count = cart_items.count()
-        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        if user.is_authenticated:
+            cart_items = Cart.objects.filter(customer_id=user)
+            cart_count = cart_items.count()
+            total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        else:
+            cart_items = []
+            cart_count = 0
+            total_price = 0
 
         context = {
                     'usages': usage_list,
@@ -154,9 +164,14 @@ class ProductPage(View):
         
         # Make cart items for context
         user= request.user
-        cart_items = Cart.objects.filter(customer_id=user)
-        cart_count = cart_items.count()
-        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        if user.is_authenticated:
+            cart_items = Cart.objects.filter(customer_id=user)
+            cart_count = cart_items.count()
+            total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+        else:
+            cart_items = []
+            cart_count = 0
+            total_price = 0
 
         # Context data
         context = {
@@ -195,11 +210,12 @@ class ProductDetailsPage(DetailView):
 
         # Make cart items for context
         user= self.request.user
-        cart_items = Cart.objects.filter(customer_id=user)
-        context['cart_items'] = cart_items
-        cart_count = cart_items.count()
-        context['cart_count'] = cart_count
-        total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
-        context['total_price'] = total_price
+        if user.is_authenticated:
+            cart_items = Cart.objects.filter(customer_id=user)
+            context['cart_items'] = cart_items
+            cart_count = cart_items.count()
+            context['cart_count'] = cart_count
+            total_price = cart_items.aggregate(total_price=Sum('price'))['total_price'] or 0
+            context['total_price'] = total_price
         
         return context

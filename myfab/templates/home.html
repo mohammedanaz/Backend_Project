@@ -202,27 +202,26 @@
 <!-- ============================= Off canvas section for cart begin ============================-->
 
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <!-- ==== Cart Header ====-->
         <div class="offcanvas-header">
             <h5 class="offcanvas-title text-white text-center w-100" id="offcanvasRightLabel">
-                <!-- -------------------- Header begin ---------------------------------------- -->
-                    <header class="header text-center" style=" background-color: #0F4C81;">
-                        <div class="container" style=" max-height: 100px;">
-                            <img class="img-fluid d-block mx-auto" style="max-height: 100px; width: auto; display: block;"
-                            src="{% static 'images/MyFAB_transparent.png' %}" alt="Logo">
-                        </div>
-                        Carts
-                    </header>
-                <!-- -------------------- Header end ---------------------------------------- -->
+                <header class="header text-center" style=" background-color: #0F4C81;">
+                    <div class="container" style=" max-height: 100px;">
+                        <img class="img-fluid d-block mx-auto" style="max-height: 100px; width: auto; display: block;"
+                        src="{% static 'images/MyFAB_transparent.png' %}" alt="Logo">
+                    </div>
+                    Carts
+                </header>
             </h5>
         </div>
+        <!-- ==== Cart Body ====-->
         <div class="offcanvas-body">
-        <!-- -------------------- cart begin ---------------------------------------- -->
             <div class="container">
                 {% if cart_count == 0 %}
                 <div>
                     <h3>No cart items yet.</h3>
                 </div>
-                {% endif %}
+                {% else %}
                 <div class="row">
                     <!-- Iterate over cart items -->
                     {% for item in cart_items %}
@@ -266,11 +265,10 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
-        <!-- -------------------- cart end ---------------------------------------- -->
         </div>
     </div>
-
 <!-- ============================= Off canvas section for cart end ============================-->
 
 {% endblock %}

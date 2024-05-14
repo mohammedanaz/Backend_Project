@@ -218,10 +218,10 @@
 
 <!-- ============================= Off canvas section for cart begin ============================-->
 
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title text-white text-center w-100" id="offcanvasRightLabel">
-            <!-- -------------------- Header begin ---------------------------------------- -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+        <!-- ==== Cart Header ====-->
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-white text-center w-100" id="offcanvasRightLabel">
                 <header class="header text-center" style=" background-color: #0F4C81;">
                     <div class="container" style=" max-height: 100px;">
                         <img class="img-fluid d-block mx-auto" style="max-height: 100px; width: auto; display: block;"
@@ -229,65 +229,63 @@
                     </div>
                     Carts
                 </header>
-            <!-- -------------------- Header end ---------------------------------------- -->
-        </h5>
-    </div>
-    <div class="offcanvas-body">
-    <!-- -------------------- cart begin ---------------------------------------- -->
-        <div class="container">
-            {% if cart_count == 0 %}
-            <div>
-                <h3>No cart items yet.</h3>
-            </div>
-            {% endif %}
-            <div class="row">
-                <!-- Iterate over cart items -->
-                {% for item in cart_items %}
-                <div class="col-12 mb-2 d-flex">
-                    <div class="product-info  align-items-center me-5 w-25">
-                        <h5 class="card-title">
-                            Item
-                            <span class="serial-number">-{{forloop.counter}}</span>
-                        </h5>
-                        <img src="{{ item.product_id.image.url }}" 
-                        alt="img-name" class="img-thumbnail me-3">
-                    </div>
-                    <div class="quantity-controls">
-                        <div>
-                            <h6 class="mb-1">{{item.product_id.name}}</h6>
-                            <p class="mb-1">Order Type: {% if item.order_type == 1 %}Fabric Only
-                                {% else %}Fabric with stitching{% endif %}
-                            </p>
-                            <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>
-                            <div class="d-flex">
-                                <label for="quantity">Quantity: </label>
-                                <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center ms-4" 
-                                value="{{ item.qty }}" id="quantity{{ cart_item.id }}" onchange="updateQuantity()">
+            </h5>
+        </div>
+        <!-- ==== Cart Body ====-->
+        <div class="offcanvas-body">
+            <div class="container">
+                {% if cart_count == 0 %}
+                <div>
+                    <h3>No cart items yet.</h3>
+                </div>
+                {% else %}
+                <div class="row">
+                    <!-- Iterate over cart items -->
+                    {% for item in cart_items %}
+                    <div class="col-12 mb-2 d-flex">
+                        <div class="product-info  align-items-center me-5 w-25">
+                            <h5 class="card-title">
+                                Item
+                                <span class="serial-number">-{{forloop.counter}}</span>
+                            </h5>
+                            <img src="{{ item.product_id.image.url }}" 
+                            alt="img-name" class="img-thumbnail me-3">
+                        </div>
+                        <div class="quantity-controls">
+                            <div>
+                                <h6 class="mb-1">{{item.product_id.name}}</h6>
+                                <p class="mb-1">Order Type: {% if item.order_type == 1 %}Fabric Only
+                                    {% else %}Fabric with stitching{% endif %}
+                                </p>
+                                <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>
+                                <div class="d-flex">
+                                    <label for="quantity">Quantity: </label>
+                                    <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center ms-4" 
+                                    value="{{ item.qty }}" id="quantity{{ cart_item.id }}" onchange="updateQuantity()">
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <hr>
+                    {% endfor %}
                 </div>
-                <hr>
-                {% endfor %}
-            </div>
-            <!-- Summary Section -->
-            <div class="my-2">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Summary</h5>
-                        <!-- Add summary details here -->
-                        <p class="mb-2">Total items: {{cart_count}}</p>
-                        <p class="mb-2">Total Price: <i class="fa">&#xf156;</i> {{total_price}}</p>
-                        <!-- Add checkout button -->
-                        <a href="{% url "orders:checkout" %}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                <!-- Summary Section -->
+                <div class="my-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Summary</h5>
+                            <!-- Add summary details here -->
+                            <p class="mb-2">Total items: {{cart_count}}</p>
+                            <p class="mb-2">Total Price: <i class="fa">&#xf156;</i> {{total_price}}</p>
+                            <!-- Add checkout button -->
+                            <a href="{% url "orders:checkout" %}" class="btn btn-primary btn-block">Proceed to Checkout</a>
+                        </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
-    <!-- -------------------- cart end ---------------------------------------- -->
     </div>
-</div>
-
 <!-- ============================= Off canvas section for cart end ============================-->
 
 <!-- =========================== JS =========================== -->

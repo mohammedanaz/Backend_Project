@@ -163,7 +163,7 @@ class CreateOrder(View):
                         product.qty -= (qty + Decimal('0.01'))
                         product.save()
                     else:
-                        raise Exception(f'Insufficient stock for {product.name}.Remove this item.')
+                        raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
                 cart_items.delete()
 
                 return redirect(reverse('main:products'))

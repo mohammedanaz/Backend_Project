@@ -231,8 +231,9 @@
 <!-- =========================== Product section end =========================== -->
 
 
-<!-- =========================== JS for cancel filters =========================== -->
+<!-- =========================== JS  =========================== -->
     <script>
+        //To cancel filters
         document.getElementById('clearFiltersBtn').addEventListener('click', function() {
             var checkboxes = document.querySelectorAll('#filterAccordion input[type="checkbox"]');
             var radios = document.querySelectorAll('#filterAccordion input[type="radio"]');
@@ -252,6 +253,18 @@
             searchbox.forEach(function(input) {
                 input.value = '';
             });
+        });
+
+        // To trigger offcanvas when url has 'show_offcanvas' query
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('JS for offcanvas trigger called');
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('show_offcanvas')) {
+                const offcanvasElement = document.getElementById('offcanvasRight');
+                if (offcanvasElement) {
+                    offcanvasElement.classList.add('show');
+                }
+            }
         });
     </script>
 {% endblock %}

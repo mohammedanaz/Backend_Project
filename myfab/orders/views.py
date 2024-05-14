@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
+from django.shortcuts import get_object_or_404
 from django.views import View
+from django.views.generic import UpdateView, DeleteView
 from main.models import Product, Usage
 from accounts.models import Address
 from orders.models import Cart, Order
@@ -71,6 +73,24 @@ class CartView(View):
             error_message = 'Cart not saved. Order type not Known.'
             return JsonResponse({'error_message': error_message }, status=400)
     
+
+########################## Cart Delete View #################################
+
+class CartDelete(View):
+    '''
+    To delete cart items with axios.
+    '''
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            cart_id = data.get('cartId')
+            print('Cart is:', cart_id)
+            Cart.objects.get(id=cart_id).delete()
+
+            # Return success response
+            return JsonResponse({'message': 'Cart item deleted successfully.'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 ########################## Create Order View #################################
 

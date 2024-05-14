@@ -62,12 +62,8 @@
                   {% for item in cart_items %}
                   <div class="col-12 mb-2 d-flex" id="item-{{ item.id }}">
                       <div class="product-info  align-items-center me-5 w-25">
-                          <h5 class="card-title">
-                              Item
-                              <span class="serial-number">-{{forloop.counter}}</span>
-                          </h5>
                           <img src="{{ item.product_id.image.url }}" 
-                          alt="img-name" class="img-thumbnail me-3">
+                          alt="img-name" class="img-thumbnail me-3" style="max-width: 120px;">
                       </div>
                       <div class="quantity-controls">
                           <div>

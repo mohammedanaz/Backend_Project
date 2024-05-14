@@ -71,6 +71,11 @@
         <div class="container d-flex flex-column flex-md-row  border border-3 rounded-4 bg-white">
             <!-- Order table and Summary section -->
             <div class="container">
+                {% if insufficient_qty_error_msg %}
+                <div id="alert-message" class="alert alert-danger show fade mt-3" role="alert">
+                    {{ insufficient_qty_error_msg }}
+                </div>
+                {% endif %}
                 <!-- Order table -->
                 <h4 class="mt-5 mb-4">Order Summary</h4>
                 <div class="mb-3">
@@ -166,6 +171,19 @@
         </div>
     </section>
 <!-- =========================== Checkout Section end =========================== -->
+
+<!-- =========================== JS =========================== -->
+
+    <script>
+        // Function to fade out the alert after a certain time
+        setTimeout(function() {
+            var alertMessage = document.getElementById('alert-message');
+            alertMessage.classList.remove('show');  // Remove 'show' class to start fading out
+            setTimeout(function() {
+                alertMessage.style.display = 'none';  // Hide the alert after fading out
+            }, 300);  // time to control the fade-out duration
+        }, 4000);  // time to control how long the alert is visible before fading out
+    </script>
 
 {% endblock %}
 

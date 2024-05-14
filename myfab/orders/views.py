@@ -81,6 +81,10 @@ class CheckoutView(View):
         create address for the user and products from the cart to pass
         to context.
         '''
+        # retrieve error msg passed from create order view exception to session data
+        insufficient_qty_error_msg = request.session.pop('insufficient_qty_error_msg', None)
+        print('insufficient_qty_error_msg-',insufficient_qty_error_msg)
+
         user = request.user
         addresses = Address.objects.filter(customer_id=user, is_active=True)
         carts = Cart.objects.filter(customer_id=user)
@@ -90,7 +94,8 @@ class CheckoutView(View):
             'addresses': addresses,
             'carts': carts,
             'subtotal': subtotal,
-            'grant_total': grant_total
+            'grant_total': grant_total,
+            'insufficient_qty_error_msg': insufficient_qty_error_msg,
             }
         return render(request, 'checkout.html', context)
     
@@ -138,7 +143,7 @@ class CreateOrder(View):
                         product.qty -= (qty + Decimal('0.01'))
                         product.save()
                     else:
-                        raise Exception(f'Insufficient stock for the item {product.name} with id: {product.id}')
+                        raise Exception(f'Insufficient stock for {product.name}.Remove this item.')
                 cart_items.delete()
 
                 return redirect(reverse('main:products'))
@@ -148,5 +153,7 @@ class CreateOrder(View):
             return redirect(reverse('orders:checkout'))
         except Exception as e:
             print(f'Exception occured- {e}')
-            return redirect(reverse('main:home'))
+            insufficient_qty_error_msg = f'{e}'
+            request.session['insufficient_qty_error_msg'] = insufficient_qty_error_msg
+            return redirect(reverse('orders:checkout'))
 

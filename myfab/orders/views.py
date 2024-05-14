@@ -103,7 +103,6 @@ class CheckoutView(View):
         '''
         # retrieve error msg passed from create order view exception to session data
         insufficient_qty_error_msg = request.session.pop('insufficient_qty_error_msg', None)
-        print('insufficient_qty_error_msg-',insufficient_qty_error_msg)
 
         user = request.user
         addresses = Address.objects.filter(customer_id=user, is_active=True)
@@ -165,7 +164,8 @@ class CreateOrder(View):
                     else:
                         raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
                 cart_items.delete()
-
+                order_create_msg = 'Your Order Successfully Placed.'
+                request.session['order_create_msg'] = order_create_msg
                 return redirect(reverse('main:products'))
              
         except IntegrityError:

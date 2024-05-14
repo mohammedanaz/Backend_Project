@@ -87,7 +87,14 @@
 <!-- =========================== Product sec header end =========================== -->
 
 <!-- =========================== Product section begin =========================== -->
+    <!-- Alert message section for order success  -->
+    {% if order_create_msg %}
+    <div id="alert-message-order-success" class="alert alert-success show fade mt-3 text-center" role="alert">
+        {{ order_create_msg }} 
+    {% endif %}
+    </div>
     <section class="container-fluid prod-sec-flex-container d-flex my-2">
+        
          <!-- Filter section -->
         <div class="container filter-sec w-25 my-4">
             <!-- Toggle button for Filter accordion -->
@@ -266,5 +273,20 @@
                 }
             }
         });
+
+
+        // Function to hide the alert message after a delay
+        function hideAlertMessage() {
+            var alertMessage = document.getElementById('alert-message-order-success');
+            if (alertMessage) {
+                // Hide the alert after 3 seconds (3000 milliseconds)
+                setTimeout(function() {
+                    alertMessage.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Call the function to hide the alert message
+        hideAlertMessage();
     </script>
 {% endblock %}

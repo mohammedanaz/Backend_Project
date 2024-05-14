@@ -90,6 +90,10 @@ class HomeWomen(View):
 class ProductPage(View):
 
     def get(self, request):
+
+        # check order created success msg in the session
+        order_create_msg = request.session.pop('order_create_msg', None)
+
         # Making an all product query set
         products = Product.objects.all()
 
@@ -165,6 +169,7 @@ class ProductPage(View):
                     'cart_items': cart_items,
                     'cart_count': cart_count,
                     'total_price': total_price,
+                    'order_create_msg': order_create_msg,
                    }
         return render(request, 'products.html', context)
     

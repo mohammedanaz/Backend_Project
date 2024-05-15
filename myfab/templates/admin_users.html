@@ -294,7 +294,7 @@
                     pagination.innerHTML += `<a href="#" onclick="searchUsers('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
                 }
 
-                // Call the function to attach event listeners after updating search results
+                // Call the function to attach status btn event listeners after updating search results
                 attachStatusToggleListeners();
             })
             .catch(function(error) {

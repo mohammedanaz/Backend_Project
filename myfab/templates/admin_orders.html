@@ -94,7 +94,7 @@
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Date Added</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Status</th>
                             </tr>
                             </thead>
                             <tbody id="product-table-body">
@@ -107,9 +107,15 @@
                                     <td>{{ order.quantity }}</td>
                                     <td>{{ order.add_date }}</td>
                                     <td>
-                                        <button class="btn btn-sm">
-                                            <a href="" class="btn btn-primary">View/Edit</a>
-                                        </button>
+                                        <select class="status-select btn btn-outline-secondary"
+                                            data-order-id="{{ order.id }}"
+                                            onchange="changeOrderStatus(this)">
+                                        {% for status in order.STATUS_CHOICES %}
+                                            <option value="{{ status.0 }}" {% if order.status == status.0 %} selected {% endif %}>
+                                                {{ status.1 }}
+                                            </option>
+                                        {% endfor %}
+                                        </select>
                                     </td>
                                 </tr>
                                 {% endfor %}

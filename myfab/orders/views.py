@@ -61,7 +61,6 @@ class CartView(View):
                     else:
                         error_message = f'Cart not saved. Measurement {measurement_name} is not valid.'
                         return JsonResponse({'error_message': error_message }, status=400)
-                print(measurements_dict, quantity)
                 Cart.objects.create(
                                         customer_id = user,
                                         product_id = product,
@@ -88,13 +87,31 @@ class CartDelete(View):
         try:
             data = json.loads(request.body)
             cart_id = data.get('cartId')
-            print('Cart is:', cart_id)
             Cart.objects.get(id=cart_id).delete()
 
             # Return success response
             return JsonResponse({'message': 'Cart item deleted successfully.'})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+        
+########################## Cart Update View #################################
+class CartEdit(View):
+    
+    def post(self, request):
+        data = json.loads(request.body)
+        new_quantity = data.get('quantity')
+        cart_id = data.get('cart_id')
+        # Perform Qty validation
+        print(cart_id, new_quantity)
+        if validate_input(new_quantity):
+            print('Qty validated')
+            cart = Cart.objects.get(id=cart_id)
+            cart.qty = Decimal(new_quantity)
+            cart.save()
+            return JsonResponse({'message': 'Quantity updated successfully'})
+        else:
+            print('Invalid Qty')
+            return JsonResponse({'error': 'Cart item not found'}, status=404)
 
 ########################## Create Order View #################################
 

@@ -85,10 +85,6 @@
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid">
             </div>
             <div class="col-md-6">
-                <div id="success-message" class="alert alert-success fade show" role="alert" style="display: none;">
-                    Item added to cart.
-                </div>
-                <div id="error-message" class="alert alert-danger fade show" role="alert" style="display: none;"></div>
                 <form id="cart-form" method="post" action="{% url "orders:cart" %}">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.id }}">
@@ -149,6 +145,11 @@
                         </div>
                     </div>
                     <hr>
+                    <!-- Alert Msg section -->
+                    <div id="success-message" class="alert alert-success fade show" role="alert" style="display: none;">
+                        Item added to cart.
+                    </div>
+                    <div id="error-message" class="alert alert-danger fade show" role="alert" style="display: none;"></div>
                     <button type="submit" id="add-to-cart-button" class="btn btn-primary">Add to Cart</button>
                 </form>
                 <!-- Accordion for product details and ordering info -->
@@ -265,7 +266,7 @@
             }
         }
 
-        // Listen for changes in the select input
+        // Listen for changes in the select input dress type
         selectElement.addEventListener('change', function() {
             displayMeasurements();
         });
@@ -275,6 +276,7 @@
     });
 
     // Function to serialize form data into a JavaScript object
+    // and Add dynamically generated fields to formData manually
     function serializeForm(form) {
         var formData = new FormData(form);
         // Add dynamically generated fields to formData manually
@@ -318,11 +320,6 @@
             setTimeout(function() {
                 window.location.reload();
             }, 1200);
-
-            // Hide success message after 3 seconds
-            setTimeout(function() {
-                successMessage.style.display = 'none';
-            }, 1100);
         })
         .catch(function(error) {
             console.error('Error:', error);

@@ -73,18 +73,30 @@
                               </p>
                               <p class="mb-0 fs-5">Price: <i class="fa">&#xf156;</i>{{item.price}}</p>
                               <div class="d-flex">
-                                  <label for="quantity">Quantity: </label>
-                                  <input type="number" id="quantity" name="quantity" class="form-control form-control-sm text-center ms-4" 
+                                <div>Quantity:</div>
+                                <form id="form-cart-qty-update" action="" method="">
+                                  {% csrf_token %}
+                                  <input type="hidden" id="cart_id" name="cart_id" value="{{ item.id }}">
+                                  <input type="number" id="quantity" name="quantity" 
+                                  class="form-control form-control-sm text-center ms-2" 
                                   value="{{ item.qty }}" id="quantity{{ cart_item.id }}" onchange="updateQuantity()">
-                                  <form id="deleteCartItem-{{ item.id }}" onsubmit="deleteCartItem(event, {{ item.id }})">
-                                      {% csrf_token %}
-                                      <button type="submit" class="btn" data-toggle="tooltip" title="Delete">
-                                          <i class="bi bi-trash3"></i>
-                                      </button>
-                                  </form>
+                                </form>
+                                <form id="deleteCartItem-{{ item.id }}" onsubmit="deleteCartItem(event, {{ item.id }})">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn" data-toggle="tooltip" title="Delete">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                </form>
                               </div>
                           </div>
                       </div>
+                  </div>
+                  <!-- Alert Msg section -->
+                  <div id="update-qty-msg-success" class="alert alert-success fade show" role="alert" style="display: none;">
+                    Quantity Updated.
+                  </div>
+                  <div id="update-qty-msg-error" class="alert alert-danger fade show" role="alert"style="display: none;">
+                    Invalid Quantity.
                   </div>
                   <hr>
                   {% endfor %}
@@ -149,6 +161,64 @@
               console.log('Deletion cancelled');
           }
       }
+
+
+        // To update the qty field of Cart when input field changes
+        function updateQuantity() {
+          
+          const newQuantity = document.getElementById('quantity').value;
+          const cartId = document.getElementById('cart_id').value;
+          console.log('Qty & cart_is is:',newQuantity, cartId)
+          
+          // Get the CSRF token from the form
+          const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+          // Send a POST request to update the quantity
+          axios.post('/orders/edit_cart/', {
+              quantity: newQuantity,
+              cart_id: cartId
+          }, {
+              headers: {
+                  'X-CSRFToken': csrfToken
+              }
+          })
+          .then(response => {
+              // Handle success response
+              console.log('Quantity updated successfully');
+
+              //To remove focus from input field after enter pressed
+              var inputField = document.getElementById('quantity')
+              inputField.blur();
+
+              // Show success message
+            var successMessage = document.getElementById('update-qty-msg-success');
+            successMessage.style.display = 'block';
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+              successMessage.style.display = 'none';
+            }, 3000);
+          })
+          .catch(error => {
+              // Handle error response
+              console.error('Error updating quantity:', error);
+
+              // Show success message
+            var errorMessage = document.getElementById('update-qty-msg-error');
+            errorMessage.style.display = 'block';
+            // Hide success message after 3 seconds
+            setTimeout(function() {
+              errorMessage.style.display = 'none';
+            }, 3000);
+          });
+      }
+        // Trigger the updateQuantity() when enter btn pressed
+        document.getElementById("quantity").addEventListener("keypress", function(event) {
+          if (event.key === "Enter") {
+              event.preventDefault(); 
+              updateQuantity();
+          }
+      });
+
     </script>
 
 

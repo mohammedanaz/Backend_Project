@@ -18,7 +18,7 @@ class Cart(models.Model):
     order_type = models.IntegerField(null=False)
     qty = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    cart_measurements = models.TextField(null=True)
+    cart_measurements = models.TextField(null=True, default=None, blank=True)
 
     def set_cart_measurements(self, value):
         try:
@@ -71,7 +71,7 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=10, null=False, choices=PAYMENT_CHOICES)
     status = models.CharField(max_length=10, null=False, choices=STATUS_CHOICES, default='P')
     address = models.ForeignKey(Address, on_delete=models.PROTECT)
-    order_measurements = models.TextField(null=True)
+    order_measurements = models.TextField(null=True, default=None, blank=True)
 
 
     def __str__(self):

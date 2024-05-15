@@ -94,7 +94,16 @@
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Date Added</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">
+                                    <span id="order-status-heading">
+                                        Status
+                                    </span>
+                                    <span id="order-status-success-msg" 
+                                            class="alert alert-success fade show fs-6 w-50 mx-auto py-2 m-0" 
+                                            role="alert" style="display: none;">
+                                            updated.
+                                    </span>
+                                </th>
                             </tr>
                             </thead>
                             <tbody id="product-table-body">
@@ -197,6 +206,8 @@
             });
     }
 
+    // To make order status choices (options for select element) 
+    // to build table in the search result.
     function getStatusOptions(selectedStatus) {
         const statusChoices = [
             ['P', 'Pending'],
@@ -213,21 +224,42 @@
     }
 
 
-    // To make order status choices (options for select element) 
-    // to build table in the search result.
-    function getStatusOptions(selectedStatus) {
-        const statusChoices = [
-            ['P', 'Pending'],
-            ['S', 'Shipping'],
-            ['D', 'Delivered'],
-            ['C', 'Cancelled']
-        ];
-        let options = '';
-        for (const status of statusChoices) {
-            const isSelected = status[0] === selectedStatus;
-            options += `<option value="${status[0]}" ${isSelected ? 'selected' : ''}>${status[1]}</option>`;
-        }
-        return options;
+    // Function to change order status
+    function changeOrderStatus(selectElement) {
+        const orderId = selectElement.dataset.orderId;
+        const newStatus = selectElement.value;
+
+        // Get CSRF token from the global variable
+        const csrfToken = "{{ csrf_token }}";
+
+        // Send a POST request to update the order status
+        axios.post('/custom_admin/orders/', {
+            order_id: orderId,
+            new_status: newStatus
+        }, {
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => {
+            // Handle success response
+            console.log('Order status updated successfully:', response.data);
+
+            var successMessage = document.getElementById('order-status-success-msg');
+            var statusHeading = document.getElementById('order-status-heading');
+            statusHeading.style.display = 'none';
+            successMessage.style.display = 'block';
+            setTimeout(function() {
+                statusHeading.style.display = 'block';
+                successMessage.style.display = 'none';
+            }, 1500);
+            
+        })
+        .catch(error => {
+            // Handle error response
+            console.error('Error updating order status:', error);
+            
+        });
     }
 </script>
 

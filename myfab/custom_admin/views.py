@@ -386,6 +386,10 @@ class AdminMeasurementDelete(DeleteView):
 ################################### Admin Orders ####################################
 
 class AdminOrders(View):
+    '''
+    post method in this view is used to recieve axios req for
+    order status change to update DB. Get method is to render order list page. 
+    '''
     def get(self, request):
         orders = Order.objects.all()
         paginator = Paginator(orders, 10) 
@@ -405,6 +409,20 @@ class AdminOrders(View):
 
         context = {'zipped_data': zipped_data, 'orders': paged_orders}
         return render(request, 'admin_orders.html', context)
+    
+    def post(self, request):
+        json_data = json.loads(request.body)
+
+        order_id = json_data.get('order_id')
+        if order_id:
+            new_status = json_data.get('new_status')
+            order = Order.objects.get(id=order_id)
+            order.status = new_status
+            order.save()
+            return JsonResponse({'success': True, 'success_msg': 'Order status updated.'})
+        else:
+            return JsonResponse({'success': False, 'error_msg': 'Order id not found.'})
+
 
 
 ################################### Admin Orders Search ####################################

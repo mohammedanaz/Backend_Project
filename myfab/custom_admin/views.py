@@ -7,6 +7,7 @@ from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
 from main.models import Product, Category, CategoryChoice, Usage, Measurement
+from orders.models import Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
@@ -372,4 +373,28 @@ class AdminMeasurementDelete(DeleteView):
     # To redirect to prev page after deletion
     def get_success_url(self):
         return self.request.POST.get('next', self.success_url)
+    
+
+################################### Admin Orders ####################################
+
+class AdminOrders(View):
+    def get(self, request):
+        orders = Order.objects.all()
+        paginator = Paginator(orders, 10) 
+        page_number = request.GET.get('page')
+        try:
+            paged_orders = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_orders = paginator.page(1)
+        except EmptyPage:
+            paged_orders = paginator.page(paginator.num_pages)
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_orders.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_orders)))
+        zipped_data = zip(serial_numbers, paged_orders)
+
+        context = {'zipped_data': zipped_data, 'orders': paged_orders}
+        return render(request, 'admin_orders.html', context)
 

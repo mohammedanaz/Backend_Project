@@ -2,19 +2,10 @@
 
 {% load static %}
 
-{% block title %}Admin Products{% endblock %}
+{% block title %}Admin Orders{% endblock %}
 
 {% block content %}
-<style>
-    .thumbnail-image {
-        max-width: 75px; 
-        max-height: 75px;
-        width: auto; 
-        height: auto;
-        display: block;
-        margin: auto; 
-    }
-</style>
+
 <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -34,13 +25,13 @@
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_orders" %}">Orders</a>
+                    <button class="nav-link btn btn-link" style="min-width: 150px;  background-color: #800020;" aria-current="page">
+                        <a class="text-white text-decoration-none" href="#">Orders</a>
                     </button>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;  background-color: #800020;" aria-current="page">
-                        <a class="text-white text-decoration-none" href="#">Products</a>
+                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_products" %}">Products</a>
                     </button>
                 </li>
                 <li class="nav-item">
@@ -88,12 +79,7 @@
         <div class="container-fluid">
             <div class="container-fluid text-center px-0">
                 <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
-                    Products
-                    <span>
-                        <button class="btn btn-outline-primary my-2" onclick="window.location.href='{% url 'custom_admin:admin_product_add' %}'">
-                            <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
-                        </button>
-                    </span>
+                   Orders
                 </h5>
             </div>
             <div class="row h-100">
@@ -104,32 +90,25 @@
                             <tr>
                                 <th scope="col">Sr#</th>
                                 <th scope="col">ID#</th>
-                                <th scope="col">Name</th>
+                                <th scope="col">User Name</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Date Added</th>
-                                <th scope="col">Image</th>
                                 <th scope="col">Action</th>
                             </tr>
                             </thead>
                             <tbody id="product-table-body">
-                                {% for serial_number, product in zipped_data %}
+                                {% for serial_number, order in zipped_data %}
                                 <tr>
                                     <th scope="row">{{ serial_number }}</th>
-                                    <td>{{ product.id }}</td>
-                                    <td>{{ product.name }}</td>
-                                    <td>{{ product.price }}</td>
-                                    <td>{{ product.qty }}</td>
-                                    <td>{{ product.add_date }}</td>
-                                    <td>
-                                        <a href="{{ product.image.url }}" target="_blank">
-                                            <img class="thumbnail-image" src="{{ product.image.url }}" alt="{{ product.name }} Image">
-                                        </a>
-                                    </td>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.customer_id.username }}</td>
+                                    <td>{{ order.price }}</td>
+                                    <td>{{ order.quantity }}</td>
+                                    <td>{{ order.add_date }}</td>
                                     <td>
                                         <button class="btn btn-sm">
-                                            <a href="{% url "custom_admin:admin_product_edit" product.id %}" class="btn btn-primary">View/Edit</a>
-                                            <a href="{% url "custom_admin:admin_product_delete" product.id %}" class="btn btn-danger">Delete</a>
+                                            <a href="" class="btn btn-primary">View/Edit</a>
                                         </button>
                                     </td>
                                 </tr>
@@ -138,16 +117,16 @@
                         </table>
                     </div>
                     <div class="pagination justify-content-center">
-                        {% if products.has_previous %}
+                        {% if orders.has_previous %}
                             <a href="?page=1" class="page-link">&laquo; First</a>
-                            <a href="?page={{ products.previous_page_number }}" class="page-link">Previous</a>
+                            <a href="?page={{ orders.previous_page_number }}" class="page-link">Previous</a>
                         {% endif %}
-                        {% for page in products.paginator.page_range %}
-                        <a href="?page={{ page }}" class="page-link {% if products.number == page %}active{% endif %}">{{ page }}</a>
+                        {% for page in orders.paginator.page_range %}
+                        <a href="?page={{ page }}" class="page-link {% if orders.number == page %}active{% endif %}">{{ page }}</a>
                         {% endfor %}
-                        {% if products.has_next %}
-                            <a href="?page={{ products.next_page_number }}" class="page-link">Next</a>
-                            <a href="?page={{ products.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                        {% if orders.has_next %}
+                            <a href="?page={{ orders.next_page_number }}" class="page-link">Next</a>
+                            <a href="?page={{ orders.paginator.num_pages }}" class="page-link">Last &raquo;</a>
                         {% endif %}
                     </div>
                 </div>
@@ -157,7 +136,7 @@
 <!-- =========================== products section end =========================== -->
 
 <!-- ====================== JS ============================= -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -213,6 +192,6 @@ function searchProducts(query, page) {
             console.error('Error:', error);
         });
 }
-</script>
+</script> {% endcomment %}
 
 {% endblock content %}

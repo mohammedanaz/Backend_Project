@@ -127,6 +127,7 @@
                     <div class="form-group mb-3">
                         <label>Choose an Address:</label>
                         {% for address in addresses %}
+                        <hr class="w-50">
                         <div class="form-check d-flex flex-row align-items-center mb-2">
                             <input class="form-check-input me-3" type="radio" name="addressOption" 
                             id="addressOption-{{address.name}}" value="{{address.pk}}"

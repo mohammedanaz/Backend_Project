@@ -102,9 +102,7 @@ class CartEdit(View):
         new_quantity = data.get('quantity')
         cart_id = data.get('cart_id')
         # Perform Qty validation
-        print(cart_id, new_quantity)
         if validate_input(new_quantity):
-            print('Qty validated')
             cart = Cart.objects.get(id=cart_id)
             cart.qty = Decimal(new_quantity)
             cart.save()

@@ -18,30 +18,15 @@ class AdminHome(View):
         users = CustomUser.objects.all()[:5]
         context = {'users': users}
         return render(request, 'admin_home.html', context)
-    
-    def post(self, request):
-        json_data = json.loads(request.body)
-
-        if 'user_id' in json_data:  # Check for user_id in json data
-                user_id = json_data.get('user_id')
-                is_active = json_data.get('is_active')
-                try:
-                    user = CustomUser.objects.get(id=user_id)
-                    user.is_active = is_active
-                    user.save()
-                    return JsonResponse({'success': True})
-                except CustomUser.DoesNotExist:
-                    return JsonResponse({'success': False, 'error': 'User not found'})
-                except Exception as e:
-                    return JsonResponse({'success': False, 'error': str(e)})
-        else:
-            print('Missing user_id in request data')
-            return JsonResponse({'success': False, 'error': 'Missing user_id in request data'})
 
 
 ################################### Admin Users ####################################
 
 class AdminUsers(View):
+    '''
+    get method is to render admin user list page.
+    post method is to handle json data to change status.
+    '''
     def get(self, request):
         users = CustomUser.objects.all()
         paginator = Paginator(users, 10) 
@@ -62,6 +47,26 @@ class AdminUsers(View):
         
         context = {'zipped_data': zipped_data, 'users': paged_users}
         return render(request, 'admin_users.html', context)
+    
+    def post(self, request):
+        json_data = json.loads(request.body)
+
+        if 'user_id' in json_data:  # Check for user_id in json data
+                user_id = json_data.get('user_id')
+                is_active = json_data.get('is_active')
+                try:
+                    user = CustomUser.objects.get(id=user_id)
+                    user.is_active = is_active
+                    user.save()
+                    return JsonResponse({'success': True})
+                except CustomUser.DoesNotExist:
+                    return JsonResponse({'success': False, 'error': 'User not found'})
+                except Exception as e:
+                    return JsonResponse({'success': False, 'error': str(e)})
+        else:
+            print('Missing user_id in request data')
+            return JsonResponse({'success': False, 'error': 'Missing user_id in request data'})
+
 
 ################################### Admin Products ####################################
 

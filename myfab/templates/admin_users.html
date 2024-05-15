@@ -202,7 +202,7 @@
                 // Get CSRF token from cookies
                 const csrftoken = getCookie('csrftoken');
 
-                axios.post('/custom_admin/', {
+                axios.post('/custom_admin/users/', {
                     is_active: !isActive,
                     user_id: userId
                 }, {

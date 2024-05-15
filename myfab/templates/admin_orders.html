@@ -144,6 +144,8 @@
 <!-- ====================== JS ============================= -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+    // To make search result with axios. on submit it calls searchOrders() to
+    // request axios with search query
     document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const query = document.getElementById('search-input').value.trim();
@@ -152,47 +154,81 @@
     
 });
 
-function searchOrders(query, page) {
-    axios.get('/custom_admin/orders/search/', { params: { query: query, page: page } })
-        .then(function(response) {
-            const tableBody = document.getElementById('product-table-body');
-            tableBody.innerHTML = ''; // Clear previous results
-            response.data.data.forEach(function(order) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <th scope="row">${order.serial_number}</th>
-                    <td>${order.id}</td>
-                    <td>${order.username}</td>
-                    <td>${order.price}</td>
-                    <td>${order.qty}</td>
-                    <td>${order.add_date}</td>
-                    <td>
-                        <button class="btn btn-sm">
-                            <a href="" class="btn btn-primary">View/Edit</a>
-                            <a href="" class="btn btn-danger">Delete</a>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+    function searchOrders(query, page) {
+        axios.get('/custom_admin/orders/search/', { params: { query: query, page: page } })
+            .then(function(response) {
+                const tableBody = document.getElementById('product-table-body');
+                tableBody.innerHTML = ''; // Clear previous results
+                response.data.data.forEach(function(order) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <th scope="row">${order.serial_number}</th>
+                        <td>${order.id}</td>
+                        <td>${order.username}</td>
+                        <td>${order.price}</td>
+                        <td>${order.qty}</td>
+                        <td>${order.add_date}</td>
+                        <td>
+                            <select class="status-select btn btn-outline-secondary"
+                                    data-order-id="${order.id}"
+                                    onchange="changeOrderStatus(this)">
+                                ${getStatusOptions(order.status)}
+                            </select>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
 
-            // Update pagination links based on response
-            const pagination = document.querySelector('.pagination');
-            pagination.innerHTML = '';
-            if (response.data.has_previous) {
-                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
-            }
-            for (let i = 1; i <= response.data.pages; i++) {
-                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${i})" class="page-link">${i}</a>`;
-            }
-            if (response.data.has_next) {
-                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
-            }
-        })
-        .catch(function(error) {
-            console.error('Error:', error);
-        });
-}
+                // Update pagination links based on response
+                const pagination = document.querySelector('.pagination');
+                pagination.innerHTML = '';
+                if (response.data.has_previous) {
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
+                }
+                for (let i = 1; i <= response.data.pages; i++) {
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${i})" class="page-link">${i}</a>`;
+                }
+                if (response.data.has_next) {
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+    }
+
+    function getStatusOptions(selectedStatus) {
+        const statusChoices = [
+            ['P', 'Pending'],
+            ['S', 'Shipping'],
+            ['D', 'Delivered'],
+            ['C', 'Cancelled']
+        ];
+        let options = '';
+        for (const status of statusChoices) {
+            const isSelected = status[0] === selectedStatus;
+            options += `<option value="${status[0]}" ${isSelected ? 'selected' : ''}>${status[1]}</option>`;
+        }
+        return options;
+    }
+
+
+    // To make order status choices (options for select element) 
+    // to build table in the search result.
+    function getStatusOptions(selectedStatus) {
+        const statusChoices = [
+            ['P', 'Pending'],
+            ['S', 'Shipping'],
+            ['D', 'Delivered'],
+            ['C', 'Cancelled']
+        ];
+        let options = '';
+        for (const status of statusChoices) {
+            const isSelected = status[0] === selectedStatus;
+            options += `<option value="${status[0]}" ${isSelected ? 'selected' : ''}>${status[1]}</option>`;
+        }
+        return options;
+    }
 </script>
 
 {% endblock content %}

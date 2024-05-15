@@ -79,19 +79,6 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
     
-<!-- =========================== Search section begin =========================== -->
-    <div class="container w-50 py-3">
-        <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between">
-            <div class="input-group">  <select class="form-select" aria-label="Search options">
-                <option value="email">Email</option>
-                <option value="order_id">Order ID</option>
-              </select>
-              <input type="text" class="form-control w-50" placeholder="Search">
-            </div>
-            <button type="button" class="btn btn-primary mt-3 mt-sm-0">Search</button>
-          </div>             
-    </div>
-<!-- =========================== Search section end =========================== -->
 <!-- =========================== user section begin =========================== -->
     <section class="mb-2">
         <div class="container-fluid">
@@ -107,8 +94,8 @@
                                 <th scope="col">ID#</th>
                                 <th scope="col">First Name</th>
                                 <th scope="col">Last Name</th>
+                                <th scope="col">User Name</th>
                                 <th scope="col">Email ID</th>
-                                <th scope="col">Order ID</th>
                                 <th scope="col">Action</th>
                             </tr>
                             </thead>
@@ -118,8 +105,8 @@
                                     <th scope="col">{{ user.id }}</th>
                                     <td>{{ user.first_name }}</td>
                                     <td>{{ user.last_name }}</td>
+                                    <td>{{ user.username }}</td>
                                     <td>{{ user.email }}</td>
-                                    <td>To be filled</td>
                                     <td>
                                         <button class="status-toggle text-white btn btn-sm"
                                             data-user-id="{{ user.id }}"

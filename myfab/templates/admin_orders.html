@@ -136,39 +136,34 @@
 <!-- =========================== products section end =========================== -->
 
 <!-- ====================== JS ============================= -->
-{% comment %} <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const query = document.getElementById('search-input').value.trim();
     
-    searchProducts(query, 1);  // Initial search, start from page 1
+    searchOrders(query, 1);  // Initial search, start from page 1
     
 });
 
-function searchProducts(query, page) {
-    axios.get('/custom_admin/products/search/', { params: { query: query, page: page } })
+function searchOrders(query, page) {
+    axios.get('/custom_admin/orders/search/', { params: { query: query, page: page } })
         .then(function(response) {
             const tableBody = document.getElementById('product-table-body');
             tableBody.innerHTML = ''; // Clear previous results
-            response.data.data.forEach(function(product) {
+            response.data.data.forEach(function(order) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <th scope="row">${product.serial_number}</th>
-                    <td>${product.id}</td>
-                    <td>${product.name}</td>
-                    <td>${product.price}</td>
-                    <td>${product.qty}</td>
-                    <td>${product.add_date}</td>
-                    <td>
-                        <a href="${product.image_url}" target="_blank">
-                            <img class="thumbnail-image" src="${product.image_url}" alt="${product.name} Image">
-                        </a>
-                    </td>
+                    <th scope="row">${order.serial_number}</th>
+                    <td>${order.id}</td>
+                    <td>${order.username}</td>
+                    <td>${order.price}</td>
+                    <td>${order.qty}</td>
+                    <td>${order.add_date}</td>
                     <td>
                         <button class="btn btn-sm">
-                            <a href="/custom_admin/products/${product.id}/edit/" class="btn btn-primary">View/Edit</a>
-                            <a href="/custom_admin/products/${product.id}/delete/" class="btn btn-danger">Delete</a>
+                            <a href="" class="btn btn-primary">View/Edit</a>
+                            <a href="" class="btn btn-danger">Delete</a>
                         </button>
                     </td>
                 `;
@@ -179,19 +174,19 @@ function searchProducts(query, page) {
             const pagination = document.querySelector('.pagination');
             pagination.innerHTML = '';
             if (response.data.has_previous) {
-                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
+                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
             }
             for (let i = 1; i <= response.data.pages; i++) {
-                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${i})" class="page-link">${i}</a>`;
+                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${i})" class="page-link">${i}</a>`;
             }
             if (response.data.has_next) {
-                pagination.innerHTML += `<a href="#" onclick="searchProducts('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
+                pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
             }
         })
         .catch(function(error) {
             console.error('Error:', error);
         });
 }
-</script> {% endcomment %}
+</script>
 
 {% endblock content %}

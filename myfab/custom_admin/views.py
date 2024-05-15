@@ -398,3 +398,35 @@ class AdminOrders(View):
         context = {'zipped_data': zipped_data, 'orders': paged_orders}
         return render(request, 'admin_orders.html', context)
 
+
+################################### Admin Orders Search ####################################
+
+class AdminOrderSearch(View):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        page_number = request.GET.get('page', 1)
+        orders = Order.objects.filter(customer_id__username__icontains=query)
+        paginator = Paginator(orders, 10)
+
+        try:
+            paged_orders = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_orders = paginator.page(1)
+        except EmptyPage:
+            paged_orders = paginator.page(paginator.num_pages)
+
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_orders.number - 1) * paginator.per_page + 1
+
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_orders)))
+        serial_numbers.reverse() # reverse list of page Sr number for poping
+
+        data = [{'username': order.customer_id.username, 
+                 'price': order.price, 
+                 'qty': order.quantity, 
+                 'add_date': order.add_date, 
+                 'id': order.id,
+                 'serial_number':serial_numbers.pop()
+                 } for order in paged_orders]
+        return JsonResponse({'data': data, 'has_previous': paged_orders.has_previous(), 'has_next': paged_orders.has_next(), 'pages': paginator.num_pages}, safe=False)

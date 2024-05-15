@@ -61,7 +61,15 @@
                     <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
                         <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_measurements" %}">Measurement Types</a>
                     </button>
-                </li>   
+                </li>
+                <li class="nav-item">
+                    <form id="search-form">
+                        <div class="input-group">
+                            <input type="text" id="search-input" name="query">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </li> 
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item ms-3 ms-lg-0">
@@ -91,6 +99,7 @@
                         <table class="table  table-hover">
                             <thead>
                             <tr>
+                                <th scope="col">Sr#</th>
                                 <th scope="col">ID#</th>
                                 <th scope="col">First Name</th>
                                 <th scope="col">Last Name</th>
@@ -99,10 +108,11 @@
                                 <th scope="col">Action</th>
                             </tr>
                             </thead>
-                            {% for user in users  %}
-                            <tbody>
+                            <tbody id="product-table-body">
+                                {% for serial_number, user in zipped_data %}
                                 <tr>
-                                    <th scope="col">{{ user.id }}</th>
+                                    <th scope="row">{{ serial_number }}</th>
+                                    <td>{{ user.id }}</td>
                                     <td>{{ user.first_name }}</td>
                                     <td>{{ user.last_name }}</td>
                                     <td>{{ user.username }}</td>
@@ -115,8 +125,8 @@
                                         </button>
                                     </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
-                            {% endfor %}
                         </table>
                     </div>
                     <div class="pagination justify-content-center">
@@ -124,9 +134,9 @@
                             <a href="?page=1" class="page-link">&laquo; First</a>
                             <a href="?page={{ users.previous_page_number }}" class="page-link">Previous</a>
                         {% endif %}
-                        <span class="current-page">{{ users.number }}</span>
-                        /
-                        <span class="total-pages">{{ users.paginator.num_pages }}</span>
+                        {% for page in users.paginator.page_range %}
+                        <a href="?page={{ page }}" class="page-link {% if users.number == page %}active{% endif %}">{{ page }}</a>
+                        {% endfor %}
                         {% if users.has_next %}
                             <a href="?page={{ users.next_page_number }}" class="page-link">Next</a>
                             <a href="?page={{ users.paginator.num_pages }}" class="page-link">Last &raquo;</a>
@@ -138,13 +148,27 @@
     </section>
 
 <!-- =========================== user section end =========================== -->
-<!-- =========================== user section JS begin =========================== -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const statusButtons = document.querySelectorAll('.status-toggle');
 
-        // Function to set initial status of each button
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Function to set initial status of each button
     function setInitialStatus(button) {
         const isActive = button.dataset.isActive.toLowerCase() === 'true';
 
@@ -156,6 +180,9 @@
         }
     }
 
+    // Function to attach event listeners to status toggle buttons
+    function attachStatusToggleListeners() {
+        const statusButtons = document.querySelectorAll('.status-toggle');
         statusButtons.forEach(button => {
             // Set initial status of each button
             setInitialStatus(button);
@@ -164,7 +191,7 @@
                 event.preventDefault(); // Prevent default form submission
 
                 const userId = this.dataset.userId;
-                const isActive = this.dataset.isActive.toLowerCase() === 'true'; // Converting the state to opposite
+                const isActive = this.dataset.isActive.toLowerCase() === 'true';
 
                 // Display confirmation dialog
                 const confirmed = confirm("Are you sure you want to change the status?");
@@ -174,7 +201,6 @@
 
                 // Get CSRF token from cookies
                 const csrftoken = getCookie('csrftoken');
-
 
                 axios.post('/custom_admin/', {
                     is_active: !isActive,
@@ -200,7 +226,7 @@
                         // Update the button text based on the new user status
                         button.textContent = !isActive ? 'Block' : 'Unblock';
 
-                       // Toggle button color based on isActive status
+                        // Toggle button color based on isActive status
                         this.classList.toggle('active', !isActive);
                         this.classList.toggle('inactive', isActive);
                     } else {
@@ -212,25 +238,72 @@
                 });
             });
         });
-    });
-
-    // Function to get CSRF token from cookies
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
     }
 
+    // Call the function to attach event listeners during initial page load
+    attachStatusToggleListeners();
+
+    // JS for search orders
+    document.getElementById('search-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const query = document.getElementById('search-input').value.trim();
+
+        searchUsers(query, 1);  // Initial search, start from page 1
+    });
+
+    function searchUsers(query, page) {
+        axios.get('/custom_admin/users/search/', { params: { query: query, page: page } })
+            .then(function(response) {
+                const tableBody = document.getElementById('product-table-body');
+                tableBody.innerHTML = ''; // Clear previous results
+                response.data.data.forEach(function(user) {
+                    const row = document.createElement('tr');
+
+                    //  to make the status btn Html based on is_active value of
+                    // This "{{ user.is_active|yesno:"Block,Unblock" }}" of Django
+                    // template is not allowed in JS.
+                    const statusLabel = user.is_active ? 'Block' : 'Unblock';
+                    row.innerHTML = `
+                        <th scope="row">${user.serial_number}</th>
+                        <td>${user.id}</td>
+                        <td>${user.first_name}</td>
+                        <td>${user.last_name}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <button class="status-toggle text-white btn btn-sm"
+                                data-user-id="${user.id}"
+                                data-is-active="${user.is_active}">
+                                ${statusLabel}  
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Update pagination links based on response
+                const pagination = document.querySelector('.pagination');
+                pagination.innerHTML = '';
+                if (response.data.has_previous) {
+                    pagination.innerHTML += `<a href="#" onclick="searchUsers('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
+                }
+                for (let i = 1; i <= response.data.pages; i++) {
+                    pagination.innerHTML += `<a href="#" onclick="searchUsers('${query}', ${i})" class="page-link">${i}</a>`;
+                }
+                if (response.data.has_next) {
+                    pagination.innerHTML += `<a href="#" onclick="searchUsers('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
+                }
+
+                // Call the function to attach event listeners after updating search results
+                attachStatusToggleListeners();
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+    }
+
+
 </script>
-<!-- =========================== user section JS end =========================== -->
+
 
 {% endblock  %}

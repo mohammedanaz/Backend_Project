@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminHome, AdminUsers, AdminProducts, AdminProductEdit, AdminProductDelete, AdminProductAdd
+from .views import AdminHome, AdminUsers, AdminUserSearch, AdminProducts, AdminProductEdit, AdminProductDelete, AdminProductAdd
 from .views import AdminCategories, AdminCategoryEdit, AdminCategoryAdd, AdminCategoryDelete
 from .views import AdminUsages, AdminUsageEdit, AdminUsageAdd, AdminUsageDelete
 from .views import AdminMeasurements, AdminMeasurementAdd, AdminMeasurementEdit, AdminMeasurementDelete, AdminProductSearch
@@ -9,6 +9,7 @@ app_name = 'custom_admin'
 urlpatterns = [
     path('', AdminHome.as_view(), name = 'admin_home'),
     path('users/', AdminUsers.as_view(), name = 'admin_users'),
+    path('users/search/', AdminUserSearch.as_view(), name = 'admin_user_search'),
     path('products/', AdminProducts.as_view(), name = 'admin_products'),
     path('products/search/', AdminProductSearch.as_view(), name = 'admin_product_search'),
     path('products/<int:pk>/edit/', AdminProductEdit.as_view(), name = 'admin_product_edit'),
@@ -27,5 +28,5 @@ urlpatterns = [
     path('measurements/add/', AdminMeasurementAdd.as_view(), name='admin_measurement_add'),
     path('measurements/<int:pk>/delete/', AdminMeasurementDelete.as_view(), name='admin_measurement_delete'),
     path('orders/', AdminOrders.as_view(), name = 'admin_orders'),
-     path('orders/search/', AdminOrderSearch.as_view(), name = 'admin_order_search'),
+    path('orders/search/', AdminOrderSearch.as_view(), name = 'admin_order_search'),
 ]   

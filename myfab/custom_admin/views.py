@@ -43,16 +43,24 @@ class AdminHome(View):
 
 class AdminUsers(View):
     def get(self, request):
-        users_list = CustomUser.objects.all()
-        paginator = Paginator(users_list, 10) 
+        users = CustomUser.objects.all()
+        paginator = Paginator(users, 10) 
         page_number = request.GET.get('page')
         try:
-            users = paginator.page(page_number)
+            paged_users = paginator.page(page_number)
         except PageNotAnInteger:
-            users = paginator.page(1)
+            paged_users = paginator.page(1)
         except EmptyPage:
-            users = paginator.page(paginator.num_pages)
-        context = {'users': users}
+            paged_users = paginator.page(paginator.num_pages)
+
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_users.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_users)))
+        zipped_data = zip(serial_numbers, paged_users)
+        
+        context = {'zipped_data': zipped_data, 'users': paged_users}
         return render(request, 'admin_users.html', context)
 
 ################################### Admin Products ####################################
@@ -430,3 +438,38 @@ class AdminOrderSearch(View):
                  'serial_number':serial_numbers.pop()
                  } for order in paged_orders]
         return JsonResponse({'data': data, 'has_previous': paged_orders.has_previous(), 'has_next': paged_orders.has_next(), 'pages': paginator.num_pages}, safe=False)
+    
+
+    ################################### Admin Users Search ####################################
+
+class AdminUserSearch(View):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        page_number = request.GET.get('page', 1)
+        users = CustomUser.objects.filter(username__icontains=query)
+        paginator = Paginator(users, 10)
+
+        try:
+            paged_users = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_users = paginator.page(1)
+        except EmptyPage:
+            paged_users = paginator.page(paginator.num_pages)
+
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_users.number - 1) * paginator.per_page + 1
+
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_users)))
+        serial_numbers.reverse() # reverse list of page Sr number for poping
+
+        data = [{'username': user.username, 
+                 'email': user.email, 
+                 'last_name': user.last_name, 
+                 'first_name': user.first_name, 
+                 'id': user.id,
+                 'is_active': user.is_active,
+                 'serial_number':serial_numbers.pop()
+                 } for user in paged_users]
+        
+        return JsonResponse({'data': data, 'has_previous': paged_users.has_previous(), 'has_next': paged_users.has_next(), 'pages': paginator.num_pages}, safe=False)

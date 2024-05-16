@@ -206,8 +206,20 @@
                         <img src="{{ product.image.url }}" class="card-img-top" alt="{{product.name}}-img">
                         <div class="card-body">
                         <h4 class="card-title text-truncate">{{product.name|title}}</h4>
-                        <p class="card-text fw-bold fs-4"><i class="fa">&#xf156;</i>  {{product.price}} /Mtr</p>
-                        <a href="{% url 'main:product_details' product.id %}" class="btn btn-primary">Go For It</a>
+                        <p class="card-text fw-bold fs-4 my-2"><i class="fa">&#xf156;</i>  {{product.price}} /Mtr</p>
+                        <div class="my-0">
+                            {% if product.qty > 25 %}
+                            <p class="text-success fw-bold my-0">In Stock</p>
+                            {% elif product.qty > 3 %}
+                            <p class="text-warning fw-bold my-0">Limited Stock</p>
+                            {% else %}
+                            <p class="text-danger fw-bold my-0">Out of Stock</p>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'main:product_details' product.id %}" 
+                            class="btn btn-primary {% if product.qty < 3 %}disabled{% endif %}">
+                            Go For It
+                        </a>
                         </div>
                     </div>
                 </div>

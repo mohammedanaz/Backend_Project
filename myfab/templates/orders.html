@@ -5,7 +5,7 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block title %}User Address{% endblock %}
+{% block title %}User Orders{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -65,70 +65,100 @@
 
 <!-- =========================== Address Section begin =========================== -->
     <section class="container my-2">
-        {% if addresses %}
+        {% if orders %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
-            Addresses
-            {% if address_count < 3  %}
-            <span>
-                <button class="btn btn-outline-primary my-2" data-toggle="tooltip" title="Add New"
-                onclick="window.location.href='{% url 'accounts:add_address' %}'">
-                    <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
-                </button>
-            </span>
-            {% else %}
-            <span><h2>(Maximum 3 Addresses only.)</h2></span>
-            {% endif %}
-            
+            Orders
         </h5>
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-            {% for address in addresses %}
-            <div class="col mt-2">
-                <div class="card">
+        {% for order in orders %}
+        <div class="card my-3 col col-md-11" id="card-{{order.id}}">
+            <div class="row g-0">
+                <div class="col-md-3">
+                    <img src="{{ order.product_id.image.url }}" 
+                    class="img-thumbnail img-fluid rounded-start w-100" alt="img-order-{{order.id}}">
+                </div>
+                <div class="col-md-9">
+                    <h4 class="card-header">{{order.product_id.name}}</h4>
                     <div class="card-body">
-                        <h5 class="card-title">Address Details - {{forloop.counter}}</h5>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><strong>Name:</strong> {{ address.name }}</li>
-                            <li class="list-group-item"><strong>House Name:</strong> {{ address.house_name }}</li>
-                            <li class="list-group-item"><strong>Street Name 1:</strong> {{ address.street_name_1 }}</li>
-                            <li class="list-group-item"><strong>Street Name 2:</strong> {{ address.street_name_2 }}</li>
-                            <li class="list-group-item"><strong>City:</strong> {{ address.city }}</li>
-                            <li class="list-group-item"><strong>State:</strong> {{ address.state }}</li>
-                            <li class="list-group-item"><strong>Pincode:</strong> {{ address.pincode }}</li>
-                            <li class="list-group-item"><strong>Phone Number:</strong> {{ address.phone_number }}</li>
-                        </ul>
-                        <a href="{% url "accounts:edit_address" address.id %}" class="btn fs-4"><i class="bi bi-pencil-square"></i></a>
-                        <form id="deleteAddressForm" action="{% url "accounts:delete_address" address.id %}" method="post" 
-                            class="d-inline" onsubmit="return confirmDelete()">
-                            {% csrf_token %}
-                            <button type="submit" class="btn fs-4"><i class="bi bi-trash3"></i></button>
-                        </form>
+                        <h5 class="my-0">Order-id: {{order.id}}</h5>
+                        <p >
+                            <small class="text-body-secondary">
+                                Ordered on: {{order.add_date}}
+                            </small>
+                        </p>
+                        <p class="card-text my-0">Quantity: {{order.quantity}} meter.</p>
+                        <p class="card-text my-0">Price: <i class="fa">&#xf156;</i> {{order.price}}</p>
+                        <p class="card-text my-0" id="status-{{order.id}}">
+                            Status: {{order.get_status_display}}
+                        </p>
+                        {% if order.status == 'D' %}
+                        <a href="#" class="btn btn-primary" style="margin-top: 10px;">Request Return</a>
+                        {% elif order.status == 'C' %}
+                        <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" disabled>
+                            Cancel
+                        </button>
+                        {% else %}
+                        <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" id="btn-{{order.id}}"
+                            data-order-id="{{ order.id }}" onclick="cancelOrder({{ order.id }})">
+                            Cancel
+                        </button>
+                        <div id="order-cancel-success-msg-{{order.id}}" 
+                            class="alert alert-success fade show w-25 my-1" role="alert" style="display: none;">
+                            Order Cancelled.
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-        {% endfor %}
         </div>
-
+        {% endfor %}
         {% else %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
-            Addresses
-            <span>
-                <button class="btn btn-outline-primary my-2" data-toggle="tooltip" title="Add New"
-                onclick="window.location.href='{% url 'accounts:add_address' %}'">
-                    <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
-                </button>
-            </span>
+            Orders
         </h5>
         <h2 class="text-info my-2">
-            No Address Yet
+            No Orders Yet
         </h2>
         {% endif %}
 
     </section>
 <!-- =========================== Address Section end =========================== -->
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        function confirmDelete() {
-            return confirm("Are you sure you want to delete this address?");
+        function cancelOrder(orderId) {
+            var confirmation = window.confirm("Are you sure you want to cancel this order?");
+
+            if(confirmation){
+                const csrfToken = "{{ csrf_token }}";
+
+                // Send Axios request
+                axios.post('/accounts/orders/', {
+                    order_id: orderId
+                }, {
+                    headers: {
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(function (response) {
+                    // Handle success
+                    console.log(response.data);
+                    var btnCancel = document.getElementById('btn-' +orderId)
+                    var statusDiv = document.getElementById('status-' +orderId)
+                    var successMsg = document.getElementById('order-cancel-success-msg-' +orderId)
+
+                    successMsg.style.display = 'block';
+                    btnCancel.disabled = true;
+                    statusDiv.textContent = 'Status: Cancelled';
+
+                    setTimeout(function() {
+                        successMsg.style.display = 'none';
+                    }, 1500);
+                })
+                .catch(function (error) {
+                    // Handle error
+                    console.error(error);
+                });
+            }
+            
         }
     </script>
 {% endblock %}

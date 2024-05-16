@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.views.generic import View, TemplateView, UpdateView, DeleteView
-from django.http import HttpResponseRedirect
 from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
 from .models import CustomUser, Address
+from orders.models import Order
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
@@ -14,7 +15,7 @@ from .forms import OTPVerificationForm
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 import re
-from django import forms
+import json
 from .forms import AddressForm
 
 
@@ -184,5 +185,36 @@ class AddressEdit(UpdateView):
     form_class = AddressForm
     template_name = 'address_edit.html'
     success_url = reverse_lazy('accounts:address')
+
+
+############################### User Orders ######################################
+
+class Orders(View):
+    '''
+    To render user orders page.
+    '''
+    def get(self, request):
+
+        user = request.user
+        orders = Order.objects.filter(customer_id=user)
+        context = {'orders': orders}
+        return render(request, 'orders.html', context)
+    
+    def post(self, request):
+        json_data = json.loads(request.body)
+
+        order_id = json_data.get('order_id')
+        order = Order.objects.get(id=order_id)
+        try:
+            order.status = 'C'
+            order.save()
+        except ValidationError as e:
+            print(f'Validation error- {e}')
+
+        return JsonResponse({'success-msg': 'Order cancelled.'})
+
+        
+
+        return JsonResponse({'success': True, 'success-msg': 'Order Cancelled.'})
 
     

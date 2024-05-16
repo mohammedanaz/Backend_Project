@@ -85,6 +85,10 @@
                                 Ordered on: {{order.add_date}}
                             </small>
                         </p>
+                        <p class="card-text my-0">
+                            Order type: {% if order.order_type == 1 %}Fabric only 
+                            {% else %}Fabric with stitching{% endif %}
+                        </p>
                         <p class="card-text my-0">Quantity: {{order.quantity}} meter.</p>
                         <p class="card-text my-0">Price: <i class="fa">&#xf156;</i> {{order.price}}</p>
                         <p class="card-text my-0" id="status-{{order.id}}">

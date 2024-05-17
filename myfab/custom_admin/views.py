@@ -9,6 +9,7 @@ from accounts.models import CustomUser
 from main.models import Product, Category, CategoryChoice, Usage, Measurement
 from orders.models import Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 
 # Create your views here.
@@ -123,7 +124,9 @@ class AdminProductSearch(View):
                  'id': product.id,
                  'serial_number':serial_numbers.pop()
                  } for product in paged_products]
-        return JsonResponse({'data': data, 'has_previous': paged_products.has_previous(), 'has_next': paged_products.has_next(), 'pages': paginator.num_pages}, safe=False)
+        return JsonResponse({'data': data, 'has_previous': paged_products.has_previous(), 
+                             'has_next': paged_products.has_next(), 
+                             'pages': paginator.num_pages}, safe=False)
 
 
 ################################### Admin Product Edit ####################################
@@ -436,7 +439,11 @@ class AdminOrderSearch(View):
     def get(self, request):
         query = request.GET.get('query', '')
         page_number = request.GET.get('page', 1)
-        orders = Order.objects.filter(customer_id__username__icontains=query).order_by('-add_date')
+        orders = (
+            Order.objects
+            .filter(Q(customer_id__username__icontains=query) | Q(id__icontains=query))
+            .order_by('-add_date')
+        )
         paginator = Paginator(orders, 10)
 
         try:
@@ -460,7 +467,9 @@ class AdminOrderSearch(View):
                  'id': order.id,
                  'serial_number':serial_numbers.pop()
                  } for order in paged_orders]
-        return JsonResponse({'data': data, 'has_previous': paged_orders.has_previous(), 'has_next': paged_orders.has_next(), 'pages': paginator.num_pages}, safe=False)
+        return JsonResponse({'data': data, 'has_previous': paged_orders.has_previous(), 
+                             'has_next': paged_orders.has_next(), 
+                             'pages': paginator.num_pages}, safe=False)
     
 
     ################################### Admin Users Search ####################################
@@ -469,7 +478,7 @@ class AdminUserSearch(View):
     def get(self, request):
         query = request.GET.get('query', '')
         page_number = request.GET.get('page', 1)
-        users = CustomUser.objects.filter(username__icontains=query)
+        users = CustomUser.objects.filter(Q(first_name__icontains=query) | Q(username__icontains=query))
         paginator = Paginator(users, 10)
 
         try:
@@ -495,4 +504,6 @@ class AdminUserSearch(View):
                  'serial_number':serial_numbers.pop()
                  } for user in paged_users]
         
-        return JsonResponse({'data': data, 'has_previous': paged_users.has_previous(), 'has_next': paged_users.has_next(), 'pages': paginator.num_pages}, safe=False)
+        return JsonResponse({'data': data, 'has_previous': paged_users.has_previous(), 
+                             'has_next': paged_users.has_next(), 
+                             'pages': paginator.num_pages}, safe=False)

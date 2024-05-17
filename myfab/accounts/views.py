@@ -191,7 +191,8 @@ class AddressEdit(UpdateView):
 
 class Orders(View):
     '''
-    To render user orders page.
+    Get method is To render user orders page.
+    Post method is to handle cancel request.
     '''
     def get(self, request):
 

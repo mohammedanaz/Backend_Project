@@ -10,8 +10,9 @@ from main.models import Product, Category, CategoryChoice, Usage, Measurement
 from orders.models import Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
-from django.db.models.functions import ExtractMonth
+from django.db.models.functions import ExtractMonth, ExtractYear
 import calendar
+from datetime import datetime
 from django.db.models import Count, Sum
 
 # Create your views here.
@@ -20,8 +21,16 @@ class AdminHome(View):
     def get(self, request):
         # This quer generates a list of dicts that contain
         # {'month': values, 'order_count': values} format.
+        unique_years = (
+            Order.objects
+            .annotate(year=ExtractYear('add_date'))
+            .values_list('year', flat=True)
+            .distinct()
+            )
+        current_year = datetime.now().year
         orders = (
             Order.objects
+            .annotate(year=ExtractYear('add_date')).filter(year=current_year)
             .annotate(month=ExtractMonth('add_date'))
             .values('month')  # Select only the 'month' field
             .annotate(order_count=Count('id'))  # Count the number of orders per month
@@ -39,6 +48,7 @@ class AdminHome(View):
 
         sales = (
             Order.objects
+            .annotate(year=ExtractYear('add_date')).filter(year=current_year)
             .annotate(month=ExtractMonth('add_date'))
             .values('month')  
             .annotate(sales=Sum('price'))  
@@ -57,7 +67,8 @@ class AdminHome(View):
         context = {
             'months_orders': months_orders,
             'months_sales': months_sales,
-                   
+            'current_year': current_year,
+            'unique_years': unique_years,
                    }
         return render(request, 'admin_home.html', context)
 

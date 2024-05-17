@@ -69,12 +69,28 @@
 <!-- =========================== Graph section begin =========================== -->
 
     <!-- Sample chart model -->
-    <div class="container d-flex">
-        <div class="container my-5" >
-            <canvas id="myChart1"></canvas>
+    <div class="container d-flex flex-column flex-lg-row gap-3">
+        <div class="container my-5 shadow" >
+            <select class="form-select form-select-sm w-25 mx-auto mt-2" 
+                id="year-orders" name="year-orders">
+                {% for year in unique_years  %}
+                <option value="{{year}}" {% if year == current_year %} selected {% endif %}>
+                    {{year}}
+                </option>
+                {% endfor %}
+            </select>
+            <canvas id="chart-orders" style="max-width: 100%; height: 100%;"></canvas>
         </div>
-        <div class="container my-5">
-            <canvas id="myChart2"></canvas>
+        <div class="container my-5 shadow">
+            <select class="form-select form-select-sm w-25 mx-auto mt-2" 
+                id="year-sales" name="year-sales">
+                {% for year in unique_years  %}
+                <option value="{{year}}" {% if year == current_year %} selected {% endif %}>
+                    {{year}}
+                </option>
+                {% endfor %}
+            </select>
+            <canvas id="chart-sales" style="max-width: 100%; height: 100%;"></canvas>
         </div>
     </div>
     
@@ -84,10 +100,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-    const ctx1 = document.getElementById('myChart1');
-    const ctx2 = document.getElementById('myChart2');
+    const ctx1 = document.getElementById('chart-orders');
+    const ctx2 = document.getElementById('chart-sales');
     
-    new Chart(ctx1, {
+    let chartOrders = new Chart(ctx1, {
         type: 'bar',
         data: {
         labels: [{% for month in months_orders.keys %}'{{ month }}',{% endfor %}],
@@ -117,7 +133,7 @@
         }
     });
 
-    new Chart(ctx2, {
+    let chartSales = new Chart(ctx2, {
         type: 'line',
         data: {
         labels: [{% for month in months_sales.keys %}'{{ month }}',{% endfor %}],

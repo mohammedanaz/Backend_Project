@@ -11,16 +11,14 @@ from orders.models import Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.db.models.functions import ExtractMonth
-from django.db.models import Count
-from pprint import pprint
-
-
+import calendar
+from django.db.models import Count, Sum
 
 # Create your views here.
 ################################### Admin Home ####################################
 class AdminHome(View):
     def get(self, request):
-        # This quer generates a dict that contain
+        # This quer generates a list of dicts that contain
         # {'month': values, 'order_count': values} format.
         orders = (
             Order.objects
@@ -29,9 +27,38 @@ class AdminHome(View):
             .annotate(order_count=Count('id'))  # Count the number of orders per month
             .order_by('month')  # Order by month 
         )
-        pprint(orders)
 
-        context = {'orders': orders}
+        months_orders = {
+            'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0, 'May': 0, 'Jun': 0,
+            'Jul': 0, 'Aug': 0, 'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
+        }
+
+        for order in orders:
+            month_abbr = calendar.month_name[order['month']][:3]
+            months_orders[month_abbr] = order['order_count']
+
+        sales = (
+            Order.objects
+            .annotate(month=ExtractMonth('add_date'))
+            .values('month')  
+            .annotate(sales=Sum('price'))  
+            .order_by('month') 
+        )
+
+        months_sales = {
+            'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0, 'May': 0, 'Jun': 0,
+            'Jul': 0, 'Aug': 0, 'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
+        }
+
+        for sale in sales:
+            month_abbr = calendar.month_name[sale['month']][:3]
+            months_sales[month_abbr] = sale['sales']
+        
+        context = {
+            'months_orders': months_orders,
+            'months_sales': months_sales,
+                   
+                   }
         return render(request, 'admin_home.html', context)
 
 

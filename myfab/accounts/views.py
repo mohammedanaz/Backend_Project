@@ -211,7 +211,6 @@ class Orders(View):
         try:
             order.status = 'C'
             order.save()
-            print('Before send_email')
              # Send email after saving the order status
             send_mail(
                 'Order Cancellation Confirmation', # Email subject
@@ -220,13 +219,14 @@ class Orders(View):
                 [order.customer_id.email],  # Recipient email address
                 fail_silently=False,
             )
-            print('Before send_email')
+            return JsonResponse({'success-msg': 'Order cancelled.'})
         except ValidationError as e:
             print(f'Validation error- {e}')
+            return JsonResponse({'error-msg': 'Validation Error.'})
         except Exception as e:
             print('Entered in send_email error')
             logging.error(f'An error occurred while sending email: {e}')
-        return JsonResponse({'success-msg': 'Order cancelled.'})
+            return JsonResponse({'error-msg': 'Logging Error.'})
 
 
     

@@ -69,33 +69,87 @@
 <!-- =========================== Graph section begin =========================== -->
 
     <!-- Sample chart model -->
-    <div class="container my-5" style="max-width: 70%;">
-        <canvas id="myChart"></canvas>
+    <div class="container d-flex">
+        <div class="container my-5" >
+            <canvas id="myChart1"></canvas>
+        </div>
+        <div class="container my-5">
+            <canvas id="myChart2"></canvas>
+        </div>
     </div>
     
+    
+
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-    const ctx = document.getElementById('myChart');
+    const ctx1 = document.getElementById('myChart1');
+    const ctx2 = document.getElementById('myChart2');
     
-    new Chart(ctx, {
+    new Chart(ctx1, {
         type: 'bar',
         data: {
-        labels: [{% for order in orders %}{% verbatim %}'{{ order.month }}'{% endverbatim %},{% endfor %}],
+        labels: [{% for month in months_orders.keys %}'{{ month }}',{% endfor %}],
         datasets: [{
-            label: '# of Votes',
-            data: [{% for order in orders %}{% verbatim %}'{{ order.order_count }}'{% endverbatim %},{% endfor %}],
-            borderWidth: 1
+            label: 'Monthly Orders',
+            data: [{% for order in months_orders.values %}'{{ order }}',{% endfor %}],
+            borderWidth: 2,
+            backgroundColor: 'rgba(128,0,32, 0.8)'
         }]
         },
         options: {
         scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Months'
+                }
+            },
             y: {
-            beginAtZero: true
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Number of Orders'
+                }
             }
         }
         }
     });
+
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+        labels: [{% for month in months_sales.keys %}'{{ month }}',{% endfor %}],
+        datasets: [{
+            label: 'Monthly Sales',
+            data: [{% for sale in months_sales.values %}'{{ sale }}',{% endfor %}],
+            borderWidth: 2,
+            borderColor: 'rgba(128,0,32, 1)',
+            backgroundColor: 'rgba(128,0,32, 0.2)',
+            fill: true,
+            tension: 0.2
+        }]
+        },
+        options: {
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Months'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Rupees'
+                }
+            }
+        }
+        }
+    });
+
     </script>
       
 <!-- =========================== Graph section End =========================== -->

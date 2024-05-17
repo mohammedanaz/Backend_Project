@@ -396,7 +396,7 @@ class AdminOrders(View):
     order status change to update DB. Get method is to render order list page. 
     '''
     def get(self, request):
-        orders = Order.objects.all()
+        orders = Order.objects.all().order_by('-add_date')
         paginator = Paginator(orders, 10) 
         page_number = request.GET.get('page')
         try:
@@ -436,7 +436,7 @@ class AdminOrderSearch(View):
     def get(self, request):
         query = request.GET.get('query', '')
         page_number = request.GET.get('page', 1)
-        orders = Order.objects.filter(customer_id__username__icontains=query)
+        orders = Order.objects.filter(customer_id__username__icontains=query).order_by('-add_date')
         paginator = Paginator(orders, 10)
 
         try:

@@ -199,7 +199,7 @@ class Orders(View):
     def get(self, request):
 
         user = request.user
-        orders = Order.objects.filter(customer_id=user)
+        orders = Order.objects.filter(customer_id=user).order_by('-add_date')
         context = {'orders': orders}
         return render(request, 'orders.html', context)
     

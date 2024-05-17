@@ -10,14 +10,28 @@ from main.models import Product, Category, CategoryChoice, Usage, Measurement
 from orders.models import Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from django.db.models.functions import ExtractMonth
+from django.db.models import Count
+from pprint import pprint
+
 
 
 # Create your views here.
 ################################### Admin Home ####################################
 class AdminHome(View):
     def get(self, request):
-        users = CustomUser.objects.all()[:5]
-        context = {'users': users}
+        # This quer generates a dict that contain
+        # {'month': values, 'order_count': values} format.
+        orders = (
+            Order.objects
+            .annotate(month=ExtractMonth('add_date'))
+            .values('month')  # Select only the 'month' field
+            .annotate(order_count=Count('id'))  # Count the number of orders per month
+            .order_by('month')  # Order by month 
+        )
+        pprint(orders)
+
+        context = {'orders': orders}
         return render(request, 'admin_home.html', context)
 
 

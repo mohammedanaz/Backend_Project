@@ -67,9 +67,37 @@
 <!-- =========================== Navbar End =========================== -->
 
 <!-- =========================== Graph section begin =========================== -->
-    <div class="container-fluid" style="max-height: 30vw;">
-        <img class="logo" style="width: 100%; max-height: 30vw;" src="{% static 'images/graph.png' %}" alt="grapf">
+
+    <!-- Sample chart model -->
+    <div class="container my-5" style="max-width: 70%;">
+        <canvas id="myChart"></canvas>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    const ctx = document.getElementById('myChart');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: [{% for order in orders %}{% verbatim %}'{{ order.month }}'{% endverbatim %},{% endfor %}],
+        datasets: [{
+            label: '# of Votes',
+            data: [{% for order in orders %}{% verbatim %}'{{ order.order_count }}'{% endverbatim %},{% endfor %}],
+            borderWidth: 1
+        }]
+        },
+        options: {
+        scales: {
+            y: {
+            beginAtZero: true
+            }
+        }
+        }
+    });
+    </script>
+      
 <!-- =========================== Graph section End =========================== -->
 
 

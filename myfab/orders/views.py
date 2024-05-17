@@ -151,6 +151,8 @@ class CreateOrder(View):
             with transaction.atomic():
                 # lock corresponding rows of cart and product to update.
                 cart_items = Cart.objects.select_for_update().filter(customer_id=user)
+                if not cart_items:
+                    return redirect(reverse('main:products'))
                 product_ids = [cart_item.product_id.id for cart_item in cart_items]
                 products = Product.objects.select_for_update().filter(id__in=product_ids)
                 for cart in cart_items:

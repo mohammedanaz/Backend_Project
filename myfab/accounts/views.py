@@ -17,6 +17,8 @@ from django.core.exceptions import ValidationError
 import re
 import json
 from .forms import AddressForm
+from django.core.mail import send_mail
+import logging
 
 
 # Create your views here.
@@ -209,13 +211,22 @@ class Orders(View):
         try:
             order.status = 'C'
             order.save()
+            print('Before send_email')
+             # Send email after saving the order status
+            send_mail(
+                'Order Cancellation Confirmation', # Email subject
+                f'Your order with ID {order.id} has been successfully cancelled.',
+                'anzforweb@gmail.com',  # Sender email address
+                [order.customer_id.email],  # Recipient email address
+                fail_silently=False,
+            )
+            print('Before send_email')
         except ValidationError as e:
             print(f'Validation error- {e}')
-
+        except Exception as e:
+            print('Entered in send_email error')
+            logging.error(f'An error occurred while sending email: {e}')
         return JsonResponse({'success-msg': 'Order cancelled.'})
 
-        
-
-        return JsonResponse({'success': True, 'success-msg': 'Order Cancelled.'})
 
     

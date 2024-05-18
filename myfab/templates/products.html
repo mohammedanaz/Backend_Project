@@ -102,7 +102,7 @@
                 Filters
             </button>
             <!-- Fliter Accordion -->
-            <div class="accordion d-none d-lg-block shadow pb-3 ps-3" id="filterAccordion">
+            <div class="accordion d-none d-lg-block shadow p-3 rounded-3" id="filterAccordion">
                 <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters and Sort</h6>
                 <form action="" method="get">
                     <!-- Hidden search input field to preserve search value when submitting filter form -->
@@ -201,7 +201,7 @@
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
                 {% for product in products %}
-                <div class="col mt-2">
+                <div class="col mt-2 mb-5">
                     <div class="card shadow" >
                         <img src="{{ product.image.url }}" class="card-img-top" alt="{{product.name}}-img">
                         <div class="card-body">

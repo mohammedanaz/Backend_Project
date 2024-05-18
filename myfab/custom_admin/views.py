@@ -18,6 +18,9 @@ from django.db.models import Count, Sum
 # Create your views here.
 ################################### Admin Home ####################################
 class AdminHome(View):
+    '''
+    To render the admin home page with charts.
+    '''
     def get(self, request):
         # This quer generates a list of dicts that contain
         # {'month': values, 'order_count': values} format.
@@ -71,6 +74,51 @@ class AdminHome(View):
             'unique_years': unique_years,
                    }
         return render(request, 'admin_home.html', context)
+    
+    def post(self, request):
+        '''
+        To handle post axios request to change the year for chart view.
+        '''
+        json_data = json.loads(request.body)
+        requested_year = json_data.get('year')
+
+        orders = (
+            Order.objects
+            .annotate(year=ExtractYear('add_date')).filter(year=requested_year)
+            .annotate(month=ExtractMonth('add_date'))
+            .values('month')  # Select only the 'month' field
+            .annotate(order_count=Count('id'))  # Count the number of orders per month
+            .order_by('month')  # Order by month 
+        )
+
+        months_orders = {
+            'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0, 'May': 0, 'Jun': 0,
+            'Jul': 0, 'Aug': 0, 'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
+        }
+
+        for order in orders:
+            month_abbr = calendar.month_name[order['month']][:3]
+            months_orders[month_abbr] = order['order_count']
+        
+        sales = (
+            Order.objects
+            .annotate(year=ExtractYear('add_date')).filter(year=requested_year)
+            .annotate(month=ExtractMonth('add_date'))
+            .values('month')  
+            .annotate(sales=Sum('price'))  
+            .order_by('month') 
+        )
+
+        months_sales = {
+            'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0, 'May': 0, 'Jun': 0,
+            'Jul': 0, 'Aug': 0, 'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
+        }
+
+        for sale in sales:
+            month_abbr = calendar.month_name[sale['month']][:3]
+            months_sales[month_abbr] = sale['sales']
+
+        return JsonResponse({'months_orders': months_orders, 'months_sales': months_sales})
 
 
 ################################### Admin Users ####################################

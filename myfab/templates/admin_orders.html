@@ -164,8 +164,19 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
     // To make search result with axios. on submit it calls searchOrders() to
-    // request axios with search query
+    // request axios with search query and selected order status filter.
     document.getElementById('search-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const query = document.getElementById('search-input').value.trim();
+    const orderStatus = document.getElementById('order-status').value;
+
+    searchOrders(query, orderStatus, 1);  // Initial search, start from page 1
+    
+});
+
+    // To make filter order status with axios. on change it calls searchOrders() to
+    // request axios with search query and selected order status filter.
+    document.getElementById('order-status').addEventListener('change', function(event) {
     event.preventDefault();
     const query = document.getElementById('search-input').value.trim();
     const orderStatus = document.getElementById('order-status').value;

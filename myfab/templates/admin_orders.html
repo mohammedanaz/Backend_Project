@@ -82,6 +82,16 @@
                    Orders
                 </h5>
             </div>
+            <div class="container-fluid d-flex justify-content-end">
+                <select class="form-select w-50 mb-2" id="order-status" name="order-status">
+                    <option value="All" selected>Filter Order Status</option>
+                    <option value="All" >All status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Shipping">Shipping</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+            </div>
             <div class="row h-100">
                 <div class="col-12">
                     <div class="table-responsive text-center">
@@ -158,13 +168,21 @@
     document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
     const query = document.getElementById('search-input').value.trim();
-    
-    searchOrders(query, 1);  // Initial search, start from page 1
+    const orderStatus = document.getElementById('order-status').value;
+
+    searchOrders(query, orderStatus, 1);  // Initial search, start from page 1
     
 });
 
-    function searchOrders(query, page) {
-        axios.get('/custom_admin/orders/search/', { params: { query: query, page: page } })
+    function searchOrders(query, orderStatus, page) {
+
+        axios.get('/custom_admin/orders/search/', { 
+        params: { 
+                    query: query,
+                    orderStatus: orderStatus,
+                    page: page
+                } 
+            })
             .then(function(response) {
                 const tableBody = document.getElementById('product-table-body');
                 tableBody.innerHTML = ''; // Clear previous results
@@ -192,13 +210,13 @@
                 const pagination = document.querySelector('.pagination');
                 pagination.innerHTML = '';
                 if (response.data.has_previous) {
-                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', '${orderStatus}', ${page - 1})" class="page-link">&laquo; Previous</a>`;
                 }
                 for (let i = 1; i <= response.data.pages; i++) {
-                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${i})" class="page-link">${i}</a>`;
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', '${orderStatus}', ${i})" class="page-link">${i}</a>`;
                 }
                 if (response.data.has_next) {
-                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', ${page + 1})" class="page-link">Next &raquo;</a>`;
+                    pagination.innerHTML += `<a href="#" onclick="searchOrders('${query}', '${orderStatus}', ${page + 1})" class="page-link">Next &raquo;</a>`;
                 }
             })
             .catch(function(error) {

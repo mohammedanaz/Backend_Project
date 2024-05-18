@@ -538,14 +538,31 @@ class AdminOrders(View):
 class AdminOrderSearch(View):
     def get(self, request):
         query = request.GET.get('query', '')
+        order_status = request.GET.get('orderStatus')
         page_number = request.GET.get('page', 1)
-        orders = (
-            Order.objects
-            .filter(Q(customer_id__username__icontains=query) | Q(id__icontains=query))
-            .order_by('-add_date')
-        )
+        # Filter order list as per status selected 
+        if order_status == 'All':
+            orders = (
+                Order.objects
+                .filter(Q(customer_id__username__icontains=query) | Q(id__icontains=query))
+                .order_by('-add_date')
+            )
+        else:
+            order_status_map = {
+                'Pending': 'P',
+                'Shipping': 'S',
+                'Delivered': 'D',
+                'Cancelled': 'C'
+            }
+            status = order_status_map.get(order_status)
+            orders = (
+                Order.objects
+                .filter(status=status)
+                .filter(Q(customer_id__username__icontains=query) | Q(id__icontains=query))
+                .order_by('-add_date')
+            )
+        # Pagination
         paginator = Paginator(orders, 10)
-
         try:
             paged_orders = paginator.page(page_number)
         except PageNotAnInteger:
@@ -563,7 +580,8 @@ class AdminOrderSearch(View):
         data = [{'username': order.customer_id.username, 
                  'price': order.price, 
                  'qty': order.quantity, 
-                 'add_date': order.add_date, 
+                 'add_date': order.add_date,
+                 'status': order.status,
                  'id': order.id,
                  'serial_number':serial_numbers.pop()
                  } for order in paged_orders]

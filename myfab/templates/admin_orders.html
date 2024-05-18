@@ -264,6 +264,14 @@
         // Get CSRF token from the global variable
         const csrfToken = "{{ csrf_token }}";
 
+        // Ask for confirmation before proceeding
+        const confirmationMessage = `Are you sure you want to change the order status?`;
+        if (!confirm(confirmationMessage)) {
+            // If "Cancel", revert to the old status and do nothing
+            selectElement.selectedIndex = selectElement.dataset.oldSelectedIndex;
+            return;
+        }
+
         // Send a POST request to update the order status
         axios.post('/custom_admin/orders/', {
             order_id: orderId,
@@ -288,11 +296,26 @@
             
         })
         .catch(error => {
-            // Handle error response
-            console.error('Error updating order status:', error);
-            
+            if (error.response) {
+        
+                // Access the error message and old status from the response
+                const errorMessage = error.response.data['error-msg'];
+                const oldStatus = error.response.data['oldStatus'];
+        
+                alert(`Error: ${errorMessage}`);
+                // revert to the old status 
+                selectElement.value = oldStatus;
+            }
         });
     }
+
+    // Save the old selected index when the dropdown gains focus
+    document.querySelectorAll('.status-select').forEach(selectElement => {
+        selectElement.addEventListener('focus', function() {
+            this.dataset.oldSelectedIndex = this.selectedIndex;
+        });
+    });
+
 </script>
 
 {% endblock content %}

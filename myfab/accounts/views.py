@@ -6,6 +6,7 @@ from django.contrib.auth.views import LogoutView
 from .forms import UserRegistrationForm
 from .models import CustomUser, Address
 from orders.models import Order
+from main.models import Product
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.cache import never_cache
@@ -19,6 +20,8 @@ import json
 from .forms import AddressForm
 from django.core.mail import send_mail
 import logging
+from decimal import Decimal
+from django.db import transaction, IntegrityError
 
 
 # Create your views here.
@@ -218,18 +221,22 @@ class Orders(View):
 
         order_id = json_data.get('order_id')
         order = Order.objects.get(id=order_id)
+        product = Product.objects.select_for_update().get(id=order.product_id.id)
         try:
-            order.status = 'C'
-            order.save()
-             # Send email after saving the order status
-            send_mail(
-                'Order Cancellation Confirmation', # Email subject
-                f'Your order with ID {order.id} has been successfully cancelled.',
-                'anzforweb@gmail.com',  # Sender email address
-                [order.customer_id.email],  # Recipient email address
-                fail_silently=False,
-            )
-            return JsonResponse({'success-msg': 'Order cancelled.'})
+            with transaction.atomic():
+                order.status = 'C'
+                order.save()
+                product.qty += (order.quantity + Decimal('0.01'))
+                product.save()
+                # Send email after saving the order status
+                send_mail(
+                    'Order Cancellation Confirmation', # Email subject
+                    f'Your order with ID {order.id} has been successfully cancelled.',
+                    'anzforweb@gmail.com',  # Sender email address
+                    [order.customer_id.email],  # Recipient email address
+                    fail_silently=False,
+                )
+                return JsonResponse({'success-msg': 'Order cancelled.'})
         except ValidationError as e:
             print(f'Validation error- {e}')
             return JsonResponse({'error-msg': 'Validation Error.'})

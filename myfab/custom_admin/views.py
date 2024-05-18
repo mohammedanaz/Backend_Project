@@ -525,9 +525,26 @@ class AdminOrders(View):
         if order_id:
             new_status = json_data.get('new_status')
             order = Order.objects.get(id=order_id)
-            order.status = new_status
-            order.save()
-            return JsonResponse({'success': True, 'success_msg': 'Order status updated.'})
+            old_status = order.status
+            if old_status == 'C':
+                return JsonResponse({
+                    'error-msg': 'cannot change Cancelled order.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'P':
+                return JsonResponse({
+                    'error-msg': 'cannot change to Pending.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'S' and old_status == 'D':
+                return JsonResponse({
+                    'error-msg': 'cannot change Delivered order.',
+                    'oldStatus': old_status
+                    }, status=400)
+            else:
+                order.status = new_status
+                order.save()
+                return JsonResponse({'success': True, 'success_msg': 'Order status updated.'})
         else:
             return JsonResponse({'success': False, 'error_msg': 'Order id not found.'})
 

@@ -68,7 +68,7 @@
         {% if addresses %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
             Addresses
-            {% if address_count < 3  %}
+            {% if address_count < 6  %}
             <span>
                 <button class="btn btn-outline-primary my-2" data-toggle="tooltip" title="Add New"
                 onclick="window.location.href='{% url 'accounts:add_address' %}'">
@@ -76,7 +76,7 @@
                 </button>
             </span>
             {% else %}
-            <span><h2>(Maximum 3 Addresses only.)</h2></span>
+            <span><h2>(Maximum 6 Addresses only.)</h2></span>
             {% endif %}
             
         </h5>

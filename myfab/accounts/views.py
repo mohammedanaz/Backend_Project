@@ -151,12 +151,22 @@ class AddressView(View):
 ############################### User Add Address ######################################
 class AddAddress(CreateView):
     '''
-    To add new address.
+    To add new address. get_success_url() redirects to address or 
+    checkout page as per the next parameter in the req url
+
     '''
     model = Address
     form_class = AddressForm
     template_name = 'address_add.html'
-    success_url = reverse_lazy('accounts:address')
+
+    def get_success_url(self):
+        next = self.request.GET.get('next','')
+        address_success_url = reverse_lazy('accounts:address')
+        checkout_success_url = reverse_lazy('orders:checkout')
+        if next == 'checkout':
+            return checkout_success_url
+        return address_success_url
+
 
     
 

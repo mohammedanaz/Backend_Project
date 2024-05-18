@@ -124,7 +124,12 @@ class CheckoutView(View):
         insufficient_qty_error_msg = request.session.pop('insufficient_qty_error_msg', None)
 
         user = request.user
-        addresses = Address.objects.filter(customer_id=user, is_active=True)
+        addresses = (
+            Address.objects
+            .filter(customer_id=user, is_active=True)
+            .order_by('-id')
+            )
+        address_count = addresses.count()
         carts = Cart.objects.filter(customer_id=user)
         subtotal = sum(cart.price for cart in carts)
         grant_total = subtotal + 75
@@ -134,6 +139,7 @@ class CheckoutView(View):
             'subtotal': subtotal,
             'grant_total': grant_total,
             'insufficient_qty_error_msg': insufficient_qty_error_msg,
+            'address_count': address_count,
             }
         return render(request, 'checkout.html', context)
     

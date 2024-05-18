@@ -34,7 +34,7 @@ class Address(models.Model):
             pincode=self.pincode,
             phone_number=self.phone_number,
             customer_id=self.customer_id
-        ).exclude(pk=self.pk)  # Exclude the current instance being edited
+        ).exclude(is_active=False).exclude(pk=self.pk)  # Exclude the current instance being edited
         if existing_addresses.exists():
             raise ValidationError("An address with this pincode, phone number already exists for this customer.")
         super().clean()

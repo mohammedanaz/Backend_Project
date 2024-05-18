@@ -8,6 +8,12 @@
 {% block title %}Checkout Page{% endblock %}
 
 {% block content %}
+    <style>
+        .addrs-container {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+    </style>
 <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -123,13 +129,23 @@
                 <form action="{% url "orders:create_order" %}" method="post">
                     {% csrf_token %}
                     <!-- Shipping Address -->
-                    <h4 class="mt-5 mb-4">Shipping Address</h4>
-                    <div class="form-group mb-3">
+                    <h4 class="mt-5 mb-1">
+                        Shipping Address 
+                        {% if address_count < 6  %}
+                        <span>
+                            <a class="btn btn-outline-primary my-1" data-toggle="tooltip" title="Add New"
+                            href="{% url 'accounts:add_address' %}?next=checkout">
+                                <img class="logo" src="{% static 'images/add_icon.png' %}" alt="add">
+                            </a>
+                        </span>
+                        {% endif %}
+                    </h4>
+                    <div class="form-group mb-3 addrs-container w-50 p-2 rounded-start-3 border">
                         <label>Choose an Address:</label>
                         {% for address in addresses %}
-                        <hr class="w-50">
+                        <hr class="">
                         <div class="form-check d-flex flex-row align-items-center mb-2">
-                            <input class="form-check-input me-3" type="radio" name="addressOption" 
+                            <input class="form-check-input me-3 ms-1" type="radio" name="addressOption" 
                             id="addressOption-{{address.name}}" value="{{address.pk}}"
                             {% if forloop.first %} checked {% endif %}>
                             <label class="form-check-label" for="addressOption-{{address.name}}">
@@ -141,7 +157,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <hr class="w-50">
                     <!-- Payment Details -->
                     <h4>Payment Options</h4>
                     <div class="form-group mb-3">

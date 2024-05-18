@@ -38,11 +38,7 @@
                         <li><a class="dropdown-item" href="{% url 'accounts:address' %}">Addresses</a></li>
                         <li><a class="dropdown-item" href="#">Orders</a></li>
                     </ul>
-                  </div>
-                <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="#">
-                        <i style='font-size:24px' class='fas'>&#xf217;</i></a>
-                </li>
+                </div>
                 <li class="nav-item ms-3 ms-lg-0">
                     <form action="{% url 'accounts:logout' %}" method="post">
                         {% csrf_token %}
@@ -131,7 +127,7 @@
                 {% if form.phone_number.value %}value={{form.phone_number.value}}{% endif %} required>
             </div>
             <button type="submit" class="btn btn-primary my-2">Add</button>
-            <a href="{% url "accounts:address" %}"  class="btn btn-secondary">Cancel</a>
+            <a href="#" onclick="window.history.back();"  class="btn btn-secondary">Cancel</a>
         </form>
     </section>
 <!-- =========================== Add Address Section end =========================== -->

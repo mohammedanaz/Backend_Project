@@ -226,7 +226,7 @@ class AdminProductSearch(View):
                  } for product in paged_products]
         return JsonResponse({'data': data, 'has_previous': paged_products.has_previous(), 
                              'has_next': paged_products.has_next(), 
-                             'pages': paginator.num_pages}, safe=False)
+                             'pages': paginator.num_pages})
 
 
 ################################### Admin Product Edit ####################################
@@ -587,7 +587,7 @@ class AdminOrderSearch(View):
                  } for order in paged_orders]
         return JsonResponse({'data': data, 'has_previous': paged_orders.has_previous(), 
                              'has_next': paged_orders.has_next(), 
-                             'pages': paginator.num_pages}, safe=False)
+                             'pages': paginator.num_pages})
     
 
     ################################### Admin Users Search ####################################
@@ -624,4 +624,4 @@ class AdminUserSearch(View):
         
         return JsonResponse({'data': data, 'has_previous': paged_users.has_previous(), 
                              'has_next': paged_users.has_next(), 
-                             'pages': paginator.num_pages}, safe=False)
+                             'pages': paginator.num_pages})

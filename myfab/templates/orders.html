@@ -63,7 +63,7 @@
     </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== Address Section begin =========================== -->
+<!-- =========================== Order Section begin =========================== -->
     <section class="container my-2">
         {% if orders %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
@@ -115,6 +115,19 @@
             </div>
         </div>
         {% endfor %}
+        <div class="pagination justify-content-center">
+            {% if orders.has_previous %}
+                <a href="?page=1" class="page-link">&laquo; First</a>
+                <a href="?page={{ orders.previous_page_number }}" class="page-link">Previous</a>
+            {% endif %}
+            {% for page in orders.paginator.page_range %}
+            <a href="?page={{ page }}" class="page-link {% if orders.number == page %}active{% endif %}">{{ page }}</a>
+            {% endfor %}
+            {% if orders.has_next %}
+                <a href="?page={{ orders.next_page_number }}" class="page-link">Next</a>
+                <a href="?page={{ orders.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+            {% endif %}
+        </div>
         {% else %}
         <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
             Orders
@@ -125,7 +138,7 @@
         {% endif %}
 
     </section>
-<!-- =========================== Address Section end =========================== -->
+<!-- =========================== Order Section end =========================== -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         function cancelOrder(orderId) {

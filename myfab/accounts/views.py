@@ -22,6 +22,7 @@ from django.core.mail import send_mail
 import logging
 from decimal import Decimal
 from django.db import transaction, IntegrityError
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
@@ -213,7 +214,16 @@ class Orders(View):
 
         user = request.user
         orders = Order.objects.filter(customer_id=user).order_by('-add_date')
-        context = {'orders': orders}
+        paginator = Paginator(orders, 5) 
+        page_number = request.GET.get('page')
+        try:
+            paged_orders = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_orders = paginator.page(1)
+        except EmptyPage:
+            paged_orders = paginator.page(paginator.num_pages)
+
+        context = {'orders': paged_orders}
         return render(request, 'orders.html', context)
     
     def post(self, request):

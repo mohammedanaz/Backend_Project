@@ -95,7 +95,31 @@
                             Status: {{order.get_status_display}}
                         </p>
                         {% if order.status == 'D' %}
-                        <a href="#" class="btn btn-primary" style="margin-top: 10px;">Request Return</a>
+                        <!-- ========= Accordion for return request  ============= -->
+                        <div class="accordion mt-3" id="accordion-{{order.id}}">
+                            <div class="accordion-item">
+                                
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapse-{{order.id}}" aria-expanded="true" aria-controls="collapseOne">
+                                        Request Return
+                                        
+                                    </button>
+                                </h2>
+                                <div id="collapse-{{order.id}}" class="accordion-collapse collapse" 
+                                    data-bs-parent="#accordion-{{order.id}}">
+                                    <div class="accordion-body">
+                                        <button type="submit" class="btn btn-primary"
+                                            {% if order.add_date|older_than_2_weeks  %}disabled{% endif %}>
+                                            Submit
+                                        </button>
+                                        <small class="text-danger">
+                                            (Return only within 2 weeks after delivery)
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         {% elif order.status == 'C' %}
                         <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" disabled>
                             Cancel
@@ -115,6 +139,7 @@
             </div>
         </div>
         {% endfor %}
+        <!-- =========================== Pagination section =========================== -->
         <div class="pagination justify-content-center">
             {% if orders.has_previous %}
                 <a href="?page=1" class="page-link">&laquo; First</a>

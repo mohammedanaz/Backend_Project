@@ -28,40 +28,43 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="/custom_admin/">Home</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_home" %}" >
+                        Home
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px; background-color: #800020;" aria-current="page">
-                        <a class="text-white text-decoration-none" href="#">Users</a>
-                    </button>
+                    <a class="btn text-white" href="{% url "custom_admin:admin_users" %}" 
+                    style="background-color: #800020;">
+                        Users
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_orders" %}">Orders</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_orders" %}" >
+                        Orders
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_products" %}">Products</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_products" %}" >
+                        Products
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_categories" %}">Categories</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_categories" %}" >
+                        Categories
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_usages" %}">Usages Types</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_usages" %}" >
+                        Dress Type
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "custom_admin:admin_measurements" %}">Measurement Types</a>
-                    </button>
+                    <a class="btn text-black" href="{% url "custom_admin:admin_measurements" %}">
+                        Measurements
+                    </a>
                 </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <form id="search-form">
                         <div class="input-group">
@@ -69,9 +72,7 @@
                             <button class="btn btn-outline-secondary" type="submit">Search</button>
                         </div>
                     </form>
-                </li> 
-            </ul>
-            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                </li>
                 <li class="nav-item ms-3 ms-lg-0">
                     <a class="nav-link" href="{% url "main:home" %}">UserHome</a>
                 </li>

@@ -7,7 +7,7 @@ from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
 from main.models import Product, Category, CategoryChoice, Usage, Measurement
-from orders.models import Order
+from orders.models import Order, ReturnOrder
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.db.models.functions import ExtractMonth, ExtractYear
@@ -652,5 +652,25 @@ class AdminUserSearch(View):
     ################################### Admin Order Returns ####################################
 
 class AdminReturnsView(View):
+    '''
+    get method to render return order page.
+    '''
     def get(self, request):
-        return render(request, 'admin_returns.html')
+        returns = ReturnOrder.objects.all().order_by('-id')
+        paginator = Paginator(returns, 10) 
+        page_number = request.GET.get('page')
+        try:
+            paged_returns = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_returns = paginator.page(1)
+        except EmptyPage:
+            paged_returns = paginator.page(paginator.num_pages)
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_returns.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_returns)))
+        zipped_data = zip(serial_numbers, paged_returns)
+
+        context = {'zipped_data': zipped_data, 'returns': paged_returns}
+        return render(request, 'admin_returns.html', context)

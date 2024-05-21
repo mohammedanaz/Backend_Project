@@ -7,6 +7,17 @@
 
 {% block content %}
 
+    <style>
+        .thumbnail-image {
+            max-width: 75px; 
+            max-height: 75px;
+            width: auto; 
+            height: auto;
+            display: block;
+            margin: auto; 
+        }
+    </style>
+
 <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -85,5 +96,99 @@
         </div>
     </nav>
 <!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== Return Order section begin =========================== -->
+    <section class="container-fluid mb-2">
+        <div class="container-fluid text-center px-0">
+            <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">
+               Return Orders
+            </h5>
+        </div>
+        <div class="container-fluid d-flex justify-content-end">
+            <select class="form-select w-50 mb-2" id="return-status" name="return-status">
+                <option value="All" selected>All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Denied">Denied</option>
+                <option value="Shipping">Shipping</option>
+                <option value="Received">Received</option>
+              </select>
+        </div>
+        <div class="row h-100">
+            <div class="col-12">
+                <div class="table-responsive text-center">
+                    <table class="table  table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">Sr#</th>
+                            <th scope="col">ID#</th>
+                            <th scope="col">Order ID#</th>
+                            <th scope="col">Image-1</th>
+                            <th scope="col">Image-2 (Optional)</th>
+                            <th scope="col">
+                                <span id="order-status-heading">
+                                    Status
+                                </span>
+                                <span id="return-status-success-msg" 
+                                        class="alert alert-success fade show fs-6 w-50 mx-auto py-2 m-0" 
+                                        role="alert" style="display: none;">
+                                        updated.
+                                </span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="return-table-body">
+                            {% for serial_number, return in zipped_data %}
+                            <tr>
+                                <th scope="row">{{ serial_number }}</th>
+                                <td>{{ return.id }}</td>
+                                <td>{{ return.order_id.id }}</td>
+                                <td>
+                                    <a href="{{ return.image_1.url }}" target="_blank">
+                                        <img class="thumbnail-image" src="{{ return.image_1.url }}" alt="{{ return.id }} Image-1">
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if return.image_2 %}
+                                    <a href="{{ return.image_2.url }}" target="_blank">
+                                        <img class="thumbnail-image" src="{{ return.image_1.url }}" alt="{{ return.id }} Image-2">
+                                    </a>
+                                    {% else %}
+                                    <p class="">No image</p>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <select class="status-select btn btn-outline-secondary"
+                                        data-order-id="{{ return.id }}"
+                                        onchange="changeReturnStatus(this)">
+                                    {% for status in return.STATUS_CHOICES %}
+                                        <option value="{{ status.0 }}" {% if return.status == status.0 %} selected {% endif %}>
+                                            {{ status.1 }}
+                                        </option>
+                                    {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination justify-content-center">
+                    {% if returns.has_previous %}
+                        <a href="?page=1" class="page-link">&laquo; First</a>
+                        <a href="?page={{ returns.previous_page_number }}" class="page-link">Previous</a>
+                    {% endif %}
+                    {% for page in returns.paginator.page_range %}
+                    <a href="?page={{ page }}" class="page-link {% if returns.number == page %}active{% endif %}">{{ page }}</a>
+                    {% endfor %}
+                    {% if returns.has_next %}
+                        <a href="?page={{ returns.next_page_number }}" class="page-link">Next</a>
+                        <a href="?page={{ returns.paginator.num_pages }}" class="page-link">Last &raquo;</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+<!-- =========================== Return Order section end =========================== -->
 
 {% endblock content %}

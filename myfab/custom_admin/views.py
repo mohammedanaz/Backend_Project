@@ -721,3 +721,63 @@ class AdminReturnsView(View):
                 return JsonResponse({'success': True, 'success_msg': 'Order status updated.'})
         else:
             return JsonResponse({'success': False, 'error_msg': 'Order id not found.'})
+        
+################################### Admin Order Returns Search ####################################
+
+class AdminReturnSearch(View):
+    def get(self, request):
+        query = request.GET.get('query', '')
+        return_status = request.GET.get('returnStatus')
+        page_number = request.GET.get('page', 1)
+        print(query, return_status, page_number)
+        # Filter order list as per status selected 
+        if return_status == 'All':
+            returns = (
+                ReturnOrder.objects
+                .filter(Q(order_id__id__icontains=query) | Q(id__icontains=query))
+                .order_by('-id')
+            )
+        else:
+            return_status_map = {
+                'Pending': 'P',
+                'Approved': 'A',
+                'Denied': 'D',
+                'Shipping': 'S',
+                'Received': 'R'
+            }
+            status = return_status_map.get(return_status)
+            returns = (
+                ReturnOrder.objects
+                .filter(status=status)
+                .filter(Q(order_id__id__icontains=query) | Q(id__icontains=query))
+                .order_by('-id')
+            )
+        print(returns)
+        # Pagination
+        paginator = Paginator(returns, 10)
+        try:
+            paged_returns = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_returns = paginator.page(1)
+        except EmptyPage:
+            paged_returns = paginator.page(paginator.num_pages)
+
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_returns.number - 1) * paginator.per_page + 1
+
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_returns)))
+        serial_numbers.reverse() # reverse list of page Sr number for poping
+
+        data = [{
+                'order_id': returns.order_id.id,
+                'status': returns.status,
+                'id': returns.id,
+                'image_1': returns.image_1.url,
+                'image_2': returns.image_2.url if returns.image_2 else None,
+                'serial_number':serial_numbers.pop()
+                } for returns in paged_returns]
+        return JsonResponse({'data': data, 'has_previous': paged_returns.has_previous(), 
+                             'has_next': paged_returns.has_next(), 
+                             'pages': paginator.num_pages})
+    

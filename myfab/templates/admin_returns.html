@@ -195,6 +195,108 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
 
+        // To make search result with axios. on submit it calls searchReturns() to
+        // request axios with search query and selected return status filter.
+        document.getElementById('search-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const query = document.getElementById('search-input').value.trim();
+        const returnStatus = document.getElementById('return-status').value;
+
+        searchReturns(query, returnStatus, 1);  // Initial search, start from page 1
+        
+    });
+
+        // To make filter return status with axios. on change it calls searchReturns() to
+        // request axios with search query and selected order return status filter.
+        document.getElementById('return-status').addEventListener('change', function(event) {
+        event.preventDefault();
+        const query = document.getElementById('search-input').value.trim();
+        const returnStatus = document.getElementById('return-status').value;
+
+        searchReturns(query, returnStatus, 1);  // Initial search, start from page 1
+        
+    });
+
+        function searchReturns(query, returnStatus, page) {
+
+            axios.get('/custom_admin/returns/search/', { 
+            params: { 
+                        query: query,
+                        returnStatus: returnStatus,
+                        page: page
+                    } 
+                })
+                .then(function(response) {
+                    const tableBody = document.getElementById('return-table-body');
+                    tableBody.innerHTML = ''; // Clear previous results
+                    response.data.data.forEach(function(returns) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <th scope="row">${returns.serial_number}</th>
+                            <td>${returns.id}</td>
+                            <td>${returns.order_id}</td>
+                            <td>
+                                <a href="${returns.image_1}" target="_blank">
+                                    <img class="thumbnail-image" src="${returns.image_1}" alt="${returns.id} Image-1">
+                                </a>
+                            </td>
+                            <td>
+                                ${returns.image_2 ? `
+                                <a href="${returns.image_2}" target="_blank">
+                                    <img class="thumbnail-image" src="${returns.image_2}" alt="${returns.id} Image-2">
+                                </a>
+                                ` : `<p class="">No image</p>`}
+                            </td>
+                            <td>
+                                <select class="status-select btn btn-outline-secondary"
+                                        data-order-id="${returns.id}"
+                                        onchange="changeReturnStatus(this)">
+                                    ${getStatusOptions(returns.status)}
+                                </select>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    // Update pagination links based on response
+                    const pagination = document.querySelector('.pagination');
+                    pagination.innerHTML = '';
+                    if (response.data.has_previous) {
+                        pagination.innerHTML += `<a href="#" onclick="searchReturns('${query}', '${returnStatus}', ${page - 1})" 
+                        class="page-link">&laquo; Previous</a>`;
+                    }
+                    for (let i = 1; i <= response.data.pages; i++) {
+                        pagination.innerHTML += `<a href="#" onclick="searchReturns('${query}', '${returnStatus}', ${i})" 
+                        class="page-link ${i == page ? 'active' : ''}">${i}</a>`;
+                    }
+                    if (response.data.has_next) {
+                        pagination.innerHTML += `<a href="#" onclick="searchReturns('${query}', '${returnStatus}', ${page + 1})" 
+                        class="page-link">Next &raquo;</a>`;
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                });
+        }
+
+        // To make order status choices (options for select element) 
+        // to build table in the search result.
+        function getStatusOptions(selectedStatus) {
+            const statusChoices = [
+                ['P', 'Pending'],
+                ['A', 'Approved'],
+                ['D', 'Denied'],
+                ['S', 'Shipping'],
+                ['R', 'Received']
+            ];
+            let options = '';
+            for (const status of statusChoices) {
+                const isSelected = status[0] === selectedStatus;
+                options += `<option value="${status[0]}" ${isSelected ? 'selected' : ''}>${status[1]}</option>`;
+            }
+            return options;
+        }
+
         // Function to change order status
         function changeReturnStatus(selectElement) {
             const returnId = selectElement.dataset.returnId;

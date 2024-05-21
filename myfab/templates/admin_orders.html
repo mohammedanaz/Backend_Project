@@ -72,12 +72,18 @@
                     </form>
                 </li>
                 <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="{% url "main:home" %}">UserHome</a>
+                    <a class="btn" href="{% url "main:home" %}"
+                        data-toggle="tooltip" title="User Home">
+                        <i style="font-size:24px" class="fa">&#xf015;</i>
+                    </a>
                 </li>
                 <li class="nav-item ms-3 ms-lg-0">
-                    <form id="logout-form" action="/accounts/logout/" method="post">
+                    <form action="{% url 'accounts:logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="nav-link btn btn-link">Logout</button>
+                        <button type="submit" class="nav-link" style="border: none; background: none;"
+                            data-toggle="tooltip" title="Logout">
+                            <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+                        </button>
                     </form>
                 </li>
             </ul>

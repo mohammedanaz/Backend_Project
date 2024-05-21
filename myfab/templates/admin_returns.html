@@ -126,7 +126,7 @@
                             <th scope="col">Image-1</th>
                             <th scope="col">Image-2 (Optional)</th>
                             <th scope="col">
-                                <span id="order-status-heading">
+                                <span id="return-status-heading">
                                     Status
                                 </span>
                                 <span id="return-status-success-msg" 
@@ -159,7 +159,7 @@
                                 </td>
                                 <td>
                                     <select class="status-select btn btn-outline-secondary"
-                                        data-order-id="{{ return.id }}"
+                                        data-return-id="{{ return.id }}"
                                         onchange="changeReturnStatus(this)">
                                     {% for status in return.STATUS_CHOICES %}
                                         <option value="{{ status.0 }}" {% if return.status == status.0 %} selected {% endif %}>
@@ -190,5 +190,70 @@
         </div>
     </section>
 <!-- =========================== Return Order section end =========================== -->
+
+<!-- =========================== JS =========================== -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        // Function to change order status
+        function changeReturnStatus(selectElement) {
+            const returnId = selectElement.dataset.returnId;
+            const newStatus = selectElement.value;
+
+            // Get CSRF token from the global variable
+            const csrfToken = "{{ csrf_token }}";
+
+            // Ask for confirmation before proceeding
+            const confirmationMessage = `Are you sure you want to change the return order status?`;
+            if (!confirm(confirmationMessage)) {
+                // If "Cancel", revert to the old status and do nothing
+                selectElement.selectedIndex = selectElement.dataset.oldSelectedIndex;
+                return;
+            }
+
+            // Send a POST request to update the order status
+            axios.post('/custom_admin/returns/', {
+                return_id: returnId,
+                new_status: newStatus
+            }, {
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => {
+                // Handle success response
+                console.log('Return Order status updated successfully:', response.data);
+
+                var successMessage = document.getElementById('return-status-success-msg');
+                var statusHeading = document.getElementById('return-status-heading');
+                statusHeading.style.display = 'none';
+                successMessage.style.display = 'block';
+                setTimeout(function() {
+                    statusHeading.style.display = 'block';
+                    successMessage.style.display = 'none';
+                }, 1500);
+                
+            })
+            .catch(error => {
+                if (error.response) {
+            
+                    // Access the error message and old status from the response
+                    const errorMessage = error.response.data['error-msg'];
+                    const oldStatus = error.response.data['oldStatus'];
+            
+                    alert(`Error: ${errorMessage}`);
+                    // revert to the old status 
+                    selectElement.value = oldStatus;
+                }
+            });
+        }
+
+        // Save the old selected index when the dropdown gains focus
+        document.querySelectorAll('.status-select').forEach(selectElement => {
+            selectElement.addEventListener('focus', function() {
+                this.dataset.oldSelectedIndex = this.selectedIndex;
+            });
+        });
+    </script>
 
 {% endblock content %}

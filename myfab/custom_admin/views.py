@@ -654,6 +654,8 @@ class AdminUserSearch(View):
 class AdminReturnsView(View):
     '''
     get method to render return order page.
+    post method in this view is used to recieve axios req for
+    order return status change to update DB. validate before change status.
     '''
     def get(self, request):
         returns = ReturnOrder.objects.all().order_by('-id')
@@ -674,3 +676,48 @@ class AdminReturnsView(View):
 
         context = {'zipped_data': zipped_data, 'returns': paged_returns}
         return render(request, 'admin_returns.html', context)
+    
+    def post(self, request):
+        json_data = json.loads(request.body)
+
+        return_id = json_data.get('return_id')
+        if return_id:
+            new_status = json_data.get('new_status')
+            returns = ReturnOrder.objects.get(id=return_id)
+            old_status = returns.status
+            if old_status == 'D' or old_status == 'R':
+                return JsonResponse({
+                    'error-msg': 'cannot change Denied or Returned order.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'P':
+                return JsonResponse({
+                    'error-msg': 'cannot change back to Pending.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'S' and old_status == 'R':
+                return JsonResponse({
+                    'error-msg': 'order already  Recieved.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'D' and old_status in ['A', 'S']:
+                return JsonResponse({
+                    'error-msg': 'Cannot reject already approved request.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'A' and old_status in ['S', 'R']:
+                return JsonResponse({
+                    'error-msg': 'Request already approved.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status in ['S', 'R'] and old_status == 'P':
+                return JsonResponse({
+                    'error-msg': 'Please Approve the request first.',
+                    'oldStatus': old_status
+                    }, status=400)
+            else:
+                returns.status = new_status
+                returns.save()
+                return JsonResponse({'success': True, 'success_msg': 'Order status updated.'})
+        else:
+            return JsonResponse({'success': False, 'error_msg': 'Order id not found.'})

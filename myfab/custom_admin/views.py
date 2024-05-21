@@ -496,7 +496,8 @@ class AdminMeasurementDelete(DeleteView):
 class AdminOrders(View):
     '''
     post method in this view is used to recieve axios req for
-    order status change to update DB. Get method is to render order list page. 
+    order status change to update DB. validate before change status.
+    Get method is to render order list page. 
     '''
     def get(self, request):
         orders = Order.objects.all().order_by('-add_date')
@@ -526,19 +527,24 @@ class AdminOrders(View):
             new_status = json_data.get('new_status')
             order = Order.objects.get(id=order_id)
             old_status = order.status
-            if old_status == 'C':
+            if old_status == 'C' or old_status == 'R':
                 return JsonResponse({
-                    'error-msg': 'cannot change Cancelled order.',
+                    'error-msg': 'cannot change Cancelled or Returned order.',
                     'oldStatus': old_status
                     }, status=400)
             elif new_status == 'P':
                 return JsonResponse({
-                    'error-msg': 'cannot change to Pending.',
+                    'error-msg': 'cannot change back to Pending.',
                     'oldStatus': old_status
                     }, status=400)
             elif new_status == 'S' and old_status == 'D':
                 return JsonResponse({
-                    'error-msg': 'cannot change Delivered order.',
+                    'error-msg': 'order already  Delivered.',
+                    'oldStatus': old_status
+                    }, status=400)
+            elif new_status == 'C' and old_status == 'D':
+                return JsonResponse({
+                    'error-msg': 'order already Delivered. You can change to Returned',
                     'oldStatus': old_status
                     }, status=400)
             else:

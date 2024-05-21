@@ -101,26 +101,49 @@
                                 
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#collapse-{{order.id}}" aria-expanded="true" aria-controls="collapseOne">
+                                        data-bs-target="#collapse-{{order.id}}" 
+                                        aria-expanded="true" aria-controls="collapseOne">
                                         Request Return
-                                        
                                     </button>
                                 </h2>
                                 <div id="collapse-{{order.id}}" class="accordion-collapse collapse" 
                                     data-bs-parent="#accordion-{{order.id}}">
                                     <div class="accordion-body">
-                                        <button type="submit" class="btn btn-primary"
-                                            {% if order.add_date|older_than_2_weeks  %}disabled{% endif %}>
-                                            Submit
-                                        </button>
-                                        <small class="text-danger">
-                                            (Return only within 2 weeks after delivery)
-                                        </small>
+                                        <form method="post" enctype="multipart/form-data" 
+                                            class="return-form" data-order-id="{{order.id}}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                            <input type="hidden" name="order_id" id="{{order.id}}" value="{{order.id}}">
+                                            <div class="form-group my-2">
+                                                <textarea class="form-control" maxlength="300" rows="3" name="reason"
+                                                id="reason-{{order.id}}" 
+                                                placeholder="Reason(Maximum 300 characters)" required></textarea>
+                                            </div>
+                                            <div class="form-group my-2">
+                                                <label for="image-1-{{order.id}}">Upload Images:</label>
+                                                <small class="text-danger">
+                                                    (Maximum image size is 2Mb.)
+                                                </small>
+                                                <div class="custom-file my-2">
+                                                    <input type="file" class="custom-file-input" 
+                                                        id="image-1-{{order.id}}" name="image_1" required>
+                                                    <input type="file" class="custom-file-input" 
+                                                        id="image-2-{{order.id}}" name="image_2">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary"
+                                                {% if order.add_date|older_than_2_weeks  %}disabled{% endif %}>
+                                                Submit
+                                            </button>
+                                            <small class="text-danger">
+                                                (Return possible only within 2 weeks after delivery)
+                                            </small>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {% elif order.status == 'C' %}
+                        {% elif order.status == 'C' or order.status == 'R' %}
                         <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" disabled>
                             Cancel
                         </button>
@@ -202,6 +225,45 @@
             }
             
         }
+
+        //To submit request return order with axios.
+        document.addEventListener('DOMContentLoaded', function(){
+            document.querySelectorAll('.return-form').forEach(form => {
+                form.addEventListener('submit', function(event){
+                    event.preventDefault();
+                    const form = event.target;
+                    const orderId = form.getAttribute('data-order-id')
+                    const formData = new FormData(form);
+                    const url = '/accounts/return_order/'
+
+                    // Get CSRF token from hidden input
+                    const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+                    axios.post(url, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        console.log('Success:', response.data);
+                        window.location.reload();
+                        alert('Return request submitted successfully.');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        if (error.response) {
+                            const errors = error.response.data.errors;
+                            let errorMsg = 'Form submission failed:\n';
+                            for (const [field, messages] of Object.entries(errors)) {
+                                errorMsg += `${messages.map(message => message.message).join(', ')}\n`;
+                            }
+                            window.location.reload();
+                            alert(errorMsg);
+                        }
+                    });
+                });
+            });
+        });
     </script>
 {% endblock %}
 

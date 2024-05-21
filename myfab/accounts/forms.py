@@ -1,6 +1,7 @@
 # forms.py
 from django import forms
 from .models import CustomUser, Address
+from orders.models import ReturnOrder, Order
 import re
 from django.core.validators import EmailValidator
 from django.contrib.auth.hashers import make_password
@@ -120,3 +121,32 @@ class AddressForm(forms.ModelForm):
         return phone_number
 
 
+######################## Form for request return order ##########################
+
+class ReturnOrderForm(forms.ModelForm):
+    '''
+    Form To create an instance of Return Order model.
+    '''
+    class Meta:
+        model = ReturnOrder
+        fields = ['order_id', 'reason', 'image_1', 'image_2']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        
+        order = cleaned_data.get('order_id')
+        image_1 = cleaned_data.get('image_1')
+        image_2 = cleaned_data.get('image_2')
+
+        if ReturnOrder.objects.filter(order_id=order).exists():
+            print('Some issue in the comparing order ids')
+            self.add_error('order_id', "Already made a return request for this order.")
+            return cleaned_data
+        
+        if image_1 and image_1.size > 2 * 1024 * 1024:  # 2 MB limit
+            self.add_error('image_1', "Image 1 file size should be less than 2 MB.")
+        
+        if image_2 and image_2.size > 2 * 1024 * 1024:  # 2 MB limit
+            self.add_error('image_2', "Image 2 file size should be less than 2 MB.")
+        
+        return cleaned_data

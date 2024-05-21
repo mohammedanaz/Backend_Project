@@ -19,5 +19,5 @@ def older_than_2_weeks(date):
     '''
     if not date:
         return False
-    two_weeks_ago = datetime.now().date() - timedelta(weeks=2)
+    two_weeks_ago = datetime.now().date() - timedelta(weeks=5)
     return date < two_weeks_ago

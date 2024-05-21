@@ -85,12 +85,12 @@
             </div>
             <div class="container-fluid d-flex justify-content-end">
                 <select class="form-select w-50 mb-2" id="order-status" name="order-status">
-                    <option value="All" selected>Filter Order Status</option>
-                    <option value="All" >All status</option>
+                    <option value="All" selected>All Status</option>
                     <option value="Pending">Pending</option>
                     <option value="Shipping">Shipping</option>
                     <option value="Delivered">Delivered</option>
                     <option value="Cancelled">Cancelled</option>
+                    <option value="Returned">Returned</option>
                   </select>
             </div>
             <div class="row h-100">
@@ -246,7 +246,8 @@
             ['P', 'Pending'],
             ['S', 'Shipping'],
             ['D', 'Delivered'],
-            ['C', 'Cancelled']
+            ['C', 'Cancelled'],
+            ['R', 'Returned']
         ];
         let options = '';
         for (const status of statusChoices) {

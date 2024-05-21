@@ -204,3 +204,4 @@ class CreateOrder(View):
             request.session['insufficient_qty_error_msg'] = insufficient_qty_error_msg
             return redirect(reverse('orders:checkout'))
 
+

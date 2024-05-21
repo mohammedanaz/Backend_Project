@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 import re
 import json
-from .forms import AddressForm
+from .forms import AddressForm, ReturnOrderForm
 from django.core.mail import send_mail
 import logging
 from decimal import Decimal
@@ -208,7 +208,8 @@ class AddressEdit(UpdateView):
 class Orders(View):
     '''
     Get method is To render user orders page.
-    Post method is to handle cancel request.
+    Post method is to handle cancel request. If order cancelled then
+    add the quantity back to stock.
     '''
     def get(self, request):
 
@@ -256,4 +257,17 @@ class Orders(View):
             return JsonResponse({'error-msg': 'Logging Error.'})
 
 
-    
+########################## Return Order View #################################
+
+class ReturnOrderView(View):
+    '''
+    To create an instance of ReturnOrder model when user request a return.
+    Usins axios post method request.
+    '''
+    def post(self, request):
+        form = ReturnOrderForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success-msg': 'Return request submitted successfully'})
+        else:
+            return JsonResponse({'errors': form.errors.get_json_data()}, status=400)

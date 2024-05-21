@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Cart, Order
+from .models import Cart, Order, ReturnOrder
 
 # Register your models here.
 
@@ -9,3 +9,4 @@ class CartAdmin(admin.ModelAdmin):
 
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Order)
+admin.site.register(ReturnOrder)

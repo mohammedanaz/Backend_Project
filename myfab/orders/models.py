@@ -60,6 +60,7 @@ class Order(models.Model):
         ('S', 'Shipping'),
         ('D', 'Delivered'),
         ('C', 'Cancelled'),
+        ('R', 'Returned'),
     ]
 
     customer_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -92,3 +93,22 @@ class Order(models.Model):
             return None
     
 
+class ReturnOrder(models.Model):
+    '''
+    To store return request datas.
+    '''
+
+    STATUS_CHOICES = [
+        ('P', 'Pending'),
+        ('A', 'Approved'),
+        ('D', 'Denied'),
+        ('S', 'Shipping'),
+        ('R', 'Received'),
+    ]
+    
+    order_id = models.ForeignKey(Order, on_delete=models.PROTECT)
+    reason = models.TextField(null=False, blank=False)
+    image_1 = models.ImageField(upload_to='images/return_order', null=False, blank=False)
+    image_2 = models.ImageField(upload_to='images/return_order', null=True, blank=True)
+    status = models.CharField(max_length=10, null=False, choices=STATUS_CHOICES, default='P')
+    

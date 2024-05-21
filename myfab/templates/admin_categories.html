@@ -51,6 +51,17 @@
                         Measurements
                     </a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="btn text-black dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                        aria-expanded="false">
+                        More
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url "custom_admin:admin_order_return" %}">
+                            Return Request</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item ms-3 ms-lg-0">

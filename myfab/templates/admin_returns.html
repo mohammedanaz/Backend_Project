@@ -1,16 +1,16 @@
 {% extends 'admin_base.html' %}
 
 {% load static %}
+{% load custom_filters %}
 
-{% block title %}Admin Measurement Edit{% endblock %}
+{% block title %}Admin Return Request{% endblock %}
 
 {% block content %}
+
 <!-- =================================== Navbar Begin ====================================== -->
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
-            aria-expanded="false" aria-label="Toggle navigation">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -26,7 +26,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn text-black" href="{% url "custom_admin:admin_orders" %}" >
+                    <a class="btn text-black" href="{% url "custom_admin:admin_orders" %}">
                         Orders
                     </a>
                 </li>
@@ -36,7 +36,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn text-black" href="{% url "custom_admin:admin_categories" %}" >
+                    <a class="btn text-black" href="{% url "custom_admin:admin_categories" %}">
                         Categories
                     </a>
                 </li>
@@ -51,8 +51,8 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="btn text-black dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                        aria-expanded="false">
+                    <a class="btn text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                        aria-expanded="false" style=" background-color: #800020;">
                         More
                     </a>
                     <ul class="dropdown-menu">
@@ -63,6 +63,14 @@
                 </li>
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form id="search-form">
+                        <div class="input-group">
+                            <input type="text" id="search-input" name="query">
+                            <button class="btn btn-outline-secondary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </li>
                 <li class="nav-item ms-3 ms-lg-0">
                     <a class="nav-link" href="{% url "main:home" %}">UserHome</a>
                 </li>
@@ -74,24 +82,8 @@
                 </li>
             </ul>
         </div>
-    </div>
-</nav>
+        </div>
+    </nav>
 <!-- =========================== Navbar End =========================== -->
-
-<!-- =========================== product edit begin =========================== -->
-    <div class="container w-50">
-        <h2 class="text-center">Edit Measurement</h2>
-        <form method="post" >
-            {% csrf_token %}
-            <div class="form-group my-2">
-                <label for="id_name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="id_name" name="name" value="{{ object.name }}">
-            </div>
-            <input type="hidden" name="next" value="{{ previous_url }}">
-            <button type="submit" class="btn btn-primary my-2">Save Changes</button>
-            <a href="{{ previous_url }}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-<!-- =========================== product edit end =========================== -->
 
 {% endblock content %}

@@ -3,7 +3,7 @@ from .views import AdminHome, AdminUsers, AdminUserSearch, AdminProducts, AdminP
 from .views import AdminCategories, AdminCategoryEdit, AdminCategoryAdd, AdminCategoryDelete
 from .views import AdminUsages, AdminUsageEdit, AdminUsageAdd, AdminUsageDelete
 from .views import AdminMeasurements, AdminMeasurementAdd, AdminMeasurementEdit, AdminMeasurementDelete, AdminProductSearch
-from .views import AdminOrders, AdminOrderSearch
+from .views import AdminOrders, AdminOrderSearch, AdminReturnsView
 app_name = 'custom_admin'
 
 urlpatterns = [
@@ -29,4 +29,5 @@ urlpatterns = [
     path('measurements/<int:pk>/delete/', AdminMeasurementDelete.as_view(), name='admin_measurement_delete'),
     path('orders/', AdminOrders.as_view(), name = 'admin_orders'),
     path('orders/search/', AdminOrderSearch.as_view(), name = 'admin_order_search'),
+     path('returns/', AdminReturnsView.as_view(), name = 'admin_order_return'),
 ]   

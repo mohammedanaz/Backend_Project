@@ -648,3 +648,9 @@ class AdminUserSearch(View):
         return JsonResponse({'data': data, 'has_previous': paged_users.has_previous(), 
                              'has_next': paged_users.has_next(), 
                              'pages': paginator.num_pages})
+    
+    ################################### Admin Order Returns ####################################
+
+class AdminReturnsView(View):
+    def get(self, request):
+        return render(request, 'admin_returns.html')

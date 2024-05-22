@@ -1,0 +1,61 @@
+<!-- home.html -->
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Invoice{% endblock %}
+
+{% block content %}
+
+    <section class="container w-50 border my-5 p-3 bg-light rounded-3 shadow">
+        <h1>Invoice for Order # {{order.id}}</h1>
+        <p>Order date: {{order.add_date}}</p>
+        <p>Customer: {{order.customer_id.first_name}} {{order.customer_id.last_name}}</p>
+        <div class="table-responsive text-center">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order Id#</th>
+                        <th>Order type</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{order.id}}</td>
+                        <td>
+                            {% if order.type == 1 %}
+                            Fabric Only
+                            {% else %}
+                            Fabric with stitching
+                            {% endif %}
+                        </td>
+                        <td>{{order.product_id.name}}</td>
+                        <td>{{order.quantity}}</td>
+                        <td>{{order.price}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-end">
+            <div>
+                <p>Shipping: ₹ 75</p>
+                <h5 class="text-danger">Total: ₹ {{total}}</h5>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="#" onclick="history.back();">
+                Go Back
+            </a>
+            <a href="#" >
+                Download
+            </a>
+        </div>
+    </section>
+
+{% endblock %}
+

@@ -205,3 +205,18 @@ class CreateOrder(View):
             return redirect(reverse('orders:checkout'))
 
 
+########################## Create Invoice View #################################
+
+class Invoice(View):
+    '''
+    To render invoice and download.
+    '''
+
+    def get(self, request, pk):
+        order = get_object_or_404(Order, pk=pk)
+        total = order.price + 75
+        context = {
+            'order': order,
+            'total': total,
+        }
+        return render(request, 'invoice.html', context)

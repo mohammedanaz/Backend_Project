@@ -96,6 +96,7 @@
                         </p>
                         {% if order.status == 'D' %}
                         <!-- ========= Accordion for return request  ============= -->
+                        <a href="{% url "orders:invoice" order.pk %}">View Invoice</a>
                         <div class="accordion mt-3" id="accordion-{{order.id}}">
                             <div class="accordion-item">
                                 
@@ -144,10 +145,12 @@
                             </div>
                         </div>
                         {% elif order.status == 'C' or order.status == 'R' %}
+                        <a href="{% url "orders:invoice" order.pk %}">View Invoice</a><br>
                         <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" disabled>
                             Cancel
                         </button>
                         {% else %}
+                        <a href="{% url "orders:invoice" order.pk %}">View Invoice</a><br>
                         <button class="btn btn-primary cancel-btn" style="margin-top: 10px;" id="btn-{{order.id}}"
                             data-order-id="{{ order.id }}" onclick="cancelOrder({{ order.id }})">
                             Cancel

@@ -172,32 +172,35 @@ class CreateOrder(View):
                     payment_type = request.POST.get('paymentOption')
                     if payment_type == 'COD':
                         payment_method = 'C'
+                        selected_address = request.POST.get('addressOption')
+                        address = Address.objects.get(id=selected_address)
+                        order_measurements = cart.cart_measurements
+
+                        if product.qty >= qty + Decimal('0.01'):
+                            Order.objects.create(
+                                customer_id = user,
+                                product_id = product,
+                                order_type = order_type,
+                                quantity = qty,
+                                price = price,
+                                payment_method = payment_method,
+                                address = address,
+                                order_measurements = order_measurements
+                            )
+                            product.qty -= (qty + Decimal('0.01'))
+                            product.save()
+                        else:
+                            raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
+                        
                     else:
                         payment_method = 'P'
-                    selected_address = request.POST.get('addressOption')
-                    address = Address.objects.get(id=selected_address)
-                    order_measurements = cart.cart_measurements
+                        
 
-                    if product.qty >= qty + Decimal('0.01'):
-                        Order.objects.create(
-                            customer_id = user,
-                            product_id = product,
-                            order_type = order_type,
-                            quantity = qty,
-                            price = price,
-                            payment_method = payment_method,
-                            address = address,
-                            order_measurements = order_measurements
-                        )
-                        product.qty -= (qty + Decimal('0.01'))
-                        product.save()
-                    else:
-                        raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
-                cart_items.delete()
+                #cart_items.delete()
                 order_create_msg = 'Your Order Successfully Placed.'
                 request.session['order_create_msg'] = order_create_msg
                 return redirect(reverse('main:products'))
-             
+  
         except IntegrityError:
             print('Integrity error occured')
             return redirect(reverse('orders:checkout'))

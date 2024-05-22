@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice {{ order.id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .header {
+            background-color: #3b3b3b;
+            color: white;
+            padding: 10px;
+            height: 120px; 
+        }
+        .logo {
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{{ logo_url }}" class="logo" alt="Company Logo">
+    </div>
+    <h1 style="text-align: center;">INVOICE</h1>
+    <hr>
+    <h1>Invoice # Inv - {{ order.customer_id.id }}- {{order.id}}</h1>
+    <p>Order date: {{ order.add_date }}</p>
+    <p>Customer: {{ order.customer_id.first_name }} {{ order.customer_id.last_name }}</p>
+    <p>Address:</p>
+    <p>{{order.address.house_name}}</p>
+    <p>{{order.address.street_1}}</p>
+    <p>{{order.address.city}}</p>
+    <p>{{order.address.state}}</p>
+    <p>{{order.address.pincode}}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Order Id#</th>
+                <th>Order type</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>
+                    {% if order.type == 1 %}
+                    Fabric Only
+                    {% else %}
+                    Fabric with stitching
+                    {% endif %}
+                </td>
+                <td>{{ order.product_id.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.price }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>Shipping: ₹ 75</p>
+    <h1>Total: ₹ {{ total }}</h1>
+    <hr>
+    <p>
+        Disclaimer: Product descriptions, prices, and availability may change without notice. 
+        We are not liable for typographical errors. Shipping fees are non-refundable; 
+        customers are responsible for customs duties or taxes. Returns accepted within 
+        30 days for unused items in original condition; certain items may be non-returnable.
+        Products may carry a manufacturer's warranty; no additional warranties provided. 
+        Our liability is limited to the purchase price; we are not responsible for indirect 
+        or consequential damages. Personal information is used according to our privacy policy.
+        Any disputes are governed by the laws of our registered jurisdiction.
+    </p>
+    <h3>By making a purchase, you agree to these terms. 
+        Contact our customer service with any inquiries.
+    </h3>
+    <hr>
+    <h2>Thank you for choosing us</h2>
+    <h1>My Fab.</h1>
+</body>
+</html>

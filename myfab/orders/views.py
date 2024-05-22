@@ -6,11 +6,14 @@ from django.views.generic import UpdateView, DeleteView
 from main.models import Product, Usage
 from accounts.models import Address
 from orders.models import Cart, Order
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from decimal import Decimal
 from accounts.utils import validate_input
 from django.db import transaction, IntegrityError
+from xhtml2pdf import pisa
+from django.templatetags.static import static
+from django.template.loader import get_template
 
 
 ########################## Cart View #################################
@@ -220,3 +223,23 @@ class Invoice(View):
             'total': total,
         }
         return render(request, 'invoice.html', context)
+    
+########################## Generate Invoice pdf View #################################
+    
+def generate_invoice_pdf(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    total = order.price + 75
+    template = get_template('invoice_pdf.html')
+    context = {'order': order, 'total': total}
+    logo_url = request.build_absolute_uri(static('images/MyFAB_logo_for_pdf.png'))
+    html_content = template.render({'order': order, 'total': total, 'logo_url': logo_url})
+    
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_{order.id}.pdf"'
+    
+    pisa_status = pisa.CreatePDF(html_content, dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html_content + '</pre>')
+    
+    return response

@@ -51,7 +51,7 @@
             <a href="#" onclick="history.back();">
                 Go Back
             </a>
-            <a href="#" >
+            <a href="{% url 'orders:generate_invoice_pdf' order.pk %}">
                 Download
             </a>
         </div>

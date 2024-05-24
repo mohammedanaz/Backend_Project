@@ -1,19 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from django.views import View
 from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
 from main.models import Product, Category, CategoryChoice, Usage, Measurement
-from orders.models import Order, ReturnOrder
+from orders.models import  ReturnOrder, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.db.models.functions import ExtractMonth, ExtractYear
 import calendar
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models import Count, Sum
+import xlsxwriter
+from io import BytesIO
 
 # Create your views here.
 ################################### Admin Home ####################################
@@ -781,3 +783,72 @@ class AdminReturnSearch(View):
                              'has_next': paged_returns.has_next(), 
                              'pages': paginator.num_pages})
     
+################################### Admin sales report download ####################################
+
+class SaleReportDownload(View):
+    '''
+    To download sales report in excel format using XlsxWriter library.
+    '''
+
+    def post(self, request):
+        # retrieve selected radio from request
+        selected_date = request.POST.get('selected_date')
+        # To retrieve date range for custom radio
+        custom_date_range = request.POST.get('custom_date_range')
+        if selected_date == '7days':
+            start_date = datetime.now() - timedelta(days=7)
+            end_date = datetime.now()
+        elif  selected_date == '30days':
+            start_date = datetime.now() - timedelta(days=30)
+            end_date = datetime.now()
+        else:
+           start_date_str, end_date_str = custom_date_range.split(' to ')
+           date_format = '%Y-%m-%d'
+           start_date = datetime.strptime(start_date_str, date_format)
+           end_date = datetime.strptime(end_date_str, date_format)
+
+        orders = (
+            Order.objects
+            .filter(add_date__range=[start_date, end_date])
+            .order_by('add_date')
+            )
+
+        # Create an in-memory output file for the new workbook.
+        output = BytesIO()
+
+        # Create an Excel workbook and add a worksheet.
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet()
+
+        # Write the header.
+        headers = ['Order ID', 'Product Name', 'Quantity', 'Price', 'Add Date']
+        for col_num, header in enumerate(headers):
+            worksheet.write(0, col_num, header)
+
+        # Write the data.
+        for row_num, order in enumerate(orders, start=1):
+            worksheet.write(row_num, 0, order.id)
+            worksheet.write(row_num, 1, order.product_id.name)
+            worksheet.write(row_num, 2, float(order.quantity))
+            worksheet.write(row_num, 3, float(order.price))
+            worksheet.write(row_num, 4, order.add_date.strftime('%d-%m-%Y'))
+
+        # Close the workbook.
+        workbook.close()
+
+        # Rewind the buffer.
+        output.seek(0)
+
+        # For name of the file to be downloaded
+        filename_start_date = start_date.strftime('%d%m%Y')
+        filename_end_date = end_date.strftime('%d%m%Y')
+        filename = f'sales_report_{filename_start_date}_to_{filename_end_date}.xlsx'
+
+        # Set up the response.
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+
+        return response

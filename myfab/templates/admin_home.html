@@ -4,6 +4,9 @@
 {% load custom_filters %}
 
 {% block title %}Admin Home{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock head %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -113,10 +116,51 @@
             <canvas id="chart-sales" style="max-width: 100%; height: 100%;"></canvas>
         </div>
     </div>
-    
-    
+ <!-- =========================== Graph section end =========================== -->   
+
+ <!-- =========================== Sales report begin =========================== -->
+    <div class="container my-2">
+        <form method="post" action="{% url 'custom_admin:download_sales_report' %}"
+            class="col-12 col-sm-6 col-md-4 border rounded-4 p-4">
+            {% csrf_token %}
+            <h2>
+                Sales report
+            </h2>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" 
+                    id="date_7day" name="selected_date"  value="7days" checked>
+                <label class="form-check-label" for="date_7day">
+                Last 7 days
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" 
+                    id="date_30day" name="selected_date"  value="30days">
+                <label class="form-check-label" for="date_30day">
+                Last 30 days
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" 
+                    id="custom_date" name="selected_date"  value="custom">
+                <label class="form-check-label" for="custom_date">
+                Custom date
+                </label>
+            </div>
+            <div class="my-2" id="date-fields" style="display: none;">
+                <label class="form-label">Select Date Range</label>
+                <input type="text" class="form-control" id="custom-date-range" name="custom_date_range">
+            </div>
+            <button type="submit" class="btn btn-secondary my-2">
+                Download report
+            </button>
+        </form>
+    </div>
+<!-- =========================== Sales report end =========================== -->
 
 
+<!-- =========================== JS =========================== -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     
@@ -245,6 +289,32 @@
         .catch(error => {
             console.error('Error response recieved', error)
         });
+    });
+
+
+    //To display date field upon selecting custom date
+    document.addEventListener("DOMContentLoaded", function() {
+        const dateFields = document.getElementById('date-fields');
+        const radioButtons = document.querySelectorAll('input[name="selected_date"]');
+    
+        function toggleDateFields() {
+            console.log('Toggling date fields...');
+            if (document.querySelector('input[name="selected_date"]:checked').value === 'custom') {
+                console.log('Custom date selected.');   
+                dateFields.style.display = 'block';
+                flatpickr('#custom-date-range', {mode: 'range', dateFormat: 'Y-m-d'});
+            } else {
+                console.log('Other date range selected.');
+                dateFields.style.display = 'none';
+            }
+        }
+    
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', toggleDateFields);
+        });
+    
+        // Initial check to display the date fields if 'custom' is already selected
+        toggleDateFields();
     });
     </script>
       

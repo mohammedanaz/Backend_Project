@@ -1,7 +1,6 @@
 from django.db import models
 from main.models import Product
-from accounts.models import Address
-from accounts.models import CustomUser
+from accounts.models import Address, CustomUser
 from decimal import Decimal, ROUND_HALF_UP
 import json
 from django.core.exceptions import ValidationError

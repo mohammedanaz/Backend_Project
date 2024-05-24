@@ -68,12 +68,18 @@ class AdminHome(View):
         for sale in sales:
             month_abbr = calendar.month_name[sale['month']][:3]
             months_sales[month_abbr] = sale['sales']
+
+        recent_orders = (
+            Order.objects.all()
+            .order_by('-add_date')[:5]
+        )
         
         context = {
             'months_orders': months_orders,
             'months_sales': months_sales,
             'current_year': current_year,
             'unique_years': unique_years,
+            'recent_orders': recent_orders,
                    }
         return render(request, 'admin_home.html', context)
     

@@ -119,42 +119,77 @@
  <!-- =========================== Graph section end =========================== -->   
 
  <!-- =========================== Sales report begin =========================== -->
-    <div class="container my-2">
-        <form method="post" action="{% url 'custom_admin:download_sales_report' %}"
-            class="col-12 col-sm-6 col-md-4 border rounded-4 p-4">
-            {% csrf_token %}
-            <h2>
-                Sales report
-            </h2>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" 
-                    id="date_7day" name="selected_date"  value="7days" checked>
-                <label class="form-check-label" for="date_7day">
-                Last 7 days
-                </label>
+    <div class="container">
+        <div class="d-flex flex-column flex-lg-row">
+            <form method="post" action="{% url 'custom_admin:download_sales_report' %}"
+                class="border rounded-4 p-4 my-2 me-1 flex-shrink-0">
+                {% csrf_token %}
+                <h2 class="mb-3">
+                    Sales report
+                </h2>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" 
+                        id="date_7day" name="selected_date"  value="7days" checked>
+                    <label class="form-check-label" for="date_7day">
+                    Last 7 days
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" 
+                        id="date_30day" name="selected_date"  value="30days">
+                    <label class="form-check-label" for="date_30day">
+                    Last 30 days
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" 
+                        id="custom_date" name="selected_date"  value="custom">
+                    <label class="form-check-label" for="custom_date">
+                    Custom date
+                    </label>
+                </div>
+                <div class="my-2" id="date-fields" style="display: none;">
+                    <label class="form-label">Select Date Range</label>
+                    <input type="text" class="form-control" id="custom-date-range" name="custom_date_range">
+                </div>
+                <button type="submit" class="btn btn-secondary my-4">
+                    Download report
+                </button>
+            </form>
+            <div class="border rounded-4 p-4 my-2 flex-grow-1">
+                <h2>
+                    Recent Orders
+                </h2>
+                <div class="table-responsive">
+                    <table class="table w-100">
+                        <thead>
+                            <tr>
+                                <th scope="col">Sr#</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Order id</th>
+                                <th scope="col">Customer id</th>
+                                <th scope="col">Product</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                            {% for order in recent_orders %}
+                                <tr>
+                                    <th>{{ forloop.counter }}</th>
+                                    <td>{{ order.add_date }}</td>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.customer_id.username }}</td>
+                                    <td>{{ order.product_id.name }}</td>
+                                    <td>{{ order.quantity }}</td>
+                                    <td>{{ order.price }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" 
-                    id="date_30day" name="selected_date"  value="30days">
-                <label class="form-check-label" for="date_30day">
-                Last 30 days
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" 
-                    id="custom_date" name="selected_date"  value="custom">
-                <label class="form-check-label" for="custom_date">
-                Custom date
-                </label>
-            </div>
-            <div class="my-2" id="date-fields" style="display: none;">
-                <label class="form-label">Select Date Range</label>
-                <input type="text" class="form-control" id="custom-date-range" name="custom_date_range">
-            </div>
-            <button type="submit" class="btn btn-secondary my-2">
-                Download report
-            </button>
-        </form>
+        </div>
     </div>
 <!-- =========================== Sales report end =========================== -->
 

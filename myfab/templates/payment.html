@@ -17,6 +17,7 @@
 <body>
     <div class="container w-50 bg-light text-center my-5 py-5 rounded-4 shadow">
         <div id="rzp-container" data-user-id="{{ user.id }}"></div>
+        <div id="address" data-address="{{ address_id }}"></div>
         <h1>Confirm Payment of order.</h1><br>
         <button class="btn btn-success" id="rzp-button1">
             Pay with Razorpay
@@ -33,6 +34,8 @@
     <script>
     var container = document.getElementById('rzp-container');
     var user_id = container.dataset.userId; 
+    var address = document.getElementById('address');
+    var address_id = address.dataset.address;
     var options = {
         "key": "{{ razorpay_key_id }}",
         "amount": "{{ amount }}",
@@ -41,7 +44,7 @@
         "description": "Test Transaction",
         "image": "https://example.com/your_logo",
         "order_id": "{{ order_id }}",
-        "notes": { "user_id": user_id },
+        "notes": { "user_id": user_id, "address_id": address_id },
         "callback_url": "http://127.0.0.1:8000/orders/payment_callback/",
         "handler": function (response){
             console.log(response);
@@ -57,7 +60,7 @@
                     razorpay_payment_id: response.razorpay_payment_id,
                     razorpay_order_id: response.razorpay_order_id,
                     razorpay_signature: response.razorpay_signature,
-                    notes: { "user_id": user_id }
+                    notes: { "user_id": user_id, "address_id": address_id }
                 })
             }).then(response => {
                 if (response.ok) {

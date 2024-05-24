@@ -165,7 +165,6 @@ class CreateOrder(View):
         user = request.user
         user_id = user.id
         print('user_id is- ', user_id)
-        request.session['user_id'] = user_id
         payment_type = request.POST.get('paymentOption')
         if payment_type == 'COD':
             payment_method = 'C'
@@ -219,6 +218,8 @@ class CreateOrder(View):
                 return redirect(reverse('orders:checkout'))    
         else:
             payment_method = 'P'
+            selected_address = request.POST.get('addressOption')
+            address = Address.objects.get(id=selected_address)
             try:
                 with transaction.atomic():
                     # lock corresponding rows of cart and product to update.
@@ -238,25 +239,11 @@ class CreateOrder(View):
                         selected_address = request.POST.get('addressOption')
                         address = Address.objects.get(id=selected_address)
                         order_measurements = cart.cart_measurements
-
                         if product.qty >= qty + Decimal('0.01'):
-                            Order.objects.create(
-                                customer_id = user,
-                                product_id = product,
-                                order_type = order_type,
-                                quantity = qty,
-                                price = price,
-                                payment_method = payment_method,
-                                address = address,
-                                order_measurements = order_measurements
-                            )
-                            product.qty -= (qty + Decimal('0.01'))
-                            product.save()
-                            total_price += price # for sending to raqzor pay context
+                            total_price += product.price                       
                         else:
                             raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
-                    
-                    cart_items.delete()
+
             except IntegrityError:
                 print('Integrity error occured')
                 return redirect(reverse('orders:checkout'))
@@ -264,7 +251,7 @@ class CreateOrder(View):
                 print(f'Exception occured- {e}')
                 insufficient_qty_error_msg = f'{e}'
                 request.session['insufficient_qty_error_msg'] = insufficient_qty_error_msg
-                return redirect(reverse('orders:checkout'))
+                return redirect(reverse('orders:checkout'))  
             
             #For creating a  Razor Pay client instance
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
@@ -272,6 +259,7 @@ class CreateOrder(View):
             order_amount = float((total_price+75) * 100)  # amount in paise
             order_currency = 'INR'
             order_receipt = 'order_rcptid_11'
+            address_id = address.id
 
             # Create the Razorpay order
             payment = client.order.create({
@@ -283,12 +271,14 @@ class CreateOrder(View):
             print('************')
             print(payment)
             print('************')
+            print('address id is-', address_id)
             # Prepare the context for payment.html
             context = {
                 'razorpay_key_id': settings.RAZORPAY_KEY_ID,
                 'order_id': payment['id'],
                 'amount': order_amount,
                 'currency': order_currency,
+                 'address_id': address_id,
             }
             return render(request, 'payment.html', context)
 
@@ -316,8 +306,11 @@ class PaymentCallback(View):
 
             notes = payload.get('notes', {})
             user_id = notes.get('user_id')
+            address_id = notes.get('address_id')
             user = CustomUser.objects.get(id=user_id)
+            address = Address.objects.get(id=address_id)
             print('user is-', user)
+            print('address id is-', address_id)
 
             if not (razorpay_payment_id and razorpay_order_id and razorpay_signature):
                 # Payment failed
@@ -337,6 +330,37 @@ class PaymentCallback(View):
                 # below verification is just dummy.
                 client.utility.verify_payment_signature(params_dict)
                 print('after successfull - client.utility.verify_payment_signature(params_dict)')
+
+                with transaction.atomic():
+                    payment_method = 'P'
+                    # lock corresponding rows of cart and product to update.
+                    cart_items = Cart.objects.select_for_update().filter(customer_id=user)
+                    if not cart_items:
+                        return redirect(reverse('main:products'))
+                    product_ids = [cart_item.product_id.id for cart_item in cart_items]
+                    products = Product.objects.select_for_update().filter(id__in=product_ids)
+
+                    for cart in cart_items:
+                        product = products.get(id=cart.product_id.id)
+                        order_type = cart.order_type
+                        qty = cart.qty
+                        price = cart.price
+
+                        order_measurements = cart.cart_measurements
+                        Order.objects.create(
+                            customer_id = user,
+                            product_id = product,
+                            order_type = order_type,
+                            quantity = qty,
+                            price = price,
+                            payment_method = payment_method,
+                            address = address,
+                            order_measurements = order_measurements
+                        )
+                        product.qty -= (qty + Decimal('0.01'))
+                        product.save()
+                    cart_items.delete()
+                
                 # Payment successful
                 success_html = render(request, 'payment_success.html').content.decode('utf-8')
                 return JsonResponse({'status': 'success', 'html': success_html})

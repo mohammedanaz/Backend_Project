@@ -5,7 +5,7 @@ from django.views import View
 from django.views.generic import UpdateView, DeleteView
 from main.models import Product, Usage
 from accounts.models import Address, CustomUser
-from orders.models import Cart, Order
+from orders.models import Cart, Order, PaymentOrder, PaymentPrepaid
 from django.http import JsonResponse, HttpResponse
 import json
 from decimal import Decimal
@@ -15,6 +15,8 @@ from xhtml2pdf import pisa
 from django.templatetags.static import static
 from django.template.loader import get_template
 import razorpay
+import hmac
+import hashlib
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -160,11 +162,10 @@ class CreateOrder(View):
         order model for each cart item and delete all the rows of the current user from 
         cart model.
         for prepaid this will create a payment instance of razorpay and redirects to 
-        payment.html with context.
+        payment.html with context. and response from razorpay is handled by callback view.
         '''
         user = request.user
-        user_id = user.id
-        print('user_id is- ', user_id)
+        request.session['user_id'] = user.id
         payment_type = request.POST.get('paymentOption')
         if payment_type == 'COD':
             payment_method = 'C'
@@ -205,8 +206,6 @@ class CreateOrder(View):
                             raise Exception(f'Insufficient stock for {product.name}. Only {product.qty}m left.')
                         
                     cart_items.delete()
-                    order_create_msg = 'Your Order Successfully Placed.'
-                    request.session['order_create_msg'] = order_create_msg
                     return render(request, 'payment_success.html')
             except IntegrityError:
                 print('Integrity error occured')
@@ -217,6 +216,7 @@ class CreateOrder(View):
                 request.session['insufficient_qty_error_msg'] = insufficient_qty_error_msg
                 return redirect(reverse('orders:checkout'))    
         else:
+            #Logics for prepaid method
             payment_method = 'P'
             selected_address = request.POST.get('addressOption')
             address = Address.objects.get(id=selected_address)
@@ -256,87 +256,94 @@ class CreateOrder(View):
             #For creating a  Razor Pay client instance
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
             
-            order_amount = float((total_price+75) * 100)  # amount in paise
+            order_amount = (total_price+75)*100
             order_currency = 'INR'
             order_receipt = 'order_rcptid_11'
             address_id = address.id
 
             # Create the Razorpay order
-            payment = client.order.create({
-                'amount': order_amount,
+            order = client.order.create({
+                'amount': float(order_amount),
                 'currency': order_currency,
                 'receipt': order_receipt,
                 'payment_capture': '1',
             })
             print('************')
-            print(payment)
+            print(order)
             print('************')
-            print('address id is-', address_id)
+
+            #Create an instance of payment Order model
+            order_id = order['id']
+            PaymentOrder.objects.create(
+                payment_order_id = order_id,
+                user_id = user.id,
+                address_id = address_id,
+                amount = order_amount
+            )
+
             # Prepare the context for payment.html
             context = {
                 'razorpay_key_id': settings.RAZORPAY_KEY_ID,
-                'order_id': payment['id'],
+                'order_id': order_id,
                 'amount': order_amount,
                 'currency': order_currency,
                  'address_id': address_id,
             }
             return render(request, 'payment.html', context)
-
-  
         
+################### view for razorpay webhook for success, failure pay ######################
 @method_decorator(csrf_exempt, name='dispatch')
-class PaymentCallback(View):
+class RazorWebhook(View):
+
+    '''
+    To test a response from razorpay webhook. and authenticate
+    payment details like paid amount, signature.
+    '''
 
     def post(self, request):
-
-        print('inside callback method')
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        payload = None
         try:
-            print('inside try for json payload')
-            payload = json.loads(request.body)
-        except:
-            print('No json')
-        if payload:
-            print('after payload1', payload)
-            # Extract data from POST request
-            razorpay_payment_id = payload['razorpay_payment_id']
-            razorpay_order_id = payload['razorpay_order_id']
-            razorpay_signature = payload['razorpay_signature']
+            print ('Entered inside webhook post req.')
+            webhook_secret_key = settings.RAZORPAY_WEBHOOK_SECRET
+            received_data = json.loads(request.body)
+            received_signature = request.headers.get('X-Razorpay-Signature')
 
-            notes = payload.get('notes', {})
-            user_id = notes.get('user_id')
-            address_id = notes.get('address_id')
-            user = CustomUser.objects.get(id=user_id)
-            address = Address.objects.get(id=address_id)
-            print('user is-', user)
-            print('address id is-', address_id)
+            generated_signature = hmac.new(
+                webhook_secret_key.encode('utf-8'),
+                request.body,
+                hashlib.sha256
+            ).hexdigest()
 
-            if not (razorpay_payment_id and razorpay_order_id and razorpay_signature):
-                # Payment failed
-                print('Razorpay Payment failed - missing parameters')
-                failure_html = render(request, 'payment_failed.html').content.decode('utf-8')
-                return JsonResponse({'status': 'failed', 'html': failure_html})
+            if not hmac.compare_digest(received_signature, generated_signature):
+                print('Signature mismatch order not created')
+                raise KeyError('Signature keys mismatch. Response tampered.')
+            payment_id = received_data['payload']['payment']['entity']['id']
+            order_id = received_data['payload']['payment']['entity']['order_id']
+            amount = received_data['payload']['payment']['entity']['amount']
+            #Retreive the paymentOrder instance from webhook data received.
+            payment_order = PaymentOrder.objects.get(payment_order_id=order_id)
+            order_amount = payment_order.amount
+            #check saved order_amount and amount from webhook similar
+            if amount == order_amount:
+                user_id = payment_order.user_id
+                user = CustomUser.objects.get(id=user_id)
+                address_id = payment_order.address_id
+                address = Address.objects.get(id=address_id)
 
-
-            # Verify the payment signature
-            params_dict = {
-                'razorpay_order_id': razorpay_order_id,
-                'razorpay_payment_id': razorpay_payment_id,
-                'razorpay_signature': razorpay_signature
-            }
-
-            try:
-                # below verification is just dummy.
-                client.utility.verify_payment_signature(params_dict)
-                print('after successfull - client.utility.verify_payment_signature(params_dict)')
-
+                # Atomic block for creating order instance.
                 with transaction.atomic():
+                    print('Inside atomic transaction')
                     payment_method = 'P'
+                    #Create an instance of PaymentPrepaid, Order field will be added to it after
+                    # creating each related order model below.
+                    payment_prepaid = PaymentPrepaid.objects.create(
+                        payment_id = payment_id,
+                        amount = order_amount/100 # convert from paisa to rupee
+                    )
                     # lock corresponding rows of cart and product to update.
                     cart_items = Cart.objects.select_for_update().filter(customer_id=user)
                     if not cart_items:
-                        return redirect(reverse('main:products'))
+                        print('##### No cart  items found #######')
+                        raise RuntimeError('Cart items deleted before creating order instances.')
                     product_ids = [cart_item.product_id.id for cart_item in cart_items]
                     products = Product.objects.select_for_update().filter(id__in=product_ids)
 
@@ -347,7 +354,7 @@ class PaymentCallback(View):
                         price = cart.price
 
                         order_measurements = cart.cart_measurements
-                        Order.objects.create(
+                        order = Order.objects.create(
                             customer_id = user,
                             product_id = product,
                             order_type = order_type,
@@ -357,56 +364,84 @@ class PaymentCallback(View):
                             address = address,
                             order_measurements = order_measurements
                         )
+                        payment_prepaid.orders.add(order) #add this order to payment model
                         product.qty -= (qty + Decimal('0.01'))
                         product.save()
                     cart_items.delete()
-                
-                # Payment successful
-                success_html = render(request, 'payment_success.html').content.decode('utf-8')
-                return JsonResponse({'status': 'success', 'html': success_html})
-            except razorpay.errors.SignatureVerificationError:
-                # Payment verification failed
-                print('Razorpay Payment verification failed')
-                failure_html = render(request, 'payment_failed.html').content.decode('utf-8')
-                return JsonResponse({'status': 'failed', 'html': failure_html})
-        else:
-            payload = request.POST
-            print('after payload2', payload)
-
-            if 'error[code]' in payload:
-                # Payment failed
-                print('Razorpay Payment failed - error in payload')
-                return render(request, 'payment_failed.html')
-
-            # Extract data from POST request
-            razorpay_payment_id = payload.get('razorpay_payment_id')
-            razorpay_order_id = payload.get('razorpay_order_id')
-            razorpay_signature = payload.get('razorpay_signature')
-
-            # session user id lost from netbanking response.
-            user_id = request.session.get('user_id')
-            print('user_id is-', user_id)
-
-            # Verify the payment signature
-            params_dict = {
-                'razorpay_order_id': razorpay_order_id,
-                'razorpay_payment_id': razorpay_payment_id,
-                'razorpay_signature': razorpay_signature
-            }
-
-            try:
-                # below verification is just dummy.
-                client.utility.verify_payment_signature(params_dict)
-                print('after successful - client.utility.verify_payment_signature(params_dict)')
-                # Payment successful
-                return render(request, 'payment_success.html')
-            except razorpay.errors.SignatureVerificationError:
-                # Payment verification failed
-                print('Razorpay Payment verification failed')
-                return render(request, 'payment_failed.html')
+                    payment_order.delete()
+                    return JsonResponse({'success':'success'})
+            else:
+                print('Exception: Amount paid and order amount mismatch.')
+                raise ValueError('Amount paid and order amount mismatch.')
+            
+        except KeyError as e:
+            print('Exception: Key error')
+            payment_order.delete()
+            error_msg = f'{e}'
+            return JsonResponse({'error':'Exception: Key error'}, status=400)
+        except ValueError as e:
+            print('Exception: Value error')
+            payment_order.delete()
+            error_msg = f'{e}'
+            return JsonResponse({'error':'Exception: Value error'}, status=400)
+        except RuntimeError as e:
+            print('Exception: Runtime error')
+            payment_order.delete()
+            error_msg = f'{e}'
+            return JsonResponse({'error':'Exception: Runtime error'}, status=400)
+        except Exception as e:
+            print('Exception: General')
+            payment_order.delete()
+            error_msg = f'{e}'
+            return JsonResponse({'error':'Exception: General'}, status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class PaymentCallback(View):
+    '''
+    The handler function from front end sends a fetch request to check 
+    a payment instance already made by webhook backend logic with 
+    the payment_id in the payload. if payment instance exists then its 
+    a successfull payment or return error.
+    '''
+    def post(self, request):
+        try:
+            print('inside callback method')
+            payload = json.loads(request.body)
+            if not payload:
+                print('Payload is None')
+                raise Exception('Payload None')
+            payment_id = payload['razorpay_payment_id']
+            if not payment_id:
+                print('Payment id not found in payload')
+                raise ValueError('Payment id not found in payload')
+            if PaymentPrepaid.objects.filter(payment_id=payment_id).exists():
+                return JsonResponse({'success': 'Payment id found'})
+            else:
+                return JsonResponse({'error': 'Payment id not found'},status=500)
+        except ValueError as e:
+            return JsonResponse({'error': e}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': e}, status=400)
 
+
+
+########################## Payment Succes, Failure pages #################################
+class PaymentSuccess(View):
+    '''
+    To render payment success page after payment verification and order model creation
+    from webhook view.
+    '''
+    def get(self, request):
+        return render(request, 'payment_success.html')
+
+class PaymentFailed(View):
+    '''
+    To render payment failed page after payment verification failed
+    from webhook view.
+    '''
+    def get(self, request):
+        return render(request, 'payment_failed.html')
 
 ########################## Create Invoice View #################################
 

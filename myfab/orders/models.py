@@ -110,4 +110,31 @@ class ReturnOrder(models.Model):
     image_1 = models.ImageField(upload_to='images/return_order', null=False, blank=False)
     image_2 = models.ImageField(upload_to='images/return_order', null=True, blank=True)
     status = models.CharField(max_length=10, null=False, choices=STATUS_CHOICES, default='P')
+
+class PaymentOrder(models.Model):
+    '''
+    to create a temperory model to store the payment instance created by 
+    razorpay for processing payment. this datas will be used while payment 
+    verification and then creating an order and payment instance.
+    '''
+    payment_order_id = models.TextField(null=False, blank=True)
+    user_id = models.CharField(max_length=250, null=False, blank=True)
+    address_id = models.CharField(max_length=250, null=False, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
     
+class PaymentPrepaid(models.Model):
+    '''
+    Here the payment details for prepaid are stored after successful
+    payment verification. payment_id will be id got from payment service provider.
+    '''
+    payment_id = models.TextField(null=False, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    orders = models.ManyToManyField(Order, blank=True)
+
+class PaymentCOD(models.Model):
+    '''
+    Here the payment amount and order of COD type will be stored when the 
+    order status goes to delivered.
+    '''
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)

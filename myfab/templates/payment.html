@@ -32,50 +32,41 @@
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-    var container = document.getElementById('rzp-container');
-    var user_id = container.dataset.userId; 
-    var address = document.getElementById('address');
-    var address_id = address.dataset.address;
     var options = {
         "key": "{{ razorpay_key_id }}",
         "amount": "{{ amount }}",
         "currency": "INR",
-        "name": "Acme Corp",
+        "name": "MyFab Ind",
         "description": "Test Transaction",
         "image": "https://example.com/your_logo",
         "order_id": "{{ order_id }}",
-        "notes": { "user_id": user_id, "address_id": address_id },
-        "callback_url": "http://127.0.0.1:8000/orders/payment_callback/",
-        "handler": function (response){
-            console.log(response);
-            console.log('user_id is- ', user_id);
+        "handler": function (response1){
+            console.log('response - 1', response1);
             // Send the payment details to the server for verification
-            fetch("http://127.0.0.1:8000/orders/payment_callback/", {
+            fetch("/orders/payment_callback/", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
                 body: JSON.stringify({
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                    notes: { "user_id": user_id, "address_id": address_id }
+                    razorpay_payment_id: response1.razorpay_payment_id,
                 })
-            }).then(response => {
-                if (response.ok) {
-                    console.log('response ok')
-                    return response.json();
-                }
-                throw new Error('Network response was not ok.');
+            }).then(response2 => {
+                return response2.json(); // Convert the response to JSON
             }).then(data => {
-                if (data.status === 'success') {
-                    document.body.innerHTML = data.html;
+                console.log('response-2', data);
+                if (data.success) {
+                    // Redirect to payment success URL
+                    window.location.href = '/orders/payment_success/';
                 } else {
-                    document.body.innerHTML = data.html;
+                    // Redirect to payment failed URL
+                    window.location.href = '/orders/payment_failed/';
                 }
             }).catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
+                // In case of a fetch error, redirect to payment failed URL
+                window.location.href = '/orders/payment_failed/';
             });
         },
         "theme": {
@@ -83,9 +74,10 @@
         }
     };
     var rzp1 = new Razorpay(options);
-    rzp1.on('payment.failed', function (response){
-        alert("Payment Failed");
-        console.log(response.error);
+    rzp1.on('payment.failed', function (response3){
+        console.log(response3.error);
+        alert( response3.error.description)
+        //window.location.href = '/orders/payment_failed/';
 
     });
     document.getElementById('rzp-button1').onclick = function(e){

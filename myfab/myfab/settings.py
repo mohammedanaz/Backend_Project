@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-=v+n=mou5vs0iq2zqe*vn*)2gnuuzdhtozsa$z8$n#x5bci*m7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['4afd-2401-4900-6153-85f6-d5fe-8e22-7b4a-5b90.ngrok-free.app', '127.0.0.1']
 
 
 # Application definition
@@ -152,3 +152,4 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 # API keys for razorpay
 RAZORPAY_KEY_ID = config('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = config('RAZORPAY_KEY_SECRET')
+RAZORPAY_WEBHOOK_SECRET = config('RAZORPAY_WEBHOOK_SECRET')

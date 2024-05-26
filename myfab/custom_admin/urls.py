@@ -3,7 +3,7 @@ from .views import AdminHome, AdminUsers, AdminUserSearch, AdminProducts, AdminP
 from .views import AdminCategories, AdminCategoryEdit, AdminCategoryAdd, AdminCategoryDelete
 from .views import AdminUsages, AdminUsageEdit, AdminUsageAdd, AdminUsageDelete
 from .views import AdminMeasurements, AdminMeasurementAdd, AdminMeasurementEdit, AdminMeasurementDelete, AdminProductSearch
-from .views import AdminOrders, AdminOrderSearch, AdminReturnsView, AdminReturnSearch, SaleReportDownload
+from .views import AdminOrders, AdminOrderSearch, AdminReturnsView, AdminReturnSearch, SalesReport
 app_name = 'custom_admin'
 
 urlpatterns = [
@@ -31,5 +31,5 @@ urlpatterns = [
     path('orders/search/', AdminOrderSearch.as_view(), name = 'admin_order_search'),
     path('returns/', AdminReturnsView.as_view(), name = 'admin_order_return'),
     path('returns/search/', AdminReturnSearch.as_view(), name = 'admin_return_search'),
-    path('download_sales_report/', SaleReportDownload.as_view(), name='download_sales_report'),
+    path('sales_report/', SalesReport.as_view(), name='sales_report'),
 ]   

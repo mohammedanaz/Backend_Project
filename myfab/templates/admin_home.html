@@ -121,7 +121,7 @@
  <!-- =========================== Sales report begin =========================== -->
     <div class="container">
         <div class="d-flex flex-column flex-lg-row">
-            <form method="post" action="{% url 'custom_admin:download_sales_report' %}"
+            <form id="sales-report-form" method="post" action="{% url 'custom_admin:sales_report' %}"
                 class="border rounded-4 p-4 my-2 me-1 flex-shrink-0">
                 {% csrf_token %}
                 <h2 class="mb-3">
@@ -150,8 +150,12 @@
                 </div>
                 <div class="my-2" id="date-fields" style="display: none;">
                     <label class="form-label">Select Date Range</label>
-                    <input type="text" class="form-control" id="custom-date-range" name="custom_date_range">
+                    <input type="text" class="form-control" 
+                        id="custom-date-range" name="custom_date_range">
                 </div>
+                <a id="view-report-link" class="btn btn-secondary mt-4" href="#">
+                    View report
+                </a><br>
                 <button type="submit" class="btn btn-secondary my-4">
                     Download report
                 </button>
@@ -327,11 +331,15 @@
     });
 
 
-    //To display date field upon selecting custom date
+    // To toggle date range field, send get request for view page
     document.addEventListener("DOMContentLoaded", function() {
         const dateFields = document.getElementById('date-fields');
         const radioButtons = document.querySelectorAll('input[name="selected_date"]');
-    
+        const viewReportLink = document.getElementById('view-report-link');
+        const customDateRangeInput = document.getElementById('custom-date-range');
+        const salesReportForm = document.getElementById('sales-report-form');
+
+        //To display date field upon selecting custom date
         function toggleDateFields() {
             console.log('Toggling date fields...');
             if (document.querySelector('input[name="selected_date"]:checked').value === 'custom') {
@@ -350,7 +358,39 @@
     
         // Initial check to display the date fields if 'custom' is already selected
         toggleDateFields();
+
+        // Update href of view report link before clicking
+        viewReportLink.addEventListener('click', function (event) {
+            event.preventDefault(); 
+
+            const selectedDate = document.querySelector('input[name="selected_date"]:checked').value;
+            const customDateRange = customDateRangeInput.value;
+            let url = "{% url 'custom_admin:sales_report' %}?selected_date=" + selectedDate;
+
+            if (selectedDate === 'custom') {
+                if (!customDateRange) {
+                    alert('Please select a custom date range.');
+                    return; // Stop the function if the custom date range is not filled.
+                }
+                url += "&custom_date_range=" + encodeURIComponent(customDateRange);
+            }
+
+            window.location.href = url; // Redirect to the new URL
+        });
+
+        // Download Form submission validation(check value for date range)
+        salesReportForm.addEventListener('submit', function(event) {
+            const selectedDate = document.querySelector('input[name="selected_date"]:checked').value;
+            const customDateRange = customDateRangeInput.value.trim();
+            
+            if (selectedDate === 'custom' && !customDateRange) {
+                event.preventDefault(); // Prevent form submission if custom date range is empty
+                alert('Please select a custom date range.');
+            }
+        });
+
     });
+    
     </script>
       
 <!-- =========================== Graph section End =========================== -->

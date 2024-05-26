@@ -789,12 +789,46 @@ class AdminReturnSearch(View):
                              'has_next': paged_returns.has_next(), 
                              'pages': paginator.num_pages})
     
-################################### Admin sales report download ####################################
+################################### sales report view, download ####################################
 
-class SaleReportDownload(View):
+class SalesReport(View):
     '''
-    To download sales report in excel format using XlsxWriter library.
+    Get method to view the sales report.
+    Post method to download sales report in excel format using XlsxWriter library.
     '''
+
+    def get(self, request):
+
+        selected_date = request.GET.get('selected_date')
+        if selected_date == 'custom':
+            custom_date_range = request.GET.get('custom_date_range')
+        
+        if selected_date == '7days':
+            start_date = datetime.now() - timedelta(days=7)
+            end_date = datetime.now()
+        elif  selected_date == '30days':
+            start_date = datetime.now() - timedelta(days=30)
+            end_date = datetime.now()
+        else:
+           if 'to' in custom_date_range:
+            start_date_str, end_date_str = custom_date_range.split(' to ')
+            date_format = '%Y-%m-%d'
+            start_date = datetime.strptime(start_date_str, date_format)
+            end_date = datetime.strptime(end_date_str, date_format)
+           else:
+                start_date_str = end_date_str = custom_date_range
+                date_format = '%Y-%m-%d'
+                start_date = datetime.strptime(start_date_str, date_format)
+                end_date = datetime.strptime(end_date_str, date_format)
+
+        orders = (
+            Order.objects
+            .filter(add_date__range=[start_date, end_date])
+            .order_by('add_date')
+            )
+
+        context = {'orders': orders}
+        return render(request, 'admin_sales_report.html', context)
 
     def post(self, request):
         # retrieve selected radio from request
@@ -808,10 +842,16 @@ class SaleReportDownload(View):
             start_date = datetime.now() - timedelta(days=30)
             end_date = datetime.now()
         else:
-           start_date_str, end_date_str = custom_date_range.split(' to ')
-           date_format = '%Y-%m-%d'
-           start_date = datetime.strptime(start_date_str, date_format)
-           end_date = datetime.strptime(end_date_str, date_format)
+           if 'to' in custom_date_range:
+            start_date_str, end_date_str = custom_date_range.split(' to ')
+            date_format = '%Y-%m-%d'
+            start_date = datetime.strptime(start_date_str, date_format)
+            end_date = datetime.strptime(end_date_str, date_format)
+           else:
+                start_date_str = end_date_str = custom_date_range
+                date_format = '%Y-%m-%d'
+                start_date = datetime.strptime(start_date_str, date_format)
+                end_date = datetime.strptime(end_date_str, date_format)
 
         orders = (
             Order.objects
@@ -856,5 +896,4 @@ class SaleReportDownload(View):
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
-
         return response

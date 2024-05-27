@@ -885,6 +885,11 @@ class SalesReport(View):
             .filter(add_date__range=[start_date, end_date])
             .order_by('add_date')
             )
+        total_price = orders.aggregate(total_price=Sum('price'))['total_price']
+        if total_price is not None:
+            total_price = f"{total_price:.2f}"
+        else:
+            total_price = 0.00
 
         # Create an in-memory output file for the new workbook.
         output = BytesIO()
@@ -899,12 +904,15 @@ class SalesReport(View):
             worksheet.write(0, col_num, header)
 
         # Write the data.
+        row_num = 0
         for row_num, order in enumerate(orders, start=1):
             worksheet.write(row_num, 0, order.id)
             worksheet.write(row_num, 1, order.product_id.name)
             worksheet.write(row_num, 2, float(order.quantity))
             worksheet.write(row_num, 3, float(order.price))
             worksheet.write(row_num, 4, order.add_date.strftime('%d-%m-%Y'))
+        bold_right_aligned_format = workbook.add_format({'bold': True, 'align': 'right'})
+        worksheet.write(row_num+1, 3, f'Total price: Rs {total_price}', bold_right_aligned_format)
 
         # Close the workbook.
         workbook.close()

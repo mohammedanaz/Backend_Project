@@ -227,7 +227,8 @@
                         <td>
                             <select class="status-select btn btn-outline-secondary"
                                     data-order-id="${order.id}"
-                                    onchange="changeOrderStatus(this)">
+                                    onchange="changeOrderStatus(this)"
+                                    onfocus="loadOldStatus(this)">
                                 ${getStatusOptions(order.status)}
                             </select>
                         </td>
@@ -285,55 +286,75 @@
 
         // Ask for confirmation before proceeding
         const confirmationMessage = `Are you sure you want to change the order status?`;
-        if (!confirm(confirmationMessage)) {
-            // If "Cancel", revert to the old status and do nothing
-            selectElement.selectedIndex = selectElement.dataset.oldSelectedIndex;
-            return;
-        }
 
-        // Send a POST request to update the order status
-        axios.post('/custom_admin/orders/', {
-            order_id: orderId,
-            new_status: newStatus
-        }, {
-            headers: {
-                'X-CSRFToken': csrfToken
-            }
-        })
-        .then(response => {
-            // Handle success response
-            console.log('Order status updated successfully:', response.data);
+            Swal.fire({
+                title: 'Confirm Change',
+                text: confirmationMessage,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'change it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log("Axios triggered.");
 
-            var successMessage = document.getElementById('order-status-success-msg');
-            var statusHeading = document.getElementById('order-status-heading');
-            statusHeading.style.display = 'none';
-            successMessage.style.display = 'block';
-            setTimeout(function() {
-                statusHeading.style.display = 'block';
-                successMessage.style.display = 'none';
-            }, 1500);
-            
-        })
-        .catch(error => {
-            if (error.response) {
-        
-                // Access the error message and old status from the response
-                const errorMessage = error.response.data['error-msg'];
-                const oldStatus = error.response.data['oldStatus'];
-        
-                alert(`Error: ${errorMessage}`);
-                // revert to the old status 
-                selectElement.value = oldStatus;
-            }
-        });
+                    // Send a POST request to update the order status
+                    axios.post('/custom_admin/orders/', {
+                        order_id: orderId,
+                        new_status: newStatus
+                    }, {
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => {
+                        // Handle success response
+                        console.log('Order status updated successfully:', response.data);
+
+                        var successMessage = document.getElementById('order-status-success-msg');
+                        var statusHeading = document.getElementById('order-status-heading');
+                        statusHeading.style.display = 'none';
+                        successMessage.style.display = 'block';
+                        setTimeout(function() {
+                            statusHeading.style.display = 'block';
+                            successMessage.style.display = 'none';
+                        }, 1500);
+                        
+                    })
+                    .catch(error => {
+                        if (error.response) {
+                    
+                            // Access the error message and old status from the response
+                            const errorMessage = error.response.data['error-msg'];
+                            const oldStatus = error.response.data['oldStatus'];
+                    
+                            //alert(`Error: ${errorMessage}`);
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Error:',
+                                text: `${errorMessage}`,
+                                confirmButtonText: 'OK'
+                            });
+                            // revert to the old status 
+                            selectElement.value = oldStatus;
+                        }
+                    });
+
+                } else {
+                    // If "Cancel", revert to the old status
+                    console.log("Revert to old button status invoked.");
+                    selectElement.selectedIndex = selectElement.dataset.oldSelectedIndex;
+                }
+            });
     }
 
     // Save the old selected index when the dropdown gains focus
-    document.querySelectorAll('.status-select').forEach(selectElement => {
-        selectElement.addEventListener('focus', function() {
-            this.dataset.oldSelectedIndex = this.selectedIndex;
-        });
-    });
+    function loadOldStatus(selectElement) {
+    selectElement.dataset.oldSelectedIndex = selectElement.selectedIndex;
+    console.log("Focus event: oldSelectedIndex", selectElement.dataset.oldSelectedIndex);
+    }
 
 </script>
 

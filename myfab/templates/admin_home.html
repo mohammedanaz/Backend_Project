@@ -369,7 +369,12 @@
 
             if (selectedDate === 'custom') {
                 if (!customDateRange) {
-                    alert('Please select a custom date range.');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Missing Date Range',
+                        text: 'Please select a custom date range.',
+                        confirmButtonText: 'OK'
+                    });
                     return; // Stop the function if the custom date range is not filled.
                 }
                 url += "&custom_date_range=" + encodeURIComponent(customDateRange);
@@ -378,14 +383,19 @@
             window.location.href = url; // Redirect to the new URL
         });
 
-        // Download Form submission validation(check value for date range)
+        // Form submission validation(check value for date range not None)
         salesReportForm.addEventListener('submit', function(event) {
             const selectedDate = document.querySelector('input[name="selected_date"]:checked').value;
             const customDateRange = customDateRangeInput.value.trim();
             
             if (selectedDate === 'custom' && !customDateRange) {
                 event.preventDefault(); // Prevent form submission if custom date range is empty
-                alert('Please select a custom date range.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Date Range',
+                    text: 'Please select a custom date range.',
+                    confirmButtonText: 'OK'
+                });
             }
         });
 

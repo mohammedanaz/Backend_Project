@@ -823,7 +823,7 @@ class SalesReport(View):
         orders = (
             Order.objects
             .filter(add_date__range=[start_date, end_date])
-            .order_by('add_date')
+            .order_by('-add_date')
             )
         
         total_price = orders.aggregate(total_price=Sum('price'))['total_price']
@@ -883,7 +883,7 @@ class SalesReport(View):
         orders = (
             Order.objects
             .filter(add_date__range=[start_date, end_date])
-            .order_by('add_date')
+            .order_by('-add_date')
             )
         total_price = orders.aggregate(total_price=Sum('price'))['total_price']
         if total_price is not None:

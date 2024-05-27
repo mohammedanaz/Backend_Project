@@ -800,8 +800,7 @@ class SalesReport(View):
     def get(self, request):
 
         selected_date = request.GET.get('selected_date')
-        if selected_date == 'custom':
-            custom_date_range = request.GET.get('custom_date_range')
+        custom_date_range = request.GET.get('custom_date_range', None)
         
         if selected_date == '7days':
             start_date = datetime.now() - timedelta(days=7)
@@ -826,8 +825,36 @@ class SalesReport(View):
             .filter(add_date__range=[start_date, end_date])
             .order_by('add_date')
             )
+        
+        total_price = orders.aggregate(total_price=Sum('price'))['total_price']
+        if total_price is not None:
+            total_price = f"{total_price:.2f}"
+        else:
+            total_price = 0.00
+        
+        paginator = Paginator(orders, 20) 
+        page_number = request.GET.get('page')
+        try:
+            paged_orders = paginator.page(page_number)
+        except PageNotAnInteger:
+            paged_orders = paginator.page(1)
+        except EmptyPage:
+            paged_orders = paginator.page(paginator.num_pages)
+        # Calculate the starting serial number for the current page
+        start_serial_number = (paged_orders.number - 1) * paginator.per_page + 1
+        
+        # Create a list to hold the serial numbers for the current page
+        serial_numbers = list(range(start_serial_number, start_serial_number + len(paged_orders)))
+        zipped_data = zip(serial_numbers, paged_orders)
 
-        context = {'orders': orders}
+        context = {
+            'zipped_data': zipped_data, 
+            'orders': paged_orders,
+            'total_price': total_price,
+            'selected_date': selected_date,
+            'custom_date_range': custom_date_range,
+            }
+
         return render(request, 'admin_sales_report.html', context)
 
     def post(self, request):

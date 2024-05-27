@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Product, Usage, Category, CategoryChoice, Measurement
+from .models import BannerMen, BannerWomen
 from django.core.exceptions import ValidationError
 
 
@@ -45,3 +46,5 @@ admin.site.register(Usage, UsageAdmin)
 admin.site.register(Category)
 admin.site.register(CategoryChoice, CategoryChoiceAdmin)
 admin.site.register(Measurement)
+admin.site.register(BannerMen)
+admin.site.register(BannerWomen)

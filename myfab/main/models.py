@@ -3,7 +3,7 @@ from django.db import models
 
 class Measurement(models.Model):
     '''
-    model to provide possible measurements to each usage
+    model to provide possible measurements to each dress type.
     '''
     name = models.CharField(max_length=100, unique=True)
 
@@ -12,7 +12,7 @@ class Measurement(models.Model):
 
 class Usage(models.Model):
     '''
-    model to provide possible usage types
+    model to provide possible usage types(dress types.)
     '''
     GENDER_CHOICES = [
         ('M', 'male'),
@@ -28,12 +28,19 @@ class Usage(models.Model):
     
 
 class Category(models.Model):
+    '''
+    Used to store category name.
+    '''
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
 class CategoryChoice(models.Model):
+    '''
+    Used to store choices for each category, this can be chenged my 
+    admin in future.
+    '''
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to='images/category_choices', null=True, blank=True)
@@ -42,6 +49,9 @@ class CategoryChoice(models.Model):
         return self.name
 
 class Product(models.Model):
+    '''
+    Used to store product info.
+    '''
     name = models.CharField(max_length=255, unique=True, blank=False, null=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     image = models.ImageField(upload_to='images/products')
@@ -52,6 +62,22 @@ class Product(models.Model):
     usages = models.ManyToManyField(Usage)
     category_choices = models.ManyToManyField(CategoryChoice)
 
-
     def __str__(self):
         return self.name
+    
+
+class BannerMen(models.Model):
+    '''
+    Used to store img and caption for carousel on men 
+    landing page.
+    '''
+    image = models.ImageField(upload_to='images/banner')
+    caption = models.CharField(max_length=100, blank=True, null=True)
+
+class BannerWomen(models.Model):
+    '''
+    Used to store img and caption for carousel on women 
+    landing page.
+    '''
+    image = models.ImageField(upload_to='images/banner')
+    caption = models.CharField(max_length=100, blank=True, null=True)

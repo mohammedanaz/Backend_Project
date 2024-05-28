@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}Admin Products Edit{% endblock %}
+{% block title %}Admin Banner{% endblock %}
 
 {% block content %}
 <!-- =================================== Navbar Begin ====================================== -->
@@ -51,8 +51,8 @@
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="btn text-black dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
-                        aria-expanded="false">
+                    <a class="btn text-black dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" 
+                        aria-expanded="false" style=" background-color: #800020;">
                         More
                     </a>
                     <ul class="dropdown-menu">
@@ -67,12 +67,18 @@
             </ul>
             <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
                 <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="{% url "main:home" %}">UserHome</a>
+                    <a class="btn" href="{% url "main:home" %}"
+                        data-toggle="tooltip" title="User Home">
+                        <i style="font-size:24px" class="fa">&#xf015;</i>
+                    </a>
                 </li>
                 <li class="nav-item ms-3 ms-lg-0">
-                    <form id="logout-form" action="/accounts/logout/" method="post">
+                    <form action="{% url 'accounts:logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="nav-link btn btn-link">Logout</button>
+                        <button type="submit" class="nav-link" style="border: none; background: none;"
+                            data-toggle="tooltip" title="Logout">
+                            <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+                        </button>
                     </form>
                 </li>
             </ul>
@@ -81,58 +87,58 @@
 </nav>
 <!-- =========================== Navbar End =========================== -->
 
-<!-- =========================== product edit begin =========================== -->
-    <div class="container w-50">
-        <h2 class="text-center">Edit Product</h2>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group my-2">
-                <label for="id_name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="id_name" name="name" value="{{ object.name }}">
-            </div>
-            <div class="form-group my-2">
-                <label for="id_price">Price:</label>
-                <input type="number" class="form-control price-input" id="id_price" name="price" step="0.01" value="{{ object.price }}">
-            </div>
-            <div class="form-group my-2">
-                <label for="id_image">Current Image:<a href="{{ object.image.url }}" target="_blank">{{ object.image }}</a></label>
-                <div class="custom-file my-2">
-                    <input type="file" class="custom-file-input" id="id_image" name="image">
-                </div>
-            </div>
-            <div class="form-group my-2" style="height: 30vh;">
-                <label for="id_description">Description:</label>
-                <textarea class="form-control h-75" id="id_description" name="description">{{ object.description }}</textarea>
-            </div>
-            <div class="form-group my-2">
-                <label for="id_qty">Quantity:</label>
-                <input type="number" class="form-control" id="id_qty" name="qty" value="{{ object.qty }}">
-            </div>
-            <div class="form-group my-2">
-                <label for="id_is_active">Is Active:</label>
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="id_is_active" name="is_active" {% if object.is_active %}checked{% endif %}>
-                </div>
-            </div>
-            <div class="container d-flex my-2" style="height: 25vh;">
-                <div class="form-group me-5 my-2 h-100">
-                    <label for="id_usages">Usages:</label>
-                    <div class="h-75">
-                        {{ form.usages }}
-                    </div>
-                </div>
-                <div class="form-group me-5 my-2 h-100">
-                    <label for="id_category_choices">Category Choices:</label>
-                    <div class="h-75">
-                        {{ form.category_choices }}
+<!-- =========================== Banner  begin =========================== -->
+    <!-- =========================== Men Banner Sec =========================== -->
+    <div class="container w-75">
+        <h2 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
+            Banners for men page
+        </h2>
+        <div class="row row-cols-1">
+            {% for banner_m in banners_men %}
+            <div class="col mt-2 mb-5">
+                <div class="card shadow" >
+                    <img src="{{ banner_m.image.url }}" style="max-height: 50vh;"
+                        class="card-img-top" alt="{{banner_m.name}}-img">
+                    <div class="card-body">
+                    <h4 class="card-title">
+                        <span class="text-danger">Caption: </span>{{banner_m.caption}}
+                    </h4>
+                    <a href="{% url "custom_admin:admin_banner_edit" %}?banner_id={{banner_m.id}}&gender=men" 
+                        class="btn fs-4" data-toggle="tooltip" title="Edit">
+                        <i style="font-size:24px" class="fa">&#xf044;</i>
+                    </a>
                     </div>
                 </div>
             </div>
-            <input type="hidden" name="next" value="{{ previous_url }}">
-            <button type="submit" class="btn btn-primary my-2">Save Changes</button>
-            <a href="#" onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
-        </form>
+            {% endfor %}
+        </div>
     </div>
-<!-- =========================== product edit end =========================== -->
+
+    <!-- =========================== Women Banner Sec =========================== -->
+    <div class="container w-75">
+        <h2 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
+            Banners for women page
+        </h2>
+        <div class="row row-cols-1">
+            {% for banner_w in banners_women %}
+            <div class="col mt-2 mb-5">
+                <div class="card shadow" >
+                    <img src="{{ banner_w.image.url }}" style="max-height: 50vh;"
+                        class="card-img-top" alt="{{banner_w.name}}-img">
+                    <div class="card-body">
+                    <h4 class="card-title">
+                        <span class="text-danger">Caption: </span>{{banner_w.caption}}
+                    </h4>
+                    <a href="{% url "custom_admin:admin_banner_edit" %}?banner_id={{banner_w.id}}&gender=women" 
+                        class="btn fs-4" data-toggle="tooltip" title="Edit">
+                        <i style="font-size:24px" class="fa">&#xf044;</i>
+                    </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+<!-- =========================== Banner  end =========================== -->
 
 {% endblock content %}

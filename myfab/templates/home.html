@@ -73,29 +73,22 @@
     <div class="container-fluid">
         <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                {% for banner in banners %}
+                <button type="button" data-bs-target="#carouselExampleCaptions" 
+                    data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %} class="active" {% endif %} 
+                    aria-label="Slide {{ forloop.counter }}"></button>
+                {% endfor %}
             </div>
             <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="3000">
-                <img src="{% static "images/carousel_img_1.png" %}" class="d-block w-100" style="max-height: 60vh;" alt="carousel_img_1">
-                <div class="carousel-caption d-none d-md-block">
-                <h5>Fabric is the canvas, sewing is the art </h5>
+                {% for banner in banners %}
+                <div class="carousel-item {% if forloop.first %} active {% endif %}" data-bs-interval="3000">
+                    <img src="{{ banner.image.url }}" class="d-block w-100" 
+                        style="max-height: 60vh;" alt="img-{{ forloop.counter }}">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5 style="color: {{banner.caption_colour}}">{{ banner.caption }}</h5>
+                    </div>
                 </div>
-            </div>
-            <div class="carousel-item" data-bs-interval="3000">
-                <img src="{% static "images/carousel_img_2.png" %}" class="d-block w-100" style="max-height: 60vh;" alt="carousel_img_2">
-                <div class="carousel-caption d-none d-md-block">
-                <h5>Wrap yourself in luxury, stitch by stitch</h5>
-                </div>
-            </div>
-            <div class="carousel-item" data-bs-interval="3000">
-                <img src="{% static "images/carousel_img_3.png" %}" class="d-block w-100" style="max-height: 60vh;" alt="carousel_img_3">
-                <div class="carousel-caption d-none d-md-block">
-                <h5>Life's too short to wear boring fabrics</h5>
-                </div>
-            </div>
+                {% endfor %}
             </div>
         </div>
     </div>

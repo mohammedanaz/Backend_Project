@@ -73,7 +73,7 @@ class BannerMen(models.Model):
     '''
     image = models.ImageField(upload_to='images/banner')
     caption = models.CharField(max_length=100, blank=True, null=True)
-    caption_colour = models.CharField(max_length=10, default='white')
+    caption_colour = models.CharField(max_length=10, default='#FFFFFF')
 
 class BannerWomen(models.Model):
     '''
@@ -82,4 +82,4 @@ class BannerWomen(models.Model):
     '''
     image = models.ImageField(upload_to='images/banner')
     caption = models.CharField(max_length=100, blank=True, null=True)
-    caption_colour = models.CharField(max_length=10, default='white')
+    caption_colour = models.CharField(max_length=10, default='#FFFFFF')

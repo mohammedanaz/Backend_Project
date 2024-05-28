@@ -4,6 +4,7 @@ from django.views import View
 from django.views.generic import DetailView
 from .models import Usage, Category, CategoryChoice, Product
 from orders.models import Cart
+from main.models import BannerMen, BannerWomen
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.models.functions import Lower
@@ -40,6 +41,8 @@ class Home(View):
             cart_items = []
             cart_count = 0
             total_price = 0
+            
+        banners = BannerMen.objects.all()
 
         context = {
                     'usages': usage_list,
@@ -49,6 +52,7 @@ class Home(View):
                     'cart_items': cart_items,
                     'cart_count': cart_count,
                     'total_price': total_price,
+                    'banners': banners,
                     }
         return render(request, 'home.html', context)
     
@@ -82,6 +86,8 @@ class HomeWomen(View):
             cart_count = 0
             total_price = 0
 
+        banners = BannerWomen.objects.all()
+
         context = {
                     'usages': usage_list,
                     'categories_filtered': categories_filtered,
@@ -90,6 +96,7 @@ class HomeWomen(View):
                     'cart_items': cart_items,
                     'cart_count': cart_count,
                     'total_price': total_price,
+                    'banners': banners,
                    }
 
         return render(request, 'home_women.html', context)

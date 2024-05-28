@@ -1,0 +1,188 @@
+{% extends 'admin_base.html' %}
+
+{% load static %}
+
+{% block title %}Admin Banner Edit{% endblock %}
+
+{% block content %}
+<!-- =================================== Navbar Begin ====================================== -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" 
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_home" %}">
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_users" %}" >
+                        Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_orders" %}" >
+                        Orders
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_products" %}" >
+                        Products
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_categories" %}" >
+                        Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_usages" %}" >
+                        Dress Type
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn text-black" href="{% url "custom_admin:admin_measurements" %}">
+                        Measurements
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="btn text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" 
+                        aria-expanded="false" style=" background-color: #800020;">
+                        More
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url "custom_admin:admin_order_return" %}">
+                            Return Request</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url "custom_admin:admin_banners" %}">
+                            Banners</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                <li class="nav-item ms-3 ms-lg-0">
+                    <a class="btn" href="{% url "main:home" %}"
+                        data-toggle="tooltip" title="User Home">
+                        <i style="font-size:24px" class="fa">&#xf015;</i>
+                    </a>
+                </li>
+                <li class="nav-item ms-3 ms-lg-0">
+                    <form action="{% url 'accounts:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-link" style="border: none; background: none;"
+                            data-toggle="tooltip" title="Logout">
+                            <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- =========================== Navbar End =========================== -->
+
+<!-- =========================== product edit begin =========================== -->
+    <div class="container w-50">
+        <h2 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2 text-center">
+            Edit Banner
+        </h2>
+        <form id="banner-form" method="post" enctype="multipart/form-data" 
+            action="{% url "custom_admin:admin_banner_edit" %}">
+            {% csrf_token %}
+            <input type="hidden" name="gender" value="{{gender}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <div class="form-group my-2">
+                <label for="cap" class="form-label">Caption:</label>
+                <input type="text" class="form-control" id="cap" name="cap" value="{{ banner.caption }}">
+            </div>
+            <div class="form-group my-2">
+                <label for="cap_colour" class="form-label">Caption colour: </label>
+                <span class="text-danger">
+                    (give hex code for colours or write colour name. eg- #FFFFFF for 'white')
+                </span>
+                <input type="text" class="form-control" id="cap_colour" name="cap_colour" 
+                    value="{{ banner.caption_colour }}">
+            </div>
+            <div class="form-group my-2">
+                <label for="id_image">
+                    Current Image:<a href="{{ banner.image.url }}" target="_blank">{{ banner.image }}</a>
+                </label>
+                <div class="custom-file my-2">
+                    <input type="file" class="custom-file-input" id="id_image" name="image">
+                    <span class="text-danger">(Maximum image size - 10mb.)</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary my-2">Save Changes</button>
+            <a href="#" onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+<!-- =========================== product edit end =========================== -->
+
+<!-- =========================== JS =========================== -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+
+            document.getElementById('banner-form').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+
+            let formData = new FormData(this); 
+            console.log('After form created');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to save the changes?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'save',
+                cancelButtonText: 'cancel',
+                reverseButtons: true
+            }).then((result) => {
+                console.log('Inside swal then block');
+                if (result.isConfirmed) {
+
+                    axios.post("{% url 'custom_admin:admin_banner_edit' %}", formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                    .then(function(response) {
+                        console.log('Inside axios then block');
+
+                        // Show success message
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Changes have been saved.',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Redirect to the provided URL
+                            window.location.href = response.data.url;
+                        });
+                        
+                    })
+                    .catch(function(error) {
+                        console.log('Inside axios catch block');
+                        let errorMsg = error.response.data.error_msg
+                        Swal.fire({
+                            title: 'Error!',
+                            text: errorMsg,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+                }
+            });
+        });       
+    });
+    
+    
+    </script>
+
+{% endblock content %}

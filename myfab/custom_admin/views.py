@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import UpdateView, DeleteView
 from django.views.generic.edit import CreateView
 from accounts.models import CustomUser
-from main.models import Product, Category, CategoryChoice, Usage, Measurement
+from main.models import Product, Category, Usage, Measurement, BannerMen, BannerWomen
 from orders.models import  ReturnOrder, Order
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -16,6 +16,8 @@ from datetime import datetime, timedelta
 from django.db.models import Count, Sum
 import xlsxwriter
 from io import BytesIO
+from PIL import Image
+import imghdr
 
 # Create your views here.
 ################################### Admin Home ####################################
@@ -932,3 +934,82 @@ class SalesReport(View):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+
+
+################################### Banner Section ####################################
+
+class Banner(View):
+    '''
+    GET method to render the banner page for admin to see banners for
+    both men and women langing page.
+    '''
+
+    def get(self, request):
+
+        banners_men = BannerMen.objects.all()
+        banners_women = BannerWomen.objects.all()
+        context = {
+            'banners_men': banners_men,
+            'banners_women': banners_women,
+        }
+        return render(request, 'admin_banners.html', context)
+    
+class BannerEdit(View):
+    '''
+    GET method to render the banner edit page.
+    POST method to update the banner data.
+    '''
+
+    def get(self, request):
+        id = request.GET.get('banner_id')
+        gender = request.GET.get('gender')
+        if gender == 'men':
+            banner = BannerMen.objects.get(id=id)
+        else:
+            banner = BannerWomen.objects.get(id=id)
+        context = {'banner': banner, 'gender': gender, 'id': id}
+        return render(request, 'admin_banner_edit.html', context)
+    
+    def post(self, request):
+        
+        id = request.POST.get('id')
+        gender = request.POST.get('gender')
+        image = request.FILES.get('image')
+        caption = request.POST.get('cap')
+        caption_colour = request.POST.get('cap_colour')
+        errors = []
+
+        if image:
+            if image.size > 10 * 1024*1024:
+                errors.append('Image size cannot be more than 10mb')
+            img_format = imghdr.what(image)
+            if not img_format:
+                errors.append('Uploaded file is not an image.')
+            try:
+                img = Image.open(image)
+                width, height = img.size
+                aspect_ratio = width/height
+                if aspect_ratio != 16/9:
+                    errors.append('Images should be with aspect ratio 16:9')
+            except Exception as e:
+                errors.append('Cannot open the uploaded file.')
+        if errors:
+            return JsonResponse({'error_msg': errors}, status=400)
+        
+        if gender == 'men':
+            banner = BannerMen.objects.get(id=id)
+        else:
+            banner = BannerWomen.objects.get(id=id)
+            
+        if image:
+            banner.image = image
+            banner.caption= caption
+            banner.caption_colour = caption_colour
+            banner.save()
+        else:
+            banner.caption= caption
+            banner.caption_colour = caption_colour
+            banner.save()
+
+        url = reverse('custom_admin:admin_banners')
+        return JsonResponse({'url': url})

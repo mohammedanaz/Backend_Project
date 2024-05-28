@@ -18,6 +18,7 @@ import xlsxwriter
 from io import BytesIO
 from PIL import Image
 import imghdr
+import math
 
 # Create your views here.
 ################################### Admin Home ####################################
@@ -989,7 +990,8 @@ class BannerEdit(View):
                 img = Image.open(image)
                 width, height = img.size
                 aspect_ratio = width/height
-                if aspect_ratio != 16/9:
+                print(round(aspect_ratio,2), round(16/9, 2))
+                if round(aspect_ratio,2) != round(16/9, 2):
                     errors.append('Images should be with aspect ratio 16:9')
             except Exception as e:
                 errors.append('Cannot open the uploaded file.')

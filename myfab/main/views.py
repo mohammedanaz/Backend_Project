@@ -58,6 +58,7 @@ class Home(View):
     
 
 
+
 ############################### Home Women CBV ######################################
 
 class HomeWomen(View):

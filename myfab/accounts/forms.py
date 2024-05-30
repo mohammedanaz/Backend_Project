@@ -148,5 +148,4 @@ class ReturnOrderForm(forms.ModelForm):
         
         if image_2 and image_2.size > 2 * 1024 * 1024:  # 2 MB limit
             self.add_error('image_2', "Image 2 file size should be less than 2 MB.")
-        
         return cleaned_data

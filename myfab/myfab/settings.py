@@ -84,9 +84,9 @@ WSGI_APPLICATION = 'myfab.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql.psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+        'NAME': 'myfab_pg'),
+        'USER': 'admin_pg',
+        'PASSWORD': 'admin@123',
         'HOST': 'localhost',
         'PORT': '5432',
     }

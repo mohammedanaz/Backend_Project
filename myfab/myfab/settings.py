@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'myfab.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql.psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'myfab_pg',
         'USER': 'admin_pg',
         'PASSWORD': 'admin@123',

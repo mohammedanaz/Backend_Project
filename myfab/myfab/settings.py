@@ -91,6 +91,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
 # Old sqlite3 DB cofig
 # DATABASES = {
 #     'default': {

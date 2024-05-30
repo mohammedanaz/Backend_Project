@@ -11,71 +11,72 @@
 <!-- =================================== Navbar Begin ====================================== -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-        <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="/main/">Men</a>
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
-                        <a class="text-black text-decoration-none" href="{% url "main:home_women" %}">Women</a>
-                    </button>
-                </li>
-            </ul>
-            <ul class="navbar-nav d-flex justify-content-center mx-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <form id="formsearch" action="" method="get">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="search" value="{% if search_query %}{{ search_query }}{% endif %}">
-                            <button type="submit" class="btn btn-outline-secondary " id="clear-search">
-                                <span aria-hidden="true"><i style="font-size:24px" class="fa">&#xf00d;</i></span>
-                            </button>
-                            <button type="submit" class="btn btn-outline-secondary" id="search-prod">Search</button>
-                        </div>
-                    </form>
-                </li>
-            </ul>
-            <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
-                {% if user.is_authenticated %}
-                <div class="btn-group">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Hi {{user.first_name}}
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'accounts:user_profile' user.id %}">Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url "accounts:address" %}">Addresses</a></li>
-                        <li><a class="dropdown-item" href="{% url "accounts:orders" %}">Orders</a></li>
-                    </ul>
-                </div>
-                <li class="nav-item ms-3 ms-lg-0">
-                    <button type="button" class="btn" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                        <i style='font-size:24px' class='fas'>&#xf217;</i>
-                    </button>
-                </li>
-                <li class="nav-item ms-3 ms-lg-0">
-                    <form action="{% url 'accounts:logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="nav-link" style="border: none; background: none;">
-                            <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+            <button class="navbar-toggler mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav d-flex align-items-center me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <button class="nav-link active btn btn-link" style="min-width: 150px;" aria-current="page">
+                            <a class="text-black text-decoration-none" href="/main/">Men</a>
                         </button>
-                    </form>
-                </li>
-                {% else %}
-                <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" >Hi Guest</a>
-                </li>
-                <li class="nav-item ms-3 ms-lg-0">
-                    <a class="nav-link" href="/accounts/login/"><i style="font-size:24px" class="fa">&#xf007;</i></a>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link" style="min-width: 150px;" aria-current="page">
+                            <a class="text-black text-decoration-none" href="{% url "main:home_women" %}">Women</a>
+                        </button>
+                    </li>
+                </ul>
+                <ul class="navbar-nav d-flex justify-content-center mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <form id="formsearch" action="" method="get">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="search" value="{% if search_query %}{{ search_query }}{% endif %}">
+                                <button type="submit" class="btn btn-outline-secondary " id="clear-search">
+                                    <span aria-hidden="true"><i style="font-size:24px" class="fa">&#xf00d;</i></span>
+                                </button>
+                                <button type="submit" class="btn btn-outline-secondary" id="search-prod">Search</button>
+                            </div>
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav d-flex flex-row justify-content-center  ms-auto mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Hi {{user.first_name}}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'accounts:user_profile' user.id %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url "accounts:address" %}">Addresses</a></li>
+                            <li><a class="dropdown-item" href="{% url "accounts:orders" %}">Orders</a></li>
+                        </ul>
+                    </div>
+                    <li class="nav-item ms-3 ms-lg-0">
+                        <button type="button" class="btn" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                            <i style='font-size:24px' class='fas'>&#xf217;</i>
+                        </button>
+                    </li>
+                    <li class="nav-item ms-3 ms-lg-0">
+                        <form action="{% url 'accounts:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link" style="border: none; background: none;">
+                                <i style='font-size:24px' class='fas'>&#xf2f5;</i>
+                            </button>
+                        </form>
+                    </li>
+                    {% else %}
+                    <li class="nav-item ms-3 ms-lg-0">
+                        <a class="nav-link" >Hi Guest</a>
+                    </li>
+                    <li class="nav-item ms-3 ms-lg-0">
+                        <a class="nav-link" href="/accounts/login/"><i style="font-size:24px" class="fa">&#xf007;</i></a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </nav>
 <!-- =========================== Navbar End =========================== -->
@@ -88,16 +89,18 @@
 
 <!-- =========================== Product section begin =========================== -->
     
-    <section class="container-fluid prod-sec-flex-container d-flex my-2">
+    <section class="container-fluid prod-sec-flex-container d-flex flex-column flex-lg-row my-2">
         
          <!-- Filter section -->
-        <div class="container filter-sec w-25 my-4">
+        <div class="container filter-sec col-12 col-lg-3 my-4">
             <!-- Toggle button for Filter accordion -->
-            <button class="accordion-toggle btn btn-primary d-block d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#filterAccordion" aria-expanded="false" aria-controls="filterAccordion">
+            <button class="accordion-toggle btn btn-primary d-block d-lg-none collapsed mb-3" 
+                type="button" data-bs-toggle="collapse" 
+                data-bs-target="#filterAccordion" aria-expanded="false" aria-controls="filterAccordion">
                 Filters
             </button>
             <!-- Fliter Accordion -->
-            <div class="accordion d-none d-lg-block shadow p-3 rounded-3" id="filterAccordion">
+            <div class="accordion collapse d-lg-block  shadow p-3 rounded-3" id="filterAccordion">
                 <h6 class="border-bottom border-top border-3 border-dark-subtle  fs-2">Filters and Sort</h6>
                 <form action="" method="get">
                     <!-- Hidden search input field to preserve search value when submitting filter form -->
@@ -296,4 +299,5 @@
         // Call the function to hide the alert message
         hideAlertMessage();
     </script>
+
 {% endblock %}

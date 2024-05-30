@@ -58,7 +58,7 @@ class UserRegistrationForm(forms.ModelForm):
 ####### Check phone number already exist #####
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
-        if not re.match("^\d+$", phone_number):
+        if not re.match(r"^\d+$", phone_number):
             raise forms.ValidationError('Phone number should contain only digits.')
         if len(phone_number) > 10 or len(phone_number) < 10:
             raise forms.ValidationError('Phone number should have 10 digits')

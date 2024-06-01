@@ -26,7 +26,14 @@ SECRET_KEY = 'django-insecure-=v+n=mou5vs0iq2zqe*vn*)2gnuuzdhtozsa$z8$n#x5bci*m7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['myfab.shop', '16.171.90.241', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    'myfab.shop', 
+    '16.171.90.241', 
+    'localhost', 
+    '127.0.0.1',
+    'www.myfab.shop',
+    'myfab.shop'
+    ]
 
 
 # Application definition

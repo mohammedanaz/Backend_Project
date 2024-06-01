@@ -23,9 +23,9 @@ class Home(View):
         usage_list = list(usages)
 
         categories_with_img = Category.objects.filter(categorychoice__image__isnull=False).distinct()
-        categories_filtered = categories_with_img.exclude(name='gender') # to remove gender which is not filtered out
+        categories_filtered = categories_with_img.exclude(name__iexact='gender') # to remove gender which is not filtered out
         choices_with_img = CategoryChoice.objects.filter(image__isnull=False)
-        choices_filtered = choices_with_img.exclude(name = 'male') # to remove male which is not filtered out
+        choices_filtered = choices_with_img.exclude(name__iexact = 'male').exclude(name__iexact='female') # to remove male which is not filtered out
         dict = {}
         for category in categories_filtered:
             choices = choices_filtered.filter(category = category)

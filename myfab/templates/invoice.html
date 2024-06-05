@@ -9,7 +9,7 @@
 
 {% block content %}
 
-    <section class="container w-50 border my-5 p-3 bg-light rounded-3 shadow">
+    <section class="container col-10 col-lg-6 border my-5 p-3 bg-light rounded-3 shadow">
         <h1>Invoice for Order # {{order.id}}</h1>
         <p>Order date: {{order.add_date}}</p>
         <p>Customer: {{order.customer_id.first_name}} {{order.customer_id.last_name}}</p>

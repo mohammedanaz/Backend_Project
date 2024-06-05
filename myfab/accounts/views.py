@@ -245,7 +245,7 @@ class Orders(View):
                     f'Your order with ID {order.id} has been successfully cancelled.',
                     'anzforweb@gmail.com',  # Sender email address
                     [order.customer_id.email],  # Recipient email address
-                    fail_silently=False,
+                    fail_silently=True,
                 )
                 return JsonResponse({'success-msg': 'Order cancelled.'})
         except ValidationError as e:

@@ -8,24 +8,36 @@ from main.models import BannerMen, BannerWomen
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Sum
 from django.db.models.functions import Lower
+from django.core.cache import cache
 
 
 # Create your views here.
-
-
 
 ############################### Home Men CBV ######################################
 
 class Home(View):
     def get(self, request):
         
-        usages = Usage.objects.filter(gender='M')  # Filter usages with male gender
-        usage_list = list(usages)
+        usage_list_male = cache.get('usage_list_male')
+        if not usage_list_male:
+            usages = Usage.objects.filter(gender='M')  # Filter usages with male gender
+            usage_list_male = list(usages)
+            cache.set('usage_list_male', usage_list_male, timeout=3600) # set 1 hour
 
-        categories_with_img = Category.objects.filter(categorychoice__image__isnull=False).distinct()
-        categories_filtered = categories_with_img.exclude(name__iexact='gender') # to remove gender which is not filtered out
-        choices_with_img = CategoryChoice.objects.filter(image__isnull=False)
-        choices_filtered = choices_with_img.exclude(name__iexact = 'male').exclude(name__iexact='female') # to remove male which is not filtered out
+        categories_filtered = cache.get('categories_filtered')
+        if not categories_filtered:
+            categories_with_img = Category.objects.filter(categorychoice__image__isnull=False).distinct()
+            # to remove gender which is not filtered out
+            categories_filtered = categories_with_img.exclude(name__iexact='gender')
+            cache.set('categories_filtered', categories_filtered, timeout=3600)
+
+        choices_filtered = cache.get('choices_filtered')
+        if not choices_filtered:
+            choices_with_img = CategoryChoice.objects.filter(image__isnull=False)
+            # to remove male which is not filtered out
+            choices_filtered = choices_with_img.exclude(name__iexact = 'male').exclude(name__iexact='female')
+            cache.set('choices_filtered', choices_filtered, timeout=3600)
+
         dict = {}
         for category in categories_filtered:
             choices = choices_filtered.filter(category = category)
@@ -41,36 +53,49 @@ class Home(View):
             cart_items = []
             cart_count = 0
             total_price = 0
-            
-        banners = BannerMen.objects.all()
+        banners_men = cache.get('banners_men')
+        if not banners_men:
+            banners_men = BannerMen.objects.all()
+            cache.set('banners_men', banners_men, timeout=3600)
 
         context = {
-                    'usages': usage_list,
+                    'usages': usage_list_male,
                     'categories_filtered': categories_filtered,
                     'choices_filtered': choices_filtered,
                     'dict': dict,
                     'cart_items': cart_items,
                     'cart_count': cart_count,
                     'total_price': total_price,
-                    'banners': banners,
+                    'banners': banners_men,
                     }
         return render(request, 'home.html', context)
     
-
-
 
 ############################### Home Women CBV ######################################
 
 class HomeWomen(View):
     def get(self, request):
         
-        usages = Usage.objects.filter(gender='F')  # Filter usages with female gender
-        usage_list = list(usages)
+        usage_list_female = cache.get('usage_list_female')
+        if not usage_list_female:
+            usages = Usage.objects.filter(gender='F')  # Filter usages with female gender
+            usage_list_female = list(usages)
+            cache.set('usage_list_female', usage_list_female, timeout=3600) # set 1 hour
 
-        categories_with_img = Category.objects.filter(categorychoice__image__isnull=False).distinct()
-        categories_filtered = categories_with_img.exclude(name__iexact='gender') # to remove gender which is not filtered out
-        choices_with_img = CategoryChoice.objects.filter(image__isnull=False)
-        choices_filtered = choices_with_img.exclude(name__iexact = 'male').exclude(name__iexact='female') # to remove male which is not filtered out
+        categories_filtered = cache.get('categories_filtered')
+        if not categories_filtered:
+            categories_with_img = Category.objects.filter(categorychoice__image__isnull=False).distinct()
+            # to remove gender which is not filtered out
+            categories_filtered = categories_with_img.exclude(name__iexact='gender')
+            cache.set('categories_filtered', categories_filtered, timeout=3600)
+
+        choices_filtered = cache.get('choices_filtered')
+        if not choices_filtered:
+            choices_with_img = CategoryChoice.objects.filter(image__isnull=False)
+            # to remove male which is not filtered out
+            choices_filtered = choices_with_img.exclude(name__iexact = 'male').exclude(name__iexact='female')
+            cache.set('choices_filtered', choices_filtered, timeout=3600)
+
         dict = {}
         for category in categories_filtered:
             choices = choices_filtered.filter(category = category)
@@ -87,17 +112,20 @@ class HomeWomen(View):
             cart_count = 0
             total_price = 0
 
-        banners = BannerWomen.objects.all()
+        banners_female = cache.get('banners_female')
+        if not banners_female:
+            banners_female = BannerWomen.objects.all()
+            cache.set('banners_female', banners_female, timeout=3600)
 
         context = {
-                    'usages': usage_list,
+                    'usages': usage_list_female,
                     'categories_filtered': categories_filtered,
                     'choices_filtered': choices_filtered,
                     'dict': dict,
                     'cart_items': cart_items,
                     'cart_count': cart_count,
                     'total_price': total_price,
-                    'banners': banners,
+                    'banners': banners_female,
                    }
 
         return render(request, 'home_women.html', context)

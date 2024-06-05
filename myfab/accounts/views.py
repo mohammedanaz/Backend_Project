@@ -240,13 +240,13 @@ class Orders(View):
                 product.qty += (order.quantity + Decimal('0.01'))
                 product.save()
                 # Send email after saving the order status
-                send_mail(
-                    'Order Cancellation Confirmation', # Email subject
-                    f'Your order with ID {order.id} has been successfully cancelled.',
-                    'anzforweb@gmail.com',  # Sender email address
-                    ['anz4web@gmail.com'],  # Recipient email address
-                    fail_silently=True,
-                )
+                # send_mail(
+                #     'Order Cancellation Confirmation', # Email subject
+                #     f'Your order with ID {order.id} has been successfully cancelled.',
+                #     'anzforweb@gmail.com',  # Sender email address
+                #     ['anz4web@gmail.com'],  # Recipient email address
+                #     fail_silently=True,
+                # )
                 return JsonResponse({'success-msg': 'Order cancelled.'})
         except ValidationError as e:
             print(f'Validation error- {e}')

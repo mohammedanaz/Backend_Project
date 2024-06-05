@@ -128,23 +128,22 @@
                 <div class="table-responsive text-center">
                     <table class="table  table-hover">
                         <thead>
-                        <tr>
-                            <th scope="col">Sr#</th>
-                            <th scope="col">ID#</th>
-                            <th scope="col">Order ID#</th>
-                            <th scope="col">Image-1</th>
-                            <th scope="col">Image-2 (Optional)</th>
-                            <th scope="col">
-                                <span id="return-status-heading">
-                                    Status
-                                </span>
-                                <span id="return-status-success-msg" 
-                                        class="alert alert-success fade show fs-6 w-50 mx-auto py-2 m-0" 
-                                        role="alert" style="display: none;">
+                            <tr>
+                                <th scope="col">Sr#</th>
+                                <th scope="col">ID#</th>
+                                <th scope="col">Order ID#</th>
+                                <th scope="col">Image-1</th>
+                                <th scope="col">Image-2 (Optional)</th>
+                                <th scope="col">Reason</th>
+                                <th scope="col">
+                                    <span id="return-status-heading">
+                                        Status
+                                    </span>
+                                    <span id="return-status-success-msg" class="alert alert-success fade show fs-6 w-50 mx-auto py-2 m-0" role="alert" style="display: none;">
                                         updated.
-                                </span>
-                            </th>
-                        </tr>
+                                    </span>
+                                </th>
+                            </tr>
                         </thead>
                         <tbody id="return-table-body">
                             {% for serial_number, return in zipped_data %}
@@ -166,15 +165,17 @@
                                     <p class="">No image</p>
                                     {% endif %}
                                 </td>
+                                <td class="overflow-scroll text-start" 
+                                    style="max-width: 500px; max-height: 150px; overflow-y: scroll; display: block;">
+                                    {{ return.reason }}
+                                </td>
                                 <td>
-                                    <select class="status-select btn btn-outline-secondary"
-                                        data-return-id="{{ return.id }}"
-                                        onchange="changeReturnStatus(this)">
-                                    {% for status in return.STATUS_CHOICES %}
+                                    <select class="status-select btn btn-outline-secondary" data-return-id="{{ return.id }}" onchange="changeReturnStatus(this)">
+                                        {% for status in return.STATUS_CHOICES %}
                                         <option value="{{ status.0 }}" {% if return.status == status.0 %} selected {% endif %}>
                                             {{ status.1 }}
                                         </option>
-                                    {% endfor %}
+                                        {% endfor %}
                                     </select>
                                 </td>
                             </tr>
@@ -255,6 +256,10 @@
                                     <img class="thumbnail-image" src="${returns.image_2}" alt="${returns.id} Image-2">
                                 </a>
                                 ` : `<p class="">No image</p>`}
+                            </td>
+                            <td class="overflow-scroll text-start" 
+                                    style="max-width: 500px; max-height: 150px; overflow-y: scroll; display: block;">
+                                ${returns.reason}
                             </td>
                             <td>
                                 <select class="status-select btn btn-outline-secondary"

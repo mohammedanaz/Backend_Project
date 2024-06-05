@@ -786,6 +786,7 @@ class AdminReturnSearch(View):
                 'id': returns.id,
                 'image_1': returns.image_1.url,
                 'image_2': returns.image_2.url if returns.image_2 else None,
+                'reason': returns.reason,
                 'serial_number':serial_numbers.pop()
                 } for returns in paged_returns]
         return JsonResponse({'data': data, 'has_previous': paged_returns.has_previous(), 

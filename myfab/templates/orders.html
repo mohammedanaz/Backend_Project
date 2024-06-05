@@ -192,41 +192,65 @@
 <!-- =========================== Order Section end =========================== -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        //Request to cancel the order when click cancel button
         function cancelOrder(orderId) {
             var confirmation = window.confirm("Are you sure you want to cancel this order?");
-
-            if(confirmation){
+        
+            if (confirmation) {
                 const csrfToken = "{{ csrf_token }}";
-
+        
+                // Show processing indicator
+                Swal.fire({
+                    title: 'Processing',
+                    text: 'Please wait...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    onBeforeOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+        
                 // Send Axios request
                 axios.post('/accounts/orders/', {
-                    order_id: orderId
-                }, {
-                    headers: {
-                        'X-CSRFToken': csrfToken
-                    }
-                })
-                .then(function (response) {
-                    // Handle success
-                    console.log(response.data);
-                    var btnCancel = document.getElementById('btn-' +orderId)
-                    var statusDiv = document.getElementById('status-' +orderId)
-                    var successMsg = document.getElementById('order-cancel-success-msg-' +orderId)
-
-                    successMsg.style.display = 'block';
-                    btnCancel.disabled = true;
-                    statusDiv.textContent = 'Status: Cancelled';
-
-                    setTimeout(function() {
-                        successMsg.style.display = 'none';
-                    }, 1500);
-                })
-                .catch(function (error) {
-                    // Handle error
-                    console.error(error);
-                });
+                        order_id: orderId
+                    }, {
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(function(response) {
+                        // Hide processing indicator
+                        Swal.close();
+                        console.log(response.data);
+        
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Order Cancelled',
+                            text: 'Your order has been successfully cancelled.',
+                            showConfirmButton: true, // Show "OK" button
+                            allowOutsideClick: true // Allow clicking outside to close the modal
+                        });
+        
+                        // Optionally, you can perform additional actions here if needed
+                        var btnCancel = document.getElementById('btn-' + orderId);
+                        var statusDiv = document.getElementById('status-' + orderId);
+                        btnCancel.disabled = true;
+                        statusDiv.textContent = 'Status: Cancelled';
+                    })
+                    .catch(function(error) {
+                        // Hide processing indicator
+                        Swal.close();
+        
+                        // Handle error
+                        console.error(error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while cancelling the order.'
+                        });
+                    });
             }
-            
         }
 
         //To submit request return order with axios.

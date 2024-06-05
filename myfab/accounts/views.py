@@ -232,29 +232,27 @@ class Orders(View):
 
         order_id = json_data.get('order_id')
         order = Order.objects.get(id=order_id)
-        product = Product.objects.select_for_update().get(id=order.product_id.id)
+        product = Product.objects.get(id=order.product_id.id)
         try:
-            with transaction.atomic():
-                order.status = 'C'
-                order.save()
-                product.qty += (order.quantity + Decimal('0.01'))
-                product.save()
-                # Send email after saving the order status
-                # send_mail(
-                #     'Order Cancellation Confirmation', # Email subject
-                #     f'Your order with ID {order.id} has been successfully cancelled.',
-                #     'anzforweb@gmail.com',  # Sender email address
-                #     ['anz4web@gmail.com'],  # Recipient email address
-                #     fail_silently=True,
-                # )
-                return JsonResponse({'success-msg': 'Order cancelled.'})
+            order.status = 'C'
+            order.save()
+            product.qty += (order.quantity + Decimal('0.01'))
+            product.save()
+            # Send email after saving the order status
+            send_mail(
+                'Order Cancellation Confirmation', # Email subject
+                f'Your order with ID {order.id} has been successfully cancelled.',
+                'anzforweb@gmail.com',  # Sender email address
+                ['anz4web@gmail.com'],  # Recipient email address
+                fail_silently=True,
+            )
+            return JsonResponse({'success-msg': 'Order cancelled.'})
         except ValidationError as e:
             print(f'Validation error- {e}')
             return JsonResponse({'error-msg': 'Validation Error.'})
         except Exception as e:
-            print('Entered in send_email error')
-            logging.error(f'An error occurred while sending email: {e}')
-            return JsonResponse({'error-msg': 'Logging Error.'})
+            print('General Exception occured')
+            return JsonResponse({'error-msg': 'Gen Exception Error.'})
 
 
 ########################## Return Order View #################################

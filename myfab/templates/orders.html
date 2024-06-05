@@ -266,6 +266,17 @@
 
                     // Get CSRF token from hidden input
                     const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+                    // Show processing indicator
+                    Swal.fire({
+                        title: 'Processing',
+                        text: 'Please wait...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
                     axios.post(url, formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data',
@@ -274,11 +285,19 @@
                     })
                     .then(response => {
                         console.log('Success:', response.data);
+                        Swal.close();
                         window.location.reload();
-                        alert('Return request submitted successfully.');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Return Request',
+                            text: 'Your request for return has been placed successfully.',
+                            showConfirmButton: true, // Show "OK" button
+                            allowOutsideClick: true 
+                        });
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        Swal.close();
                         if (error.response) {
                             const errors = error.response.data.errors;
                             let errorMsg = 'Form submission failed:\n';

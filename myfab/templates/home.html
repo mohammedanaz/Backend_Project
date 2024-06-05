@@ -70,7 +70,7 @@
 <!-- =========================== Navbar End =========================== -->
 
 <!-- =========================== Carousel Begin ========================== -->
-    <div class="container-fluid">
+    <div class="container my-4">
         <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 {% for banner in banners %}
@@ -97,42 +97,48 @@
 
 <!-- ============================ New explore section Begin =================================== -->
     
-    <div class="container-fluid text-center">
+    <div class="container text-center">
       <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2"></h5>
     </div>
-    <a class="text-decoration-none" href="{% url "main:products" %}">
-      <div class="container-wrapper" style="margin-right: 12px; margin-left: 12px;">
-        <div class="container-fluid d-flex justify-content-center align-items-center text-center" style="background-image: url('/static/images/new_arrivals_1.jpg'); background-size: contain; height: 50vh;">
-            <h1 class="fw-bold text-white">Explore Our Collections</h1>
-        </div>
+    <div class="container">
+        <a class="container text-decoration-none" href="{% url "main:products" %}">
+            <div class="container d-flex justify-content-center align-items-center text-center" 
+                style="background-image: url('/static/images/new_arrivals_1.jpg'); background-size: contain; height: 50vh;">
+                <button class="btn btn-secondary">
+                    <h1 class="fw-bold text-white">Click to shop all products</h1>
+                </button>
+            </div>
+        </a>
     </div>
-    </a>
+    
     
 <!-- =============================== New explore section End ============================= -->
 
 
 <!-- <section> shop by usage begin ============================-->
 
-  <section class="py-0 mb-2">
-    <div class="container-fluid">
+    <div class="container">
         <div class="row h-100">
             <div class="container text-center">
-                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By Usage</h5>
+                <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5">Shop By Usage</h5>
             </div>
-            <div class="col-12">
+            <div class="col-12 my-2 my-md-4">
               <div class="carousel slide" id="shopbyusage" data-bs-touch="false" data-bs-interval="false">
                 <div class="carousel-inner">
                     {% for usage in usages %}
                         {% if forloop.first %}
                             <div class="carousel-item active">
-                                <div class="row h-100 align-items-center g-2">
+                                <div class="row h-100 align-items-center g-1">
                         {% endif %}
-                                    <div class="col-sm-6 col-md-3 mb-3 mb-md-0 h-100">
-                                        <div class="card card-span h-100 text-white">
-                                            <img class="img-fluid h-100" src="{{ usage.image.url }}" alt="{{ usage.name }} Image" />
+                                    <div class="col-3 mb-3 mb-md-0 h-100">
+                                        <div class="card card-span h-100 text-white rounded-4">
+                                            <img class="img-fluid h-100 rounded-top-4" src="{{ usage.image.url }}" 
+                                                alt="{{ usage.name }} Image" />
                                             <div class="card-img-overlay ps-0"> </div>
                                             <div class="card-body ps-0 bg-200">
-                                                <h3 class="fw-bold text-center text-black text-truncate">{{ usage.name|title }}</h3>
+                                                <h3 class="fs-4 text-center text-black text-truncate">
+                                                    {{ usage.name|title }}
+                                                </h3>
                                             </div>
                                             <a class="stretched-link" href="#"></a>
                                         </div>
@@ -144,7 +150,7 @@
                             </div>
                         </div>
                         <div class="carousel-item">
-                            <div class="row h-100 align-items-center g-2">
+                            <div class="row h-100 align-items-center g-1">
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -160,37 +166,39 @@
             </div>
         </div>
     </div>
-</section>
 <!-- =================== <section> shop by usage end ============================-->
 
 <!-- ================== <section> shop by categories begin ============================-->
 
 {% for category in categories_filtered %}
     {% with choices_per_category=choices_filtered|filter_choices_by_category:category %}
-      <section class="py-0 mb-2">
-        <div class="container-fluid">
+    <section class="py-0 mb">
+        <div class="container">
             <div class="row h-100">
                 <div class="container text-center">
                     <h5 class="border-bottom border-top border-3 border-dark-subtle fw-bold fs-2 fs-lg-5 mt-2">Shop By {{category.name|title}}</h5>
                 </div>
-                <div class="col-12">
+                <div class="col-12 my-2 my-md-4">
                   <div class="carousel slide" id="{{category.name}}" data-bs-touch="false" data-bs-interval="false">
                     <div class="carousel-inner">
                           {% for choice in choices_per_category %}
                             {% if forloop.first %}
                                 <div class="carousel-item active">
-                                    <div class="row h-100 align-items-center g-2">
+                                    <div class="row h-100 align-items-center g-1">
                             {% endif %}
-                                        <div class="col-sm-6 col-md-3 mb-3 mb-md-0 h-100">
-                                            <div class="card card-span h-100 text-white">
+                                        <div class="col-3 mb-3 mb-md-0 h-100">
+                                            <div class="card card-span h-100 text-white rounded-4">
                                                 {% if choice.image.url  %}
-                                                <img class="img-fluid h-100" src="{{ choice.image.url }}" alt="{{ choice.name }} Image" />
+                                                <img class="img-fluid h-100 rounded-top-4" src="{{ choice.image.url }}" 
+                                                    alt="{{ choice.name }} Image" />
                                                 {% else %}
                                                 <h1>No Image rendered</h1>
                                                 {% endif %}
                                                 <div class="card-img-overlay ps-0"> </div>
                                                 <div class="card-body ps-0 bg-200">
-                                                    <h3 class="fw-bold text-center text-black text-truncate">{{ choice.name|title }}</h3>
+                                                    <h3 class="fs-4 text-center text-black text-truncate">
+                                                        {{ choice.name|title }}
+                                                    </h3>
                                                 </div>
                                                 <a class="stretched-link" href="#"></a>
                                             </div>
@@ -202,7 +210,7 @@
                                 </div>
                             </div>
                             <div class="carousel-item">
-                                <div class="row h-100 align-items-center g-2">
+                                <div class="row h-100 align-items-center g-1">
                             {% endif %}
                           {% endfor %}
                     </div>
@@ -218,7 +226,7 @@
                 </div>
             </div>
         </div>
-      </section>
+    </section>
     {% endwith %}
 {% endfor %}
                     

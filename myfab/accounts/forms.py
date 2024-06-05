@@ -45,13 +45,21 @@ class UserRegistrationForm(forms.ModelForm):
     def clean_password(self):
         password = self.cleaned_data.get('password')
         if len(password) < 8 :
-            raise forms.ValidationError('Password must contain 8 characters')
+            raise forms.ValidationError(
+                'Password must contain 8 characters,Upper & Lower case and  any one special character from \'@/_\''
+                )
         if not any(char.isupper() for char in password):
-            raise forms.ValidationError('Password must contain at least one upper case')
+            raise forms.ValidationError(
+                'Password must contain 8 characters,Upper & Lower case and  any one special character from \'@/_\''
+                )
         if not any(char.islower() for char in password):
-            raise forms.ValidationError('Password must contain at least one lower case')
+            raise forms.ValidationError(
+                'Password must contain 8 characters,Upper & Lower case and  any one special character from \'@/_\''
+                )
         if not any(char in '@/_' for char in password):
-            raise forms.ValidationError('Password must contain any one special character from \'@/_\'')
+            raise forms.ValidationError(
+                'Password must contain 8 characters,Upper & Lower case and  any one special character from \'@/_\''
+                )
         return password
 
     

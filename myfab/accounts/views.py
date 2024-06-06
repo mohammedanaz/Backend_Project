@@ -66,7 +66,11 @@ class LoginPage(TemplateView):
             return redirect(reverse('main:home'))
         else:
             user_exists = CustomUser.objects.filter(username = email).exists()
-            context = {'user_exists': user_exists, 'invalid_credentials': True}
+            context = {
+                'user_exists': user_exists,
+                'invalid_credentials': True,
+                'email': email,
+                }
             return render(request, 'login.html', context)
         
     def get(self, request):
@@ -111,12 +115,12 @@ class OTPVerification(View):
                 # Remove timezone component before parsing
                 expiry_time_str = re.sub(r'\+\d{2}:\d{2}$', '', expiry_time_str)
                 expiry_time = datetime.strptime(expiry_time_str, '%Y-%m-%d %H:%M:%S.%f')
+                form_data = request.session.get('signup_data')
+                form = UserRegistrationForm(form_data)
                 if datetime.now() > expiry_time:
-                    context = {'error_otp_expiry':True}
+                    context = {'error_otp_expiry':True, 'form': form,}
                     return render(request, 'signup.html', context)
                 else:
-                    form_data = request.session.get('signup_data')
-                    form = UserRegistrationForm(form_data)
                     if form.is_valid():
                         form.save()
                         del request.session['signup_data']
@@ -126,10 +130,14 @@ class OTPVerification(View):
                     else:
                         return render(request, 'signup.html', {'form': form})
             else:
-                context = {'invalid_credentials': True}
+                form_data = request.session.get('signup_data')
+                form = UserRegistrationForm(form_data)
+                context = {'invalid_credentials': True, 'form': form}
                 return render(request, 'signup.html', context)
-        else:   
-            context = {'invalid_credentials': True}
+        else:
+            form_data = request.session.get('signup_data')
+            form = UserRegistrationForm(form_data)
+            context = {'invalid_credentials': True, 'form': form}
             return render(request, 'signup.html', context)
         
 ############################### User Profile ######################################

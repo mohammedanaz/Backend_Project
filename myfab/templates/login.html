@@ -21,10 +21,12 @@
               {% endif %}
             {% endif %}
             <div class="form-group">
-              <input type="email" name="email" class="form-control" id="LoginInputEmail"  placeholder="Enter email">
+              <input type="email" name="email" class="form-control" id="LoginInputEmail"  placeholder="Enter email"
+              {% if email %}value={{email}}{% endif %} required>
             </div>
             <div class="form-group">
-              <input type="password" name="password" class="form-control my-2" id="LoginInputPassword" placeholder="Password">
+              <input type="password" name="password" class="form-control my-2" 
+                id="LoginInputPassword" placeholder="Password" required>
             </div>
             <button type="submit" class="btn text-white  mt-3" style="background-color: #0F4C81">Login</button>
         </form>
